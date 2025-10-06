@@ -1,0 +1,5 @@
+### Validar la salud del servicio
+#@no-cookie-jar
+GET http://localhost:8080/actuator/health
+
+###
