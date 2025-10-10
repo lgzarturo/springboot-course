@@ -1,0 +1,26 @@
+### Ping Controller Tests
+### Base URL
+@baseUrl = http://localhost:8080
+@apiVersion = v1
+
+### 1. Simple Ping - Debe retornar "pong"
+GET {{baseUrl}}/api/{{apiVersion}}/ping
+Accept: application/json
+
+### 2. Ping con mensaje personalizado
+GET {{baseUrl}}/api/{{apiVersion}}/ping/hello
+Accept: application/json
+
+### 3. Health Check
+GET {{baseUrl}}/api/{{apiVersion}}/ping/health
+Accept: application/json
+
+### 4. Ping con mensaje largo
+GET {{baseUrl}}/api/{{apiVersion}}/ping/this-is-a-long-message
+Accept: application/json
+
+### 5. Ping con caracteres especiales
+GET {{baseUrl}}/api/{{apiVersion}}/ping/hello-world-2024
+Accept: application/json
+
+###

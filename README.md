@@ -61,11 +61,11 @@ Este proyecto implementa una **Arquitectura Hexagonal (Ports & Adapters)** con s
 
 ### Ventajas de esta Arquitectura
 
-✅ **Independencia de Frameworks**: El dominio no depende de Spring.
-✅ **Testabilidad**: Fácil de testear cada capa de forma aislada.
-✅ **Escalabilidad**: Fácil agregar nuevas funcionalidades.
-✅ **Mantenibilidad**: Código organizado y fácil de encontrar.
-✅ **Flexibilidad**: Cambiar tecnologías sin afectar la lógica de negocio.
+- ✅ **Independencia de Frameworks**: El dominio no depende de Spring.
+- ✅ **Testabilidad**: Fácil de testear cada capa de forma aislada.
+- ✅ **Escalabilidad**: Fácil agregar nuevas funcionalidades.
+- ✅ **Mantenibilidad**: Código organizado y fácil de encontrar.
+- ✅ **Flexibilidad**: Cambiar tecnologías sin afectar la lógica de negocio.
 
 ---
 
@@ -220,6 +220,13 @@ curl http://localhost:8080/api/v1/ping/health
 ---
 
 ## Documentación
+
+### Documentación del Proyecto
+
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitectura detallada del proyecto
+- **[ARCHITECTURE_DIAGRAM.md](docs/ARCHITECTURE_DIAGRAM.md)** - Diagramas visuales
+- **[DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GUIDE.md)** - Guía de desarrollo
+- **[IMPLEMENTATION_CHECKLIST.md](docs/IMPLEMENTATION_CHECKLIST.md)** - Checklist de implementación
 
 ### Archivos HTTP
 
