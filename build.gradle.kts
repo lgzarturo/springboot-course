@@ -29,21 +29,40 @@ repositories {
 extra["sentryVersion"] = "8.16.0"
 
 dependencies {
+    // Spring Boot Starters
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    
+    // Kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.sentry:sentry-spring-boot-starter-jakarta")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    
+    // OpenAPI/Swagger Documentation
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+    
+    // Monitoring
+    implementation("io.sentry:sentry-spring-boot-starter-jakarta")
+    
+    // Development
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+    
+    // Database
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
+    
+    // Annotation Processing
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    
+    // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
+
 
 dependencyManagement {
     imports {
