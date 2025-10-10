@@ -1,5 +1,9 @@
-### Validar la salud del servicio
+### Actuator endpoints
+### Base URL
+@baseUrl = http://localhost:8080
+
+### 1. Validar la salud del servicio
 #@no-cookie-jar
-GET http://localhost:8080/actuator/health
+GET {{baseUrl}}/actuator/health
 
 ###
