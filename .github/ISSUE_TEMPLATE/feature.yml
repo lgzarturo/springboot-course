@@ -1,0 +1,141 @@
+name: 🚀 Feature Request
+description: Proponer una nueva funcionalidad siguiendo TDD y arquitectura hexagonal
+title: "[FEATURE] "
+labels: ["enhancement", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Nueva funcionalidad
+        Describe la feature que quieres implementar. Recuerda seguir TDD (Red-Green-Refactor) y respetar la arquitectura hexagonal.
+
+  - type: input
+    id: sprint
+    attributes:
+      label: Sprint/Milestone
+      description: ¿A qué sprint o milestone pertenece?
+      placeholder: "Ej: Sprint 1 - Validación y Errores"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: Explica qué funcionalidad quieres agregar y por qué es necesaria.
+      placeholder: |
+        Ejemplo: Implementar CRUD completo para el agregado Room (habitaciones) con validaciones de negocio.
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: Historia de usuario
+      description: Define la historia desde la perspectiva del usuario/sistema.
+      placeholder: |
+        Como administrador del hotel
+        Quiero crear, listar, actualizar y eliminar habitaciones
+        Para gestionar el inventario disponible
+      value: |
+        **Como** [rol]
+        **Quiero** [acción]
+        **Para** [beneficio]
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Criterios de aceptación
+      description: Lista verificable de condiciones que deben cumplirse.
+      placeholder: |
+        - [ ] Endpoint POST /api/v1/rooms crea habitación con validación
+        - [ ] Endpoint GET /api/v1/rooms lista con paginación
+        - [ ] Tests unitarios de RoomService con cobertura > 90%
+        - [ ] Tests de integración de RoomController con MockMvc
+        - [ ] OpenAPI actualizado con ejemplos
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Capas afectadas
+      description: ¿Qué capas de la arquitectura se modificarán?
+      multiple: true
+      options:
+        - Domain (model, port, service)
+        - Infrastructure - REST (controller, dto, mapper)
+        - Infrastructure - Persistence (entity, repository, adapter)
+        - Config (WebConfig, SecurityConfig, etc.)
+        - Shared (constants, utils, extensions)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      options:
+        - 🔴 Alta (bloqueante)
+        - 🟡 Media (importante)
+        - 🟢 Baja (nice to have)
+    validations:
+      required: true
+
+  - type: textarea
+    id: tdd-approach
+    attributes:
+      label: Enfoque TDD
+      description: Describe el ciclo Red-Green-Refactor que seguirás.
+      placeholder: |
+        1. **Red**: Escribir RoomServiceTest.shouldCreateRoomWithValidData (falla)
+        2. **Green**: Implementar Room, RoomService, RoomUseCase mínimos
+        3. **Refactor**: Extraer validaciones a métodos privados, mejorar nombres
+      value: |
+        1. **Red**: 
+        2. **Green**: 
+        3. **Refactor**:
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Notas técnicas
+      description: Decisiones de diseño, dependencias nuevas, patrones a aplicar.
+      placeholder: |
+        - Usar patrón Repository para persistencia
+        - Validar unicidad de número de habitación con @Query
+        - Mapear RoomEntity ↔ Room con RoomEntityMapper
+    validations:
+      required: false
+
+  - type: textarea
+    id: related-issues
+    attributes:
+      label: Issues relacionados
+      description: Enlaces a issues dependientes o relacionados.
+      placeholder: |
+        - Depende de #9 (setup-flyway-profiles)
+        - Relacionado con #10 (domain-room-entity)
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist de implementación
+      description: Marca lo que aplicará a esta feature.
+      options:
+        - label: Requiere migración de base de datos (Flyway)
+        - label: Requiere actualización de OpenAPI/Swagger
+        - label: Requiere actualización de Wiki/README
+        - label: Requiere nuevas dependencias en build.gradle.kts
+        - label: Impacta seguridad (autenticación/autorización)
+        - label: Requiere tests E2E con Testcontainers

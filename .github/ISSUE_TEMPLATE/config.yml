@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Preguntas y Discusiones
+    url: https://github.com/<owner>/<repo>/discussions
+    about: Para preguntas generales, usa Discussions en lugar de issues
+  - name: 📚 Wiki del Proyecto
+    url: https://github.com/<owner>/<repo>/wiki
+    about: Consulta la documentación completa del curso

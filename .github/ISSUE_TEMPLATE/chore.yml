@@ -1,0 +1,69 @@
+name: 🔧 Chore/Maintenance
+description: Tareas de mantenimiento, configuración, CI/CD, refactor sin cambio funcional
+title: "[CHORE] "
+labels: ["chore", "maintenance"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Tarea de mantenimiento
+        Describe la tarea técnica que no añade funcionalidad ni corrige bugs.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: Explica qué se va a hacer y por qué.
+      placeholder: |
+        Actualizar dependencias de Spring Boot 3.5.6 a 3.5.7 para parche de seguridad.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Tipo de tarea
+      options:
+        - Actualización de dependencias
+        - Configuración CI/CD
+        - Refactor (sin cambio funcional)
+        - Mejora de tests
+        - Documentación técnica
+        - Configuración de herramientas (lint, format)
+        - Optimización de build
+        - Limpieza de código (dead code, warnings)
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Criterios de aceptación
+      placeholder: |
+        - [ ] Dependencias actualizadas en build.gradle.kts
+        - [ ] Tests pasan sin cambios
+        - [ ] Build exitoso en CI
+        - [ ] CHANGELOG actualizado
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      options:
+        - 🔴 Alta (seguridad, bloquea desarrollo)
+        - 🟡 Media (mejora importante)
+        - 🟢 Baja (nice to have)
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notas adicionales
+      description: Impacto, riesgos, breaking changes potenciales.
+    validations:
+      required: false

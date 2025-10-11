@@ -1,0 +1,58 @@
+name: 📝 Documentation
+description: Mejoras o correcciones en documentación (Wiki, README, KDoc, OpenAPI)
+title: "[DOCS] "
+labels: ["documentation"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Documentación
+        Describe qué documentación necesita crearse o actualizarse.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: Explica qué falta o qué hay que corregir.
+      placeholder: |
+        Actualizar Wiki con guía de despliegue Docker y docker-compose.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Tipo de documentación
+      multiple: true
+      options:
+        - README.md
+        - Wiki (GitHub)
+        - KDoc (código)
+        - OpenAPI/Swagger
+        - CHANGELOG.md
+        - Diagramas de arquitectura
+        - Guías de desarrollo
+        - FAQ
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Criterios de aceptación
+      placeholder: |
+        - [ ] Página de Wiki creada con ejemplos
+        - [ ] Enlaces verificados
+        - [ ] Capturas de pantalla actualizadas
+    validations:
+      required: true
+
+  - type: textarea
+    id: related
+    attributes:
+      label: Issues/PRs relacionados
+      description: Enlaza issues o PRs que requieren esta documentación.
+    validations:
+      required: false

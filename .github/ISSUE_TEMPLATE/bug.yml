@@ -1,0 +1,130 @@
+name: 🐛 Bug Report
+description: Reportar un error o comportamiento inesperado
+title: "[BUG] "
+labels: ["bug", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Reporte de bug
+        Describe el problema de forma clara y reproducible.
+
+  - type: input
+    id: version
+    attributes:
+      label: Versión
+      description: ¿En qué versión del proyecto ocurre?
+      placeholder: "Ej: v0.0.1, main@abc1234"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del bug
+      description: Explica qué está fallando.
+      placeholder: |
+        El endpoint POST /api/v1/rooms devuelve 500 en lugar de 400 cuando el número de habitación está duplicado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      description: Lista los pasos exactos para reproducir el error.
+      placeholder: |
+        1. Crear habitación con número 101
+        2. Intentar crear otra habitación con número 101
+        3. Observar respuesta 500 en lugar de 400
+      value: |
+        1. 
+        2. 
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamiento esperado
+      description: ¿Qué debería ocurrir?
+      placeholder: |
+        Debería devolver 400 Bad Request con mensaje "Room number already exists"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamiento actual
+      description: ¿Qué ocurre realmente?
+      placeholder: |
+        Devuelve 500 Internal Server Error con stack trace de ConstraintViolationException
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs/Stack trace
+      description: Pega logs relevantes (usa bloques de código).
+      placeholder: |
+        ```
+        2025-10-11 10:30:00 ERROR [...] ConstraintViolationException: duplicate key value violates unique constraint "uk_room_number"
+        ```
+      render: shell
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidad
+      options:
+        - 🔴 Crítica (bloquea funcionalidad principal)
+        - 🟡 Alta (afecta experiencia pero hay workaround)
+        - 🟢 Media (problema menor)
+        - ⚪ Baja (cosmético)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Capa afectada
+      options:
+        - Domain
+        - Infrastructure - REST
+        - Infrastructure - Persistence
+        - Config
+        - Shared
+        - Desconocido
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno
+      description: Información del entorno donde ocurre.
+      placeholder: |
+        - OS: macOS 14.5
+        - JDK: OpenJDK 21.0.1
+        - Perfil: dev (H2) / prod (PostgreSQL 16)
+        - Comando: ./gradlew bootRun
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Contexto adicional
+      description: Cualquier información extra que ayude a resolver el bug.
+      placeholder: |
+        - Ocurre solo en PostgreSQL, no en H2
+        - Relacionado con cambio en PR #15
+    validations:
+      required: false
