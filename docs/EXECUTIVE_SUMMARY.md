@@ -204,14 +204,14 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 
 ### Archivos de Documentación
 
-1. **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** (274 líneas)
+1. **[ARCHITECTURE.md](ARCHITECTURE.md)** (274 líneas)
    - Explicación detallada de la arquitectura
    - Justificación de decisiones
    - Principios aplicados
    - Ventajas y beneficios
    - Referencias y próximos pasos
 
-2. **[ARCHITECTURE_DIAGRAM.md](docs/ARCHITECTURE_DIAGRAM.md)** (416 líneas)
+2. **[ARCHITECTURE_DIAGRAM.md](ARCHITECTURE_DIAGRAM.md)** (416 líneas)
    - Diagramas visuales ASCII
    - Flujo de peticiones
    - Separación de responsabilidades
@@ -220,7 +220,7 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
    - Estrategia de testing
    - Principios SOLID
 
-3. **[DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GUIDE.md)** (491 líneas)
+3. **[DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)** (491 líneas)
    - Guía de inicio rápido
    - Convenciones de código
    - Mejores prácticas de Kotlin
@@ -228,14 +228,14 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
    - Debugging tips
    - Recursos adicionales
 
-4. **[IMPLEMENTATION_CHECKLIST.md](docs/IMPLEMENTATION_CHECKLIST.md)** (339 líneas)
-   - Checklist completo de implementación
+4. **[IMPLEMENTATION_CHECKLIST.md](IMPLEMENTATION_CHECKLIST.md)** (339 líneas)
+    - Checklist completa de implementación
    - Estructura de archivos creados
    - Endpoints disponibles
    - Cómo probar la aplicación
    - Próximos pasos recomendados
 
-5. **[README_NEW.md](README_NEW.md)** (384 líneas)
+5. **[README.md](README.md)** (384 líneas)
    - README profesional y completo
    - Badges de tecnologías
    - Tabla de contenidos

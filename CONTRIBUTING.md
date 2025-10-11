@@ -109,7 +109,7 @@ Sugerencias:
 
 - Columnas sugeridas: Backlog → En progreso → En revisión → Hecho.
 - Vincula cada Issue/PR al Project para dar visibilidad.
-- Actualiza el estado al avanzar (*lo puede hacer la persona asignada o quien revisa*  ).
+- Actualiza el estado al avanzar (*lo puede hacer la persona asignada o quien revisa*).
 
 ---
 

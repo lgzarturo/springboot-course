@@ -170,7 +170,7 @@ Ejecuta la aplicación desde la clase principal o con Gradle Wrapper.
 - `GET http://localhost:8080/actuator/health` debe devolver `{ "status": "UP" }`.
   - Revisar el cliente HTTP integrado de IntelliJ ([actuator.http](../../http/actuator.http)).
 - Con H2 console habilitada, revisar [http://localhost:8080/h2-console](http://localhost:8080/h2-console) en ambiente dev (*y nunca en prod*).
-- **Ejercicio:** Agregar un controller mínimo "/ping" para confirmar pipeline de request/response.
+- **Ejercicio:** Agregar un controller mínimo "/ping" para confirmar pipeline de request, response.
 
 > **Hasta aquí ya has logrado mucho:** tener el entorno listo, el proyecto esqueleto corriendo y las dependencias base configuradas. A partir de este punto comenzaremos a construir nuestra API de forma incremental y con prácticas de calidad.
 

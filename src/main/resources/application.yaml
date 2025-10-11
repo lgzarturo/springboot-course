@@ -109,7 +109,7 @@ management:
       percentiles:
         http.server.requests: 0.5,0.95,0.99        # Percentiles comunes de latencia
       sla:
-        http.server.requests: 100ms,300ms,500ms,1s # SLAs sugeridos para tiempos de respuesta
+        http.server.requests: 100ms,300ms,500ms,1s # SLA's sugeridos para tiempos de respuesta
   health:
     livenessstate:
       enabled: true
