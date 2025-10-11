@@ -177,7 +177,7 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 
 ## Endpoints Disponibles
 
-### Ping API (Ejemplo Implementado)
+### Ping API (Ejemplo Implementado con TDD)
 
 | Método | Endpoint                 | Descripción                    |
 |--------|--------------------------|--------------------------------|
@@ -405,7 +405,7 @@ Atribución requerida a: **Arturo López** ([lgzarturo@gmail.com](mailto:lgzartu
 
 **Arturo López**
 - GitHub: [@lgzarturo](https://github.com/lgzarturo)
-- Email: arturo@example.com
+- Email: <lgzarturo@gmail.com>
 
 ---
 
@@ -419,33 +419,7 @@ Atribución requerida a: **Arturo López** ([lgzarturo@gmail.com](mailto:lgzartu
 
 ## 🚀 Próximos Pasos
 
-### Fase 1: Persistencia (En desarrollo)
-- [ ] Implementar entidades JPA
-- [ ] Crear repositorios
-- [ ] Implementar adaptadores de persistencia
-- [ ] Agregar migraciones con Flyway
-
-### Fase 2: Seguridad
-- [ ] Implementar Spring Security
-- [ ] Agregar autenticación JWT
-- [ ] Implementar autorización basada en roles
-
-### Fase 3: Módulos de Negocio
-- [ ] Módulo de Usuarios
-- [ ] Módulo de Hoteles
-- [ ] Módulo de Reservas
-- [ ] Módulo de Productos
-
-### Fase 4: Características Avanzadas
-- [ ] Paginación y filtrado
-- [ ] Caché con Redis
-- [ ] Eventos de dominio
-- [ ] Integración con servicios externos
-
-### Fase 5: DevOps
-- [ ] Dockerizar la aplicación
-- [ ] Configurar CI/CD
-- [ ] Despliegue en la nube
+> Plan de desarrollo completo: [IMPLEMENTATION_CHECKLIST.md](docs/IMPLEMENTATION_CHECKLIST.md)
 
 ---
 
