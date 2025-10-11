@@ -1,3 +1,149 @@
 spring:
   application:
     name: springboot-course
+
+  output:
+    ansi:
+      enabled: always
+
+  # Configuración de Jackson para serialización JSON
+  jackson:
+    # Serializar la respuesta en formato JSON
+    serialization:
+      write-dates-as-timestamps: false              # User el formato ISO-8601 para las fechas
+      write-dates-with-zone-id: true                # Incluir la zona horaria en las fechas
+      indent-output: true                           # En producción, desactivar la indentación para mejorar el rendimiento
+      fail-on-empty-beans: false                    # No debe fallar en beans vacíos
+      write-null-map-values: false                  # No debe serializar los valores nulos de mapas
+    # Deserializar la respuesta desde formato JSON
+    deserialization:
+      fail-on-unknown-properties: false             # Debe ser flexible con las propiedades que no se encuentran definidas
+      fail-on-null-for-primitives: false            # Tolerar valores nulos para tipos primitivos
+      accept-single-value-as-array: true            # Es importante tener flexibilidad para leer un solo valor como array
+    # Configuración general
+    default-property-inclusion: always              # Depende de la API, mostrar todos los campos
+    time-zone: UTC                                  # Siempre usar la zona horaria UTC
+    locale: es_MX                                   # Definir el idioma de la respuesta
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSSXXX       # Formato ISO-8601 con milisegundos y zona horaria
+    # Configurar el mapeo
+    mapper:
+      accept-case-insensitive-enums: true           # Permitir enums sin distinción de mayúsculas/minúsculas
+    # Configurar el parser
+    parser:
+      allow-comments: true                          # Permitir comentarios en JSON
+      allow-unquoted-field-names: false             # Estricto en los nombres de los campos
+
+  # Configuración de JPA/Hibernate
+  jpa:
+    open-in-view: false                             # Sirve para evitar problemas de lazy loading
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20                            # Mejora el rendimiento al enviar múltiples consultas en una sola transacción
+          fetch_size: 50                            # Tamaño de bloque para cargar datos desde la base de datos
+        order_updates: true                         # Ordenar las actualizaciones
+      order_inserts: true                           # Ordenar las inserciones
+      query:
+        in_clause_parameter_padding: true           # Mejora el caché de consultas
+    hibernate:
+      ddl-auto: update                              # Lo recomendable es usar 'validate' para usar migraciones con Flyway
+
+  # Configuración de H2 Database (desarrollo)
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    hikari:                                         # Configuración de HikariCP
+      maximum-pool-size: 10                         # Tamaño máximo de conexiones en el pool
+      minimum-idle: 5                               # Mantener al menos 5 conexiones inactivas en el pool
+      connection-timeout: 30000                     # Tiempo máximo de espera para obtener una conexión
+      idle-timeout: 600000                          # Tiempo máximo de inactividad antes de cerrar una conexión
+      max-lifetime: 1800000                         # Tiempo máximo de vida de una conexión
+      pool-name: HirakiPool-SpringbootCourse        # Definir el nombre del pool
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false                   # Desactivar el acceso desde otros dominios (seguridad)
+
+# Configuración de logging
+logging:
+  level:
+    root: INFO
+    com.lgzarturo.springbootcourse: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file.max-history: 30
+    file.max-size: 10MB
+    file.name: logs/springboot-course.log
+
+# Configuración de Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always                        # Lo recomendable es 'when-authorized' para que solo los usuarios autorizados puedan ver los detalles
+      probes:
+        enabled: true                             # Se agrega para kubernetes liveness/readiness probes
+  metrics:
+    tags:
+      application: ${spring.application.name}     # Para mejorar la observabilidad
+    export:
+      prometheus: {}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true                 # Habilitar histograma para latencias HTTP
+      percentiles:
+        http.server.requests: 0.5,0.95,0.99        # Percentiles comunes de latencia
+      sla:
+        http.server.requests: 100ms,300ms,500ms,1s # SLAs sugeridos para tiempos de respuesta
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+# Configuración de OpenAPI
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true                # Mostrar el tiempo de respuesta de las operaciones
+    doc-expansion: false                          # Ocultar las operaciones por defecto
+  show-actuator: false                            # No mostrar los endpoints de Actuator
+
+# Configuración del Servidor
+server:
+  port: 8080
+  compression:
+    enabled: true                                 # Habilitar la compresión de respuesta
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+  error:
+    include-message: always                       # Siempre mostrar el mensaje de error
+    include-binding-errors: always                # Siempre mostrar los errores de enlace
+    include-stacktrace: never                     # Evitar mostrar la pila de excepciones
+    include-exception: false                      # No exponer detalles de excepciones
+  shutdown: graceful
+
+# Configuración especifica de Kotlin
+spring.main:
+  banner-mode: console
+  lazy-initialization: false                      # Detectar errores al inicio

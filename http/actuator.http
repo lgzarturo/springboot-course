@@ -2,8 +2,44 @@
 ### Base URL
 @baseUrl = http://localhost:8080
 
+### 0. Índice de Actuator (lista de endpoints disponibles)
+#@no-cookie-jar
+GET {{baseUrl}}/actuator
+
 ### 1. Validar la salud del servicio
 #@no-cookie-jar
 GET {{baseUrl}}/actuator/health
+
+### 2. Obtener información
+#@no-cookie-jar
+GET {{baseUrl}}/actuator/info
+
+### 3. Mostrar métricas (lista)
+#@no-cookie-jar
+GET {{baseUrl}}/actuator/metrics
+
+### 3.1 Métrica de solicitudes HTTP
+#@no-cookie-jar
+GET {{baseUrl}}/actuator/metrics/http.server.requests
+
+### 3.1.1 Filtrar solicitudes HTTP por URI específico (ajusta el valor a un endpoint real)
+#@no-cookie-jar
+GET {{baseUrl}}/actuator/metrics/http.server.requests?tag=uri:/api/v1/ping
+
+### 3.2 Uso de CPU del sistema
+#@no-cookie-jar
+GET {{baseUrl}}/actuator/metrics/system.cpu.usage
+
+### 3.3 Memoria usada por la JVM
+#@no-cookie-jar
+GET {{baseUrl}}/actuator/metrics/jvm.memory.used
+
+### 3.4 Uptime del proceso
+#@no-cookie-jar
+GET {{baseUrl}}/actuator/metrics/process.uptime
+
+### 4. Obtener datos de prometheus
+#@no-cookie-jar
+GET {{baseUrl}}/actuator/prometheus
 
 ###

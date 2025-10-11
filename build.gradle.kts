@@ -44,6 +44,7 @@ dependencies {
     
     // Monitoring
     implementation("io.sentry:sentry-spring-boot-starter-jakarta")
+    implementation("io.micrometer:micrometer-registry-prometheus")
     
     // Development
     developmentOnly("org.springframework.boot:spring-boot-devtools")
