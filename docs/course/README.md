@@ -14,9 +14,14 @@ Este es el punto de partida del curso. Aquí encontrarás la bienvenida, el cale
 Basado en el [Temario](../README.md), se propone un calendario orientativo por semanas. Los tiempos pueden ajustarse según tu ritmo.
 
 - Semana 0: Bienvenida, instalación y entorno (*JDK 21, IntelliJ IDEA, Git, Gradle Wrapper*).
-  - [Crear el proyecto base con Spring Initializr (Kotlin, Gradle, Boot 3.5.x)](00-first-run/dependencias.md).
+    - [El Legado del Desarrollador: La Aventura de Spring Boot y Kotlin](week-00/01-historia-del-viaje.md)
+    - [Sobre el Viaje del Héroe, como método de aprendizaje](week-00/02-metodo-de-aprendizaje.md)
 - Semana 1: Introducción y configuración inicial del proyecto.
+    - [Crear el proyecto base con Spring Initializr (Kotlin, Gradle, Boot 3.5.x)](week-01/01-dependencias.md).
 - Semana 2: Conceptos básicos de Spring Boot (*controladores REST, configuración, propiedades*).
+    - [Dominar HTTP y la Comunicación Efectiva entre Microservicios](week-02/01-domina-http.md)
+    - [Guía Completa de SpringBoot y Gradle](week-02/02-spring-boot.md)
+    - [Componentes Esenciales de Spring Boot](week-02/03-spring-boot-componentes-clave.md)
 - Semana 3: Persistencia con Spring Data JPA (*H2/PostgreSQL, entidades y repositorios*).
 - Semana 4: Validación y manejo de errores (Jakarta Validation, ControllerAdvice).
 - Semana 5: Seguridad con Spring Security (*JWT básico, roles y protección de endpoints*).
@@ -170,7 +175,7 @@ Ejecuta la aplicación desde la clase principal o con Gradle Wrapper.
 - `GET http://localhost:8080/actuator/health` debe devolver `{ "status": "UP" }`.
   - Revisar el cliente HTTP integrado de IntelliJ ([actuator.http](../../http/actuator.http)).
 - Con H2 console habilitada, revisar [http://localhost:8080/h2-console](http://localhost:8080/h2-console) en ambiente dev (*y nunca en prod*).
-- **Ejercicio:** Agregar un controller mínimo "/ping" para confirmar pipeline de request/response.
+- **Ejercicio:** Agregar un controller mínimo "/ping" para confirmar pipeline de request, response.
 
 > **Hasta aquí ya has logrado mucho:** tener el entorno listo, el proyecto esqueleto corriendo y las dependencias base configuradas. A partir de este punto comenzaremos a construir nuestra API de forma incremental y con prácticas de calidad.
 

@@ -312,7 +312,7 @@ class UserRepositoryAdapter(
 }
 ```
 
-#### 8. Crear los DTO's
+#### 8. Crear los DTO
 ```kotlin
 // infrastructure/rest/dto/request/CreateUserRequest.kt
 data class CreateUserRequest(

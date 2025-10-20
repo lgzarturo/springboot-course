@@ -87,7 +87,7 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 #### **rest/** - Adaptadores de entrada HTTP
 - **controller/**: Controladores REST (Spring MVC)
 - **dto/**: Data Transfer Objects para request/response
-- **mapper/**: Conversión entre DTOs y modelos de dominio
+- **mapper/**: Conversión entre DTO y modelos de dominio
 
 #### **persistence/** - Adaptadores de salida a base de datos
 - **entity/**: Entidades JPA

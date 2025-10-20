@@ -55,10 +55,10 @@ Abstracción de acceso a datos sobre JPA/Hibernate. Repositorios declarativos (C
 
 **Uso recomendado:**
 
-- Entidades con `@Entity` y `@Table`; IDs con `@Id` y generación (*UUID o sequence*).
+- Entidades con `@Entity` y `@Table`; ID con `@Id` y generación (*UUID o sequence*).
 - Repositorios con métodos derivados o `@Query` para casos específicos.
 - Servicios de dominio que orquestan la lógica de negocio.
-- Mapeo de entidades a DTO's para la capa de presentación.
+- Mapeo de entidades a DTO para la capa de presentación.
 - **Patrón:** Repository como puerto de salida; domain services que orquestan reglas.
 
 ## H2 Database
@@ -102,10 +102,10 @@ Validación declarativa con anotaciones (`@NotBlank`, `@Email`, `@Positive`, `@S
 
 **Uso recomendado:**
 
-- DTO's de entrada con anotaciones y `@Valid` en los endpoints.
+- DTO de entrada con anotaciones y `@Valid` en los endpoints.
 - Mensajes de error personalizados y consistentes via ControllerAdvice.
-- Validación cruzada entre campos (*ej: fechas de inicio y fin*).
-- Validación condicional (*ej: si un campo A está presente, validar campo B*).
+- Validación cruzada entre campos (*ej.: fechas de inicio y fin*).
+- Validación condicional (*ej.: si un campo A está presente, validar campo B*).
 
 **Beneficio:**
 
@@ -253,4 +253,4 @@ Hasta ahora, has aprendido a:
 - Seleccionar un set de dependencias equilibrado para desarrollar una API REST moderna: Web, JPA, H2 (`dev`), PostgreSQL (`prod`), Validation, Actuator, DevTools y Sentry.
 - Se recomendó una arquitectura por capas/puertos, perfiles de configuración, manejo de errores y observabilidad desde el inicio.
 - El proyecto queda listo para iterar rápido (**DevTools**), validar entradas (**Validation**), persistir (**JPA**), monitorear (**Actuator**) y operar con confianza (**Sentry**).
-- Se proporciona el código inicial con buenas prácticas para controladores, manejo de errores y DTO's validados.
+- Se proporciona el código inicial con buenas prácticas para controladores, manejo de errores y DTO validados.
