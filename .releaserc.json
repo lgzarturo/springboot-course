@@ -89,7 +89,7 @@
         ],
         "successComment": "🎉 Este issue ha sido resuelto en la versión ${nextRelease.version} 🎉\n\nLa release está disponible en [GitHub Releases](${releases[0].url})",
         "failComment": false,
-        "releasedLabels": ["released"],
+        "releasedLabels": ["released<%= nextRelease.channel ? \` en @\${nextRelease.channel}\` : \"\" %>"],
         "addReleases": "bottom"
       }
     ]

@@ -121,3 +121,50 @@ tasks.jacocoTestReport {
 tasks.register<Exec>("codecovUpload") {
     commandLine("bash", "-c", "bash <(curl -s https://codecov.io/bash)")
 }
+
+// --- Version Management ---
+tasks.register("printVersion") {
+    group = "versioning"
+    description = "Imprime la version actual del proyecto"
+    doLast {
+        println("Version actual: $version")
+    }
+}
+
+tasks.register("whatsnext") {
+    group = "versioning"
+    description = "Simula el proximo release sin crear tags"
+    doLast {
+        val separator = "=".repeat(50)
+        println(separator)
+        println("SIMULACION DE PROXIMO RELEASE")
+        println(separator)
+        println("Version actual: $version")
+        println()
+        println("Para ver que version se generaria:")
+        println("1. Revisa los commits desde el ultimo tag")
+        println("2. Segun los tipos de commit (feat/fix/BREAKING CHANGE)")
+        println("3. Se incrementara la version segun SemVer")
+        println()
+        println("Usa semantic-release en dry-run mode para ver detalles:")
+        println("npx semantic-release --dry-run")
+        println(separator)
+    }
+}
+
+tasks.register("generateChangelog") {
+    group = "versioning"
+    description = "Genera el changelog basado en commits convencionales"
+    doLast {
+        val separator = "=".repeat(50)
+        println(separator)
+        println("GENERACION DE CHANGELOG")
+        println(separator)
+        println("El changelog se genera automaticamente en CI/CD")
+        println("mediante semantic-release cuando se hace merge a main")
+        println()
+        println("Para generar localmente:")
+        println("npx conventional-changelog -p conventionalcommits -i CHANGELOG.md -s")
+        println(separator)
+    }
+}

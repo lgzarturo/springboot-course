@@ -228,6 +228,13 @@ curl http://localhost:8080/api/v1/ping/health
 - **[DEVELOPMENT_GUIDE.md](docs/DEVELOPMENT_GUIDE.md)** - Guía de desarrollo
 - **[IMPLEMENTATION_CHECKLIST.md](docs/IMPLEMENTATION_CHECKLIST.md)** - Checklist de implementación
 
+### Workflow y Versionado
+
+- **[WORKFLOW.md](WORKFLOW.md)** - Flujo de trabajo completo: commits, versionado y releases
+- **[COMMIT_GUIDE.md](COMMIT_GUIDE.md)** - Guía de commits convencionales
+- **[COMMIT_FIXING_GUIDE.md](COMMIT_FIXING_GUIDE.md)** - Cómo corregir errores en el historial de commits
+- **[CHANGELOG.md](CHANGELOG.md)** - Historial de cambios del proyecto
+
 ### Archivos HTTP
 
 En el directorio `http/` encontrarás ejemplos de peticiones HTTP que puedes ejecutar directamente desde IntelliJ IDEA:
