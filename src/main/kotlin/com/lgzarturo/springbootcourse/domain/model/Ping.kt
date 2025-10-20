@@ -9,5 +9,5 @@ import java.time.LocalDateTime
 data class Ping(
     val message: String,
     val timestamp: LocalDateTime = LocalDateTime.now(),
-    val version: String = "1.0.0"
+    val version: String = "1.0.0",
 )

@@ -7,6 +7,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
@@ -23,14 +24,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 @Import(PingMapper::class)
 @DisplayName("PingController Integration Tests")
 class PingControllerTest {
-
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @MockkBean
     private lateinit var pingUseCase: PingUseCase
 
-    @Autowired  // Usa el mapper real
+    @Autowired // Usa el mapper real
     private lateinit var pingMapper: PingMapper
 
     @Test
@@ -39,9 +39,11 @@ class PingControllerTest {
         // Given
         val ping = Ping(message = "pong")
         every { pingUseCase.getPing() } returns ping
+        assertNotNull(pingMapper.toResponse(ping))
 
         // When & Then
-        mockMvc.perform(get("/api/v1/ping"))
+        mockMvc
+            .perform(get("/api/v1/ping"))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.message").value("pong"))
@@ -58,7 +60,8 @@ class PingControllerTest {
         every { pingUseCase.getPingWithMessage(customMessage) } returns ping
 
         // When & Then
-        mockMvc.perform(get("/api/v1/ping/$customMessage"))
+        mockMvc
+            .perform(get("/api/v1/ping/$customMessage"))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.message").value("pong: hello"))
@@ -70,7 +73,8 @@ class PingControllerTest {
     @DisplayName("GET /api/v1/ping/health debe retornar status UP")
     fun `should return UP status when calling health endpoint`() {
         // When & Then
-        mockMvc.perform(get("/api/v1/ping/health"))
+        mockMvc
+            .perform(get("/api/v1/ping/health"))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status").value("UP"))

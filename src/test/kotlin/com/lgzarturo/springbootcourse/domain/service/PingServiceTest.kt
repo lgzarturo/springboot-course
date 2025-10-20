@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
  */
 @DisplayName("PingService Tests")
 class PingServiceTest {
-
     private val pingService = PingService()
 
     @Test
