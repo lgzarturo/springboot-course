@@ -10,17 +10,15 @@ import org.springframework.stereotype.Component
  */
 @Component
 class PingMapper {
-
     /**
      * Convierte un modelo de dominio Ping a un DTO PingResponse
      * @param ping Modelo de dominio
      * @return DTO de respuesta
      */
-    fun toResponse(ping: Ping): PingResponse {
-        return PingResponse(
+    fun toResponse(ping: Ping): PingResponse =
+        PingResponse(
             message = ping.message,
             timestamp = ping.timestamp,
-            version = ping.version
+            version = ping.version,
         )
-    }
 }
