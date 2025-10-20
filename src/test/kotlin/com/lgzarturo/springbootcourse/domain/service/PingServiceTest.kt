@@ -1,7 +1,9 @@
 package com.lgzarturo.springbootcourse.domain.service
 
 import com.lgzarturo.springbootcourse.domain.model.Ping
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -11,7 +13,6 @@ import org.junit.jupiter.api.Test
  */
 @DisplayName("PingService Tests")
 class PingServiceTest {
-
     private val pingService = PingService()
 
     @Test
