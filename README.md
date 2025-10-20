@@ -235,6 +235,10 @@ curl http://localhost:8080/api/v1/ping/health
 - **[COMMIT_FIXING_GUIDE.md](COMMIT_FIXING_GUIDE.md)** - Cómo corregir errores en el historial de commits
 - **[CHANGELOG.md](CHANGELOG.md)** - Historial de cambios del proyecto
 
+### Seguridad
+
+- **[SECURITY.md](SECURITY.md)** - Política de seguridad, reporte de vulnerabilidades y mejores prácticas
+
 ### Archivos HTTP
 
 En el directorio `http/` encontrarás ejemplos de peticiones HTTP que puedes ejecutar directamente desde IntelliJ IDEA:
