@@ -241,7 +241,7 @@ class GlobalExceptionHandler {
 
 Este controlador de excepciones captura errores de validación y devuelve una respuesta JSON estructurada con los detalles de los errores.
 
-Además, él `Global Exception Handler` puede extenderse para manejar otros tipos de excepciones según sea necesario.
+Además, el `Global Exception Handler` puede extenderse para manejar otros tipos de excepciones según sea necesario.
 
 En este punto este `Handler` es suficiente para validar que la configuración de validación y manejo de errores funciona correctamente.
 
