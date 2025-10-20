@@ -35,7 +35,7 @@ class GlobalExceptionHandler {
         val errorResponse =
             ErrorResponse(
                 status = HttpStatus.BAD_REQUEST.value(),
-                error = "Validation Error",
+                error = "Error de validación",
                 message = "Los datos proporcionados no son válidos",
                 path = request.requestURI,
                 details = errors,
