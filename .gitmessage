@@ -1,0 +1,44 @@
+# <tipo>(alcance): <descripción corta>
+# |<----  Usar máximo 50 caracteres  ---->|
+
+# Explicación del cambio (opcional)
+# |<----   Usar máximo 72 caracteres   ---->|
+
+# --- FOOTER (opcional) ---
+# Closes #ISSUE
+# BREAKING CHANGE: descripción del cambio incompatible
+
+# --- TIPOS ---
+# feat:     Nueva funcionalidad (incrementa MINOR)
+# fix:      Corrección de bugs (incrementa PATCH)
+# docs:     Solo documentación
+# style:    Formato, espacios (no afecta código)
+# refactor: Refactorización (no añade funcionalidad ni corrige bugs)
+# perf:     Mejoras de rendimiento (incrementa PATCH)
+# test:     Añadir o corregir tests
+# build:    Cambios en build system o dependencias
+# ci:       Cambios en CI/CD
+# chore:    Tareas de mantenimiento
+# revert:   Revertir commit anterior
+
+# --- ALCANCES COMUNES ---
+# api, domain, service, controller, repository, model, config, test, docs
+# O nombres específicos: reservas, pagos, habitaciones, etc.
+
+# --- BREAKING CHANGE ---
+# Para cambios incompatibles, agregar ! después del tipo:
+# feat(api)!: cambiar estructura de respuesta
+# O agregar en el footer:
+# BREAKING CHANGE: descripción del cambio
+
+# --- EJEMPLOS ---
+# feat(reservas): agregar endpoint para crear reservas
+# fix(pagos): corregir cálculo de impuestos en checkout
+# docs(readme): actualizar sección de instalación
+# test(controller): agregar tests de integración para PingController
+# refactor(service): extraer lógica de validación a función separada
+
+# --- REFERENCIAS ---
+# Documentación completa: WORKFLOW.md
+# Guía rápida: COMMIT_GUIDE.md
+# Conventional Commits: https://www.conventionalcommits.org/

@@ -1,0 +1,134 @@
+{
+  "extends": ["@commitlint/config-conventional"],
+  "rules": {
+    "type-enum": [
+      2,
+      "always",
+      [
+        "feat",
+        "fix",
+        "docs",
+        "style",
+        "refactor",
+        "perf",
+        "test",
+        "build",
+        "ci",
+        "chore",
+        "revert"
+      ]
+    ],
+    "type-case": [2, "always", "lower-case"],
+    "type-empty": [2, "never"],
+    "scope-case": [2, "always", "lower-case"],
+    "subject-empty": [2, "never"],
+    "subject-full-stop": [2, "never", "."],
+    "subject-case": [0],
+    "header-max-length": [2, "always", 100],
+    "body-leading-blank": [1, "always"],
+    "body-max-line-length": [2, "always", 200],
+    "footer-leading-blank": [1, "always"],
+    "footer-max-line-length": [2, "always", 200]
+  },
+  "prompt": {
+    "messages": {
+      "type": "Selecciona el tipo de cambio que estás haciendo:",
+      "scope": "¿Cuál es el alcance de este cambio (opcional)?",
+      "customScope": "¿Cuál es el alcance de este cambio?",
+      "subject": "Escribe una descripción corta del cambio:\n",
+      "body": "Proporciona una descripción más detallada del cambio (opcional):\n",
+      "breaking": "Lista cualquier BREAKING CHANGE (opcional):\n",
+      "footer": "Lista cualquier ISSUE cerrado por este cambio (opcional). Ej: #31, #34:\n",
+      "confirmCommit": "¿Estás seguro de hacer commit con el mensaje anterior?"
+    },
+    "questions": {
+      "type": {
+        "description": "Selecciona el tipo de cambio que estás haciendo:",
+        "enum": {
+          "feat": {
+            "description": "Una nueva funcionalidad",
+            "title": "Features",
+            "emoji": "✨"
+          },
+          "fix": {
+            "description": "Una corrección de bug",
+            "title": "Bug Fixes",
+            "emoji": "🐛"
+          },
+          "docs": {
+            "description": "Cambios solo en documentación",
+            "title": "Documentation",
+            "emoji": "📚"
+          },
+          "style": {
+            "description": "Cambios que no afectan el significado del código (espacios, formato, etc)",
+            "title": "Styles",
+            "emoji": "💎"
+          },
+          "refactor": {
+            "description": "Un cambio de código que no corrige un bug ni agrega una funcionalidad",
+            "title": "Code Refactoring",
+            "emoji": "📦"
+          },
+          "perf": {
+            "description": "Un cambio de código que mejora el rendimiento",
+            "title": "Performance Improvements",
+            "emoji": "🚀"
+          },
+          "test": {
+            "description": "Agregar tests faltantes o corregir tests existentes",
+            "title": "Tests",
+            "emoji": "🚨"
+          },
+          "build": {
+            "description": "Cambios que afectan el sistema de build o dependencias externas",
+            "title": "Builds",
+            "emoji": "🛠"
+          },
+          "ci": {
+            "description": "Cambios en archivos de configuración y scripts de CI",
+            "title": "Continuous Integrations",
+            "emoji": "⚙️"
+          },
+          "chore": {
+            "description": "Otros cambios que no modifican src o archivos de test",
+            "title": "Chores",
+            "emoji": "♻️"
+          },
+          "revert": {
+            "description": "Revierte un commit anterior",
+            "title": "Reverts",
+            "emoji": "🗑"
+          }
+        }
+      },
+      "scope": {
+        "description": "¿Cuál es el alcance de este cambio (por ejemplo, componente o nombre de archivo)?"
+      },
+      "subject": {
+        "description": "Escribe una descripción corta e imperativa del cambio"
+      },
+      "body": {
+        "description": "Proporciona una descripción más detallada del cambio"
+      },
+      "isBreaking": {
+        "description": "¿Hay algún cambio que rompe compatibilidad (breaking change)?"
+      },
+      "breakingBody": {
+        "description": "Un commit con BREAKING CHANGE requiere un cuerpo. Por favor, ingresa una descripción más detallada del commit"
+      },
+      "breaking": {
+        "description": "Describe los breaking changes"
+      },
+      "isIssueAffected": {
+        "description": "¿Este cambio afecta algún issue abierto?"
+      },
+      "issuesBody": {
+        "description": "Si los issues están cerrados, el commit requiere un cuerpo. Por favor, ingresa una descripción más detallada del commit"
+      },
+      "issues": {
+        "description": "Agrega referencias a issues (ej: 'fix #123', 'refs #123')"
+      }
+    }
+  }
+}
