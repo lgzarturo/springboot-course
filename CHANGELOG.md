@@ -1,3 +1,10 @@
+# [1.0.0-beta.2](https://github.com/lgzarturo/springboot-course/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2025-10-21)
+
+
+### Bug Fixes
+
+* corrige error menor de prueba en la aplicación ([746a40a](https://github.com/lgzarturo/springboot-course/commit/746a40ae400e8f11d501820aa0368adc06ea5744))
+
 # 1.0.0-beta.1 (2025-10-21)
 
 
