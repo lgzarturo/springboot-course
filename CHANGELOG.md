@@ -1,3 +1,13 @@
+# 1.0.0-beta.1 (2025-10-21)
+
+
+### Features
+
+* agregar flujo de trabajo para publicación de versiones ([2de3737](https://github.com/lgzarturo/springboot-course/commit/2de3737389da78fcc42b9025db3397acf6a5ab49))
+* **build:** agregar dependencias OpenAPI y configuración de Qodana ([20afbd2](https://github.com/lgzarturo/springboot-course/commit/20afbd2df7d0569fd35c1df98b61ec1446488c60))
+* **build:** agregar soporte la observabilidad ([d3cfafc](https://github.com/lgzarturo/springboot-course/commit/d3cfafc9edbdf3feb01c897964072785ec6faea7))
+* **project:** configura inicialización con SpringBoot+Kotlin ([b0e918d](https://github.com/lgzarturo/springboot-course/commit/b0e918d69d98a2bf30c2cc3af6966fc0c57f37e2))
+
 # Changelog
 
 Todos los cambios notables del proyecto serán documentados aquí.
