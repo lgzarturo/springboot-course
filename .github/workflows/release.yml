@@ -50,6 +50,16 @@ jobs:
             conventional-changelog-conventionalcommits@7.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      
+      - name: Create Pull Request for release changes
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GH_PAT }}
+          commit-message: "chore(release): update changelog and version"
+          branch: release-changes
+          title: "chore(release): update changelog and version"
+          body: "Actualización automática de archivos de versión y changelog por Semantic Release"
+          base: main
 
       - name: Build application
         if: success()
