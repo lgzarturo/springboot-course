@@ -1,3 +1,22 @@
+# [1.0.0-beta.2](https://github.com/lgzarturo/springboot-course/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2025-10-25)
+
+
+### Bug Fixes
+
+* **doc:** update docs/course/week-01/01-dependencias.md ([185a2b0](https://github.com/lgzarturo/springboot-course/commit/185a2b0bd72d4516f5ef6404e8a80f0504d3acf6))
+* **doc:** update docs/course/week-01/01-dependencias.md ([5e7c5f4](https://github.com/lgzarturo/springboot-course/commit/5e7c5f4edabd89bdb708bdfa893d0258ba7e33c4))
+* **validation:** update GlobalExceptionHandler.kt ([0850fc1](https://github.com/lgzarturo/springboot-course/commit/0850fc123027ef58e971af811fb2259c3158046f))
+
+
+### Features
+
+* **build:** configurar para versión automatizada y flujo de commits ([7c4c27a](https://github.com/lgzarturo/springboot-course/commit/7c4c27a4e54556a93deac11e2bb4482eacb8e1a8)), closes [#2](https://github.com/lgzarturo/springboot-course/issues/2)
+* **build:** configurar para versión automatizada y flujo de commits ([6c00404](https://github.com/lgzarturo/springboot-course/commit/6c004042254394990ccb9fc4cc27649326e57ccf)), closes [#2](https://github.com/lgzarturo/springboot-course/issues/2)
+* **ci:** actualizar workflows con permisos refinados. ([3915f6c](https://github.com/lgzarturo/springboot-course/commit/3915f6c156e801dd4a7a8120dc6d3395084ea3ce))
+* **ci:** agregar flujos de trabajo de CI/CD y changelog ([13eb7c3](https://github.com/lgzarturo/springboot-course/commit/13eb7c30fc71d67930f7376dceaf4ad5cedc82be)), closes [#2](https://github.com/lgzarturo/springboot-course/issues/2)
+* **config:** agregar configuración de OpenAPI y manejo de excepciones ([dd0b923](https://github.com/lgzarturo/springboot-course/commit/dd0b92336370c389893dee70b09e11458ecc39bc)), closes [#5](https://github.com/lgzarturo/springboot-course/issues/5) [#6](https://github.com/lgzarturo/springboot-course/issues/6)
+* **docs:** agregar nuevas guías de workflow y commits `.releaserc.json` ([616a0df](https://github.com/lgzarturo/springboot-course/commit/616a0df2a044fbc1f61d3076025b12db1a807086))
+
 # 1.0.0-beta.1 (2025-10-21)
 
 
