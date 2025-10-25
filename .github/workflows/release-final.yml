@@ -1,4 +1,4 @@
-name: Release - Automated Versioning
+name: Release - Final Tag & Publish
 
 permissions:
   contents: write
@@ -6,15 +6,13 @@ permissions:
 on:
   push:
     branches:
-      - develop
-  workflow_dispatch:
+      - main
 
 jobs:
-  release:
-    name: Create Release
+  release-final:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'skip ci')"
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,7 +38,7 @@ jobs:
       - name: Run tests
         run: ./gradlew test --no-daemon
 
-      - name: Semantic Release
+      - name: Semantic Release (publish)
         uses: cycjimmy/semantic-release-action@v4
         with:
           semantic_version: 22
@@ -75,15 +73,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-
-      - name: Create Pull Request for release changes
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GH_PAT }}
-          commit-message: "chore(release): update changelog and version"
-          branch: release-changes
-          title: "chore(release): update changelog and version"
-          body: "Actualización automática de archivos de versión y changelog por Semantic Release"
-          base: main
-
-
