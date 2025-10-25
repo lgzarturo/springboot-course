@@ -1,6 +1,5 @@
 name: Release - Automated Versioning
 
-
 permissions:
   contents: write
 
@@ -52,7 +51,31 @@ jobs:
             conventional-changelog-conventionalcommits@7.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-      
+
+      - name: Build application
+        if: success()
+        run: ./gradlew build -x test --no-daemon
+
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=$(grep '^version = ' build.gradle.kts | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: Release v${{ steps.get_version.outputs.version }}
+          body_path: CHANGELOG.md
+          files: |
+            build/libs/*.jar
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
       - name: Create Pull Request for release changes
         uses: peter-evans/create-pull-request@v5
         with:
