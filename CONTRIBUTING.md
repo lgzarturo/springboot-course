@@ -2,9 +2,9 @@
 
 ¡Gracias por tu interés en contribuir a este curso/proyecto! Este repositorio es un recurso didáctico y abierto donde construiremos, paso a paso, una API REST real con Spring Boot 3 y Kotlin, inspirada en escenarios de hotelería, ecommerce y ocio.
 
-Repositorio: https://github.com/lgzarturo/springboot-course
+Repositorio: [https://github.com/lgzarturo/springboot-course](https://github.com/lgzarturo/springboot-course)
 
-Objetivo: aprender haciendo, con desarrollo incremental, TDD cuando sea posible, y documentación clara del proceso.
+**Objetivo:** aprender haciendo, con desarrollo incremental, TDD cuando sea posible, y documentación clara del proceso.
 
 ---
 
@@ -111,6 +111,8 @@ Sugerencias:
 - Vincula cada Issue/PR al Project para dar visibilidad.
 - Actualiza el estado al avanzar (*lo puede hacer la persona asignada o quien revisa*).
 
+> El proyecto se desarrolla usando [GitHub Projects](https://github.com/users/lgzarturo/projects/12), para definir un flujo de trabajo estilo Kanban, en el que cada columna representa un estado.
+
 ---
 
 ## Flujo de trabajo para Pull Requests (PR)
@@ -166,11 +168,11 @@ Sugerencias:
 ## Conducta y licencia
 
 - Sé respetuoso y constructivo. Este es un espacio de aprendizaje.
-- No spam, no contenido ofensivo. Sigue las [GitHub Community Guidelines].
+- No spam, no contenido ofensivo. Sigue las [GitHub Community Guidelines](https://docs.github.com/es/site-policy/github-terms/github-community-guidelines).
 - Al contribuir, aceptas que tu aportación se publique bajo la licencia del repositorio: [CC-BY-4.0](LICENSE).
-  - La atribución requerida es para: Arturo López (ver LICENSE).
+  - La atribución requerida es para: [Arturo López](https://lgzarturo.com) (ver [LICENSE](LICENSE)).
 
-Contacto del autor: lgzarturo@gmail.com
+Contacto del autor: [lgzarturo@gmail.com](mailto:lgzarturo@gmail.com)
 
 ---
 
