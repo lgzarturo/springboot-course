@@ -1,24 +1,32 @@
-name: Release - Automated Versioning
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch para release (main=stable, develop=beta)'
+        required: true
+        type: choice
+        options:
+          - main
+          - develop
+        default: 'develop'
 
 permissions:
   contents: write
-
-on:
-  push:
-    branches:
-      - develop
-  workflow_dispatch:
+  issues: write
+  pull-requests: write
 
 jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.branch }}
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
 
@@ -34,8 +42,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Run tests
         run: ./gradlew test --no-daemon
@@ -46,7 +54,7 @@ jobs:
           semantic_version: 22
           extra_plugins: |
             @semantic-release/changelog@6.0.3
-            @semantic-release/git@10.0.1
+            @semantic-release/git@10.0.3
             @semantic-release/exec@6.0.3
             conventional-changelog-conventionalcommits@7.0.2
         env:
@@ -55,35 +63,3 @@ jobs:
       - name: Build application
         if: success()
         run: ./gradlew build -x test --no-daemon
-
-      - name: Get version
-        id: get_version
-        run: |
-          VERSION=$(grep '^version = ' build.gradle.kts | sed 's/version = "\(.*\)"/\1/')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
-        if: success()
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          name: Release v${{ steps.get_version.outputs.version }}
-          body_path: CHANGELOG.md
-          files: |
-            build/libs/*.jar
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-
-      - name: Create Pull Request for release changes
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GH_PAT }}
-          commit-message: "chore(release): update changelog and version"
-          branch: release-changes
-          title: "chore(release): update changelog and version"
-          body: "Actualización automática de archivos de versión y changelog por Semantic Release"
-          base: main
-
-
