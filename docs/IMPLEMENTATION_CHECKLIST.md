@@ -4,27 +4,27 @@
 
 ### ✅ Capa de Dominio (Domain Layer)
 - [X] `domain/model/Ping.kt` - Modelo de dominio
-- [ ] `domain/port/input/PingUseCase.kt` - Caso de uso (interfaz)
-- [ ] `domain/service/PingService.kt` - Servicio de dominio (implementación)
+- [X] `domain/port/input/PingUseCase.kt` - Caso de uso (interfaz)
+- [X] `domain/service/PingService.kt` - Servicio de dominio (implementación)
 
 ### ✅ Capa de Infraestructura (Infrastructure Layer)
 
 #### REST (Entrada)
-- [ ] `infrastructure/rest/controller/PingController.kt` - Controlador REST
-- [ ] `infrastructure/rest/dto/response/PingResponse.kt` - DTO de respuesta
+- [X] `infrastructure/rest/controller/PingController.kt` - Controlador REST
+- [X] `infrastructure/rest/dto/response/PingResponse.kt` - DTO de respuesta
 - [X] `infrastructure/rest/mapper/PingMapper.kt` - Mapper de DTOs
 
 #### Exception Handling
-- [ ] `infrastructure/exception/ErrorResponse.kt` - Respuesta de error estándar
-- [ ] `infrastructure/exception/GlobalExceptionHandler.kt` - Manejador global de excepciones
+- [X] `infrastructure/exception/ErrorResponse.kt` - Respuesta de error estándar
+- [X] `infrastructure/exception/GlobalExceptionHandler.kt` - Manejador global de excepciones
 
 ### ✅ Capa de Configuración (Config Layer)
-- [ ] `config/WebConfig.kt` - Configuración de CORS y MVC
-- [ ] `config/OpenApiConfig.kt` - Configuración de Swagger/OpenAPI
+- [X] `config/WebConfig.kt` - Configuración de CORS y MVC
+- [X] `config/OpenApiConfig.kt` - Configuración de Swagger/OpenAPI
 
 ### ✅ Capa Compartida (Shared Layer)
-- [ ] `shared/constant/AppConstants.kt` - Constantes de la aplicación
-- [ ] `shared/extension/DateTimeExtensions.kt` - Extension functions
+- [X] `shared/constant/AppConstants.kt` - Constantes de la aplicación
+- [X] `shared/extension/DateTimeExtensions.kt` - Extension functions
 
 ### ✅ Tests
 - [X] `test/.../domain/service/PingServiceTest.kt` - Tests unitarios del servicio
@@ -35,8 +35,8 @@
 - [X] `build.gradle.kts` - Dependencias actualizadas (OpenAPI, MockK)
 
 ### ✅ Documentación
-- [ ] `docs/ARCHITECTURE.md` - Documentación de arquitectura
-- [ ] `docs/DEVELOPMENT_GUIDE.md` - Guía de desarrollo
+- [X] `docs/ARCHITECTURE.md` - Documentación de arquitectura
+- [X] `docs/DEVELOPMENT_GUIDE.md` - Guía de desarrollo
 - [X] `http/ping.http` - Ejemplos de peticiones HTTP
 
 ## 🎯 Endpoints Implementados
