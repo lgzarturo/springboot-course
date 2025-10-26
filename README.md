@@ -1,9 +1,13 @@
-# 🚀 Spring Boot Course - API REST real
+# 🚀 Spring Boot Course—API REST real
 
+[![Release](https://img.shields.io/github/v/release/lgzarturo/springboot-course?label=Latest%20Release)](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.1)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.25-blue.svg)](https://kotlinlang.org/)
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-CC--BY--4.0-yellow.svg)](LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/lgzarturo/springboot-course/ci.yml?branch=main)](https://github.com/lgzarturo/springboot-course/actions)
+[![Issues](https://img.shields.io/github/issues/lgzarturo/springboot-course)](https://github.com/lgzarturo/springboot-course/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/lgzarturo/springboot-course)](https://github.com/lgzarturo/springboot-course/pulls)
 
 **Idiomas:** Español
 
@@ -22,6 +26,7 @@ Este curso te guiará para construir, paso a paso, una API REST real con Spring 
 ## 📋 Tabla de Contenidos
 
 - [¿Qué vamos a construir?](#qué-vamos-a-construir)
+- [Características](#características)
 - [Arquitectura del Proyecto](#arquitectura-del-proyecto)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
 - [Inicio Rápido](#inicio-rápido)
@@ -30,7 +35,11 @@ Este curso te guiará para construir, paso a paso, una API REST real con Spring 
 - [Documentación](#documentación)
 - [Testing](#testing)
 - [Enfoque Didáctico](#enfoque-didáctico-y-metodología)
+- [Roadmap](#roadmap)
 - [Contribuir](#-contribuir)
+- [Licencia](#licencia)
+- [Autor](#-autor)
+- [Agradecimientos](#-agradecimientos)
 
 ---
 
@@ -45,6 +54,25 @@ Desarrollaremos una API REST con capas bien definidas y enfoque de dominio, abor
 - **Ocio:** ejemplos lúdicos como Pokémon u otras API's públicas para ejemplificar patrones y conceptos.
 
 El objetivo no es solo "hacer que funcione", sino diseñar una base sólida y extensible, con buenas prácticas y foco en las reglas de negocio.
+
+---
+
+## Características
+
+- ✅ **Arquitectura Hexagonal** (Ports & Adapters)
+- ✅ **Clean Architecture** y **Domain-Driven Design (DDD)**
+- ✅ **Test-Driven Development (TDD)**
+- ✅ **Documentación OpenAPI/Swagger**
+- ✅ **Monitoreo con Spring Actuator**
+- ✅ **Tracking de errores con Sentry**
+- ✅ **Validación de datos con Bean Validation**
+- ✅ **Manejo global de excepciones**
+- ✅ **Cobertura de tests con JaCoCo**
+- ✅ **Análisis estático con Detekt**
+- ✅ **Formateo de código con KTLint**
+- ✅ **CI/CD con GitHub Actions**
+- ✅ **Versionado semántico automático**
+- ✅ **Conventional Commits**
 
 ---
 
@@ -67,13 +95,15 @@ Este proyecto implementa una **Arquitectura Hexagonal (Ports & Adapters)** con s
 - ✅ **Mantenibilidad**: Código organizado y fácil de encontrar.
 - ✅ **Flexibilidad**: Cambiar tecnologías sin afectar la lógica de negocio.
 
+Para más detalles, consulta [ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ---
 
 ## Tecnologías Utilizadas
 
 ### Backend
 - **Spring Boot 3.5.6** - Framework principal
-- **Kotlin 1.9.25** - Lenguaje de programación
+- **Kotlin 2.0.21** - Lenguaje de programación
 - **Spring Data JPA** - Persistencia de datos
 - **Spring Validation** - Validación de datos
 - **Spring Actuator** - Monitoreo y métricas
@@ -90,9 +120,20 @@ Este proyecto implementa una **Arquitectura Hexagonal (Ports & Adapters)** con s
 - **JUnit 5** - Framework de testing
 - **MockK** - Mocking para Kotlin
 - **Spring MockMvc** - Testing de controladores
+- **JaCoCo** - Cobertura de código
 
-### Monitoreo
-- **Sentry** - Tracking de errores
+### Calidad de Código
+- **Detekt** - Análisis estático de código
+- **KTLint** - Formateo y linting de código Kotlin
+
+### Monitoreo y Observabilidad
+- **Sentry** - Tracking de errores y monitoreo
+- **Spring Boot Actuator** - Métricas y health checks
+
+### DevOps
+- **GitHub Actions** - CI/CD
+- **Semantic Release** - Versionado automático
+- **Conventional Commits** - Estándar de commits
 
 ---
 
@@ -100,9 +141,10 @@ Este proyecto implementa una **Arquitectura Hexagonal (Ports & Adapters)** con s
 
 ### Prerrequisitos
 
-- Java 21 o superior
-- Gradle 8.x (incluido con Gradle Wrapper)
-- IDE (IntelliJ IDEA recomendado)
+- **Java 21** o superior
+- **Gradle 8.x** (incluido con Gradle Wrapper)
+- **Git**
+- **IDE** (IntelliJ IDEA recomendado)
 
 ### Instalación y Ejecución
 
@@ -133,6 +175,16 @@ Este proyecto implementa una **Arquitectura Hexagonal (Ports & Adapters)** con s
 4. **Verificar que funciona**
     ```bash
     curl http://localhost:8080/api/v1/ping
+    ```
+
+    Respuesta esperada:
+
+    ```json
+    {
+    "message": "pong",
+    "timestamp": "2025-01-25T10:30:00",
+    "version": "0.0.1"
+    }
     ```
 
 > La aplicación estará disponible en: `http://localhost:8080`
@@ -239,11 +291,23 @@ curl http://localhost:8080/api/v1/ping/health
 
 - **[SECURITY.md](SECURITY.md)** - Política de seguridad, reporte de vulnerabilidades y mejores prácticas
 
+### Contribución
+
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guía para contribuir al proyecto
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** - Código de conducta
+
 ### Archivos HTTP
 
 En el directorio `http/` encontrarás ejemplos de peticiones HTTP que puedes ejecutar directamente desde IntelliJ IDEA:
 
 - **[ping.http](http/ping.http)** - Ejemplos de peticiones al PingController
+- **[actuator.http](http/actuator.http)** - Endpoints de Actuator
+
+### Curso y Aprendizaje
+
+- **[Temario del Curso](docs/README.md)** - El principio del viaje ¿Qué puedes aprender?
+- **[Prefacio del Autor](AUTHOR.md)** - Historia y motivación del proyecto
+- **[FAQ](docs/FAQ.md)** - Preguntas frecuentes
 
 ---
 
@@ -261,6 +325,9 @@ En el directorio `http/` encontrarás ejemplos de peticiones HTTP que puedes eje
 # Tests de una clase específica
 ./gradlew test --tests "PingServiceTest"
 ./gradlew test --tests "PingControllerTest"
+
+# Reporte de cobertura
+./gradlew jacocoTestReport
 ```
 
 ### Estrategia de Testing
@@ -275,6 +342,8 @@ En el directorio `http/` encontrarás ejemplos de peticiones HTTP que puedes eje
 ✅ PingServiceTest - Tests unitarios del servicio
 ✅ PingControllerTest - Tests de integración del controller
 ```
+
+> El reporte de cobertura se genera en: build/reports/jacoco/test/html/index.html
 
 ---
 
@@ -298,7 +367,7 @@ Este repositorio es un recurso abierto para que puedas descargar el código fuen
 
 ## Cómo seguir el histórico de desarrollo
 
-- En GitHub: visita la sección de Commits para ver los cambios en orden cronológico.
+- En GitHub: visita la sección de [Commits](https://github.com/lgzarturo/springboot-course/commits/main) para ver los cambios en orden cronológico.
 - En tu entorno local:
   - `git pull` para traer actualizaciones semanales.
   - `git log --oneline --graph --decorate` para visualizar el flujo.
@@ -309,6 +378,46 @@ Este repositorio es un recurso abierto para que puedas descargar el código fuen
 ## Actualizaciones semanales
 
 Cada semana publicaré incrementos que pueden incluir nuevas funcionalidades, pruebas, refactorizaciones o documentación adicional. La idea es simular un flujo de trabajo real y constante.
+
+### Estructura de Aprendizaje Sugerida
+
+1. Lee este README inicial.
+2. Revisa el histórico de commits para ver cómo se construyó la funcionalidad.
+3. Corre las pruebas y lee sus casos para entender el comportamiento esperado (TDD).
+4. Ejecuta la app, prueba los endpoints y mira los logs.
+5. Reflexiona sobre las decisiones de diseño y las reglas de negocio involucradas.
+
+
+### Objetivo para Perfiles Junior
+
+Este curso busca crear una base de formación sólida: aprenderás a implementar buenas prácticas, entender flujos de trabajo profesionales y, sobre todo, valorar la importancia de las reglas de negocio y el conocimiento del producto para avanzar en tu carrera.
+
+---
+
+## Roadmap
+
+Plan de desarrollo completo: [IMPLEMENTATION_CHECKLIST.md](docs/IMPLEMENTATION_CHECKLIST.md)
+
+### Versión Actual: v0.0.1
+
+- ✅ Configuración inicial del proyecto
+- ✅ Arquitectura Hexagonal implementada
+- ✅ Ping API con TDD
+- ✅ Documentación OpenAPI/Swagger
+- ✅ CI/CD con GitHub Actions
+- ✅ Versionado semántico automático
+
+> Enlace de la [Versión Estable: v0.0.1](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.1)
+
+### Próximas Versiones
+
+- 🔄 v0.1.0: Gestión de habitaciones (CRUD completo)
+- 🔄 v0.2.0: Sistema de reservas
+- 🔄 v0.3.0: Gestión de usuarios y autenticación
+- 🔄 v0.4.0: Sistema de pagos
+- 🔄 v0.5.0: Catálogo de productos/servicios
+
+Para más detalles, consulta el [CHANGELOG.md](CHANGELOG.md) y los [Issues](https://github.com/lgzarturo/springboot-course/issues).
 
 ---
 
@@ -357,22 +466,6 @@ Es importante contar con lo siguiente:
 
 ---
 
-## Estructura de aprendizaje sugerida
-
-1) Lee este README inicial.
-2) Revisa el histórico de commits para ver cómo se construyó la funcionalidad.
-3) Corre las pruebas y lee sus casos para entender el comportamiento esperado (*TDD*).
-4) Ejecuta la app, prueba los endpoints y mira los logs.
-5) Reflexiona sobre las decisiones de diseño y las reglas de negocio involucradas.
-
----
-
-## Objetivo para perfiles junior
-
-Este curso busca crear una base de formación sólida: aprenderás a implementar buenas prácticas, entender flujos de trabajo profesionales y, sobre todo, valorar la importancia de las reglas de negocio y el conocimiento del producto para avanzar en tu carrera.
-
----
-
 ## Preguntas y soporte
 
 Abre un Issue con tus dudas o propuestas de mejora. Tu retroalimentación ayudará a que el contenido sea cada vez más claro y útil para la comunidad.
@@ -396,11 +489,33 @@ Ahora eres parte de una comunidad de desarrolladores que no solo escriben códig
 
 1. Fork el proyecto
 2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'feat: add some AmazingFeature'`)
-4. Push à la rama (`git push origin feature/AmazingFeature`)
+3. Commit tus cambios siguiendo [Conventional Commits](COMMIT_GUIDE.md) (`git commit -m 'feat: add some AmazingFeature'`)
+4. Push de la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
 Por favor, lee [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles sobre nuestro código de conducta y el proceso de envío de pull requests.
+
+---
+
+## Reportar Bugs
+
+Si encuentras un bug, por favor abre un [Issue](https://github.com/lgzarturo/springboot-course/issues/new/choose) con:
+
+- Descripción clara del problema
+- Pasos para reproducirlo
+- Comportamiento esperado vs. actual
+- Screenshots (si aplica)
+- Versión del proyecto
+
+---
+
+## Solicitar Features
+
+Para solicitar nuevas características, abre un [Issue](https://github.com/lgzarturo/springboot-course/issues/new/choose) con:
+
+- Descripción de la funcionalidad
+- Casos de uso
+- Beneficios esperados
 
 ---
 
@@ -415,8 +530,11 @@ Atribución requerida a: **Arturo López** ([lgzarturo@gmail.com](mailto:lgzartu
 ## 👨‍💻 Autor
 
 **Arturo López**
+
 - GitHub: [@lgzarturo](https://github.com/lgzarturo)
-- Email: <lgzarturo@gmail.com>
+- Email: [lgzarturo@gmail.com](mailto:lgzarturo@gmail.com)
+- LinkedIn: [Arturo López](https://www.linkedin.com/in/lgzarturo)
+- Website: [arthurolg.com](http://arthurolg.com)
 
 ---
 
@@ -424,7 +542,26 @@ Atribución requerida a: **Arturo López** ([lgzarturo@gmail.com](mailto:lgzartu
 
 - A la comunidad de Spring Boot
 - A todos los que contribuyen con feedback y mejoras
+- A los proyectos open source que inspiraron este curso
 - A ti, por aprender y crecer con este proyecto
+
+---
+
+## 💬 Soporte y Comunidad
+
+- **Issues:** [GitHub Issues](https://github.com/lgzarturo/springboot-course/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/lgzarturo/springboot-course/discussions)
+- **FAQ:** [Preguntas Frecuentes](docs/FAQ.md)
+
+---
+
+## 📊 Estado del Proyecto
+
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/lgzarturo/springboot-course">
+
+<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/lgzarturo/springboot-course">
+
+<img alt="GitHub contributors" src="https://img.shields.io/github/contributors/lgzarturo/springboot-course">
 
 ---
 
@@ -437,5 +574,11 @@ Atribución requerida a: **Arturo López** ([lgzarturo@gmail.com](mailto:lgzartu
 **¡Happy Coding! 🚀**
 
 Si este proyecto te ha sido útil, ¡no olvides darle una ⭐ en GitHub!
+
+<img alt="GitHub stars" src="https://img.shields.io/github/stars/lgzarturo/springboot-course?style=social">
+
+<img alt="GitHub forks" src="https://img.shields.io/github/forks/lgzarturo/springboot-course?style=social">
+
+<img alt="GitHub watchers" src="https://img.shields.io/github/watchers/lgzarturo/springboot-course?style=social">
 
 ¡Gracias por tu apoyo y contribución!
