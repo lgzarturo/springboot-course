@@ -48,7 +48,7 @@
 - **alcance**: Módulo o área afectada (opcional pero recomendado)
 - **descripción**: Resumen breve en imperativo (obligatorio)
 - **cuerpo**: Explicación detallada (opcional)
-- **footer**: Referencias a issues, breaking changes (opcional)
+- **footer**: Referencias a `issues`, breaking changes (opcional)
 
 ---
 
@@ -157,7 +157,7 @@ con accessToken y refreshToken en lugar de string simple"
 - `service` - Servicios
 - `controller` - Controladores
 - `repository` - Repositorios
-- `model` - Modelos/DTOs
+- `model` - Modelos/DTO
 - `config` - Configuración
 - `test` - Tests
 - `docs` - Documentación
@@ -203,7 +203,7 @@ git commit -m "docs(auth): documentar endpoints de auth"
 # 3. Push y crear PR a develop
 git push -u origin feature/agregar-autenticacion
 
-# Crear PR en GitHub: feature/agregar-autenticacion → develop
+# Crear PR en GitHub: feature/agregar-autenticación → develop
 
 # 4. Después del merge, crear release beta (manual)
 # Ir a GitHub Actions → Release → Run workflow (branch: develop)
@@ -700,9 +700,8 @@ El CHANGELOG.md se genera automáticamente durante el proceso de release.
 
 ## [1.0.0] - 2024-01-01
 
-### ✨ Nuev
+### ✨ Nuevas Funcionalidades
 
-as Funcionalidades
 - **core**: implementación inicial del proyecto
 ```
 
@@ -732,7 +731,7 @@ Implementa paginación en todos los endpoints de listado.
 
 ## Cambios
 - ✨ Nuevo: Parámetros de paginación (page, size, sort)
-- 📦 Refactor: DTOs con PageResponse wrapper
+- 📦 Refactor: DTO con PageResponse wrapper
 - 📚 Docs: Actualizar OpenAPI specs
 - 🚨 Tests: Casos de paginación
 
@@ -750,9 +749,7 @@ Ninguno
 ```bash
 # Commits de documentación (no generan release)
 git commit -m "docs(readme): actualizar guía de instalación [skip ci]"
-git commit -m "docs(api): agr
-
-egar ejemplos de uso [skip ci]"
+git commit -m "docs(api): agregar ejemplos de uso [skip ci]"
 git commit -m "docs(contributing): crear guía de contribución [skip ci]"
 
 # Estos commits aparecen en el changelog pero no crean release
@@ -762,7 +759,7 @@ git commit -m "docs(contributing): crear guía de contribución [skip ci]"
 
 ## Ejemplos prácticos
 
-### Ejemplo 1: Agreagr Características al Sistema
+### Ejemplo 1: Agregar Características al Sistema
 
 ```bash
 # 1. Crear branch
@@ -909,17 +906,17 @@ Usa alcances consistentes para mejor organización:
 - api - Endpoints REST
 - service - Lógica de negocio
 - repository - Acceso a datos
-- model - Modelos y DTOs
+- model - Modelos y DTO
 - controller - Controladores
 - config - Configuración
 
 **Por Módulo**
 
-auth - Autenticación/Autorización
-user - Gestión de usuarios
-product - Productos
-order - Pedidos
-payment - Pagos
+`auth` - Autenticación/Autorización
+`user` - Gestión de usuarios
+`product` - Productos
+`order` - Pedidos
+`payment` - Pagos
 
 **Por Tipo de Archivo**
 
@@ -943,7 +940,7 @@ ci - CI/CD
 
 **Checklist Antes de Release**
 
-- [ ] ✅ Todos los PRs mergeados
+- [ ] ✅ Todos los PR's mezclados
 - [ ] ✅ Tests pasan en CI
 - [ ] ✅ Branch actualizado: git pull
 - [ ] ✅ Commits siguen conventional commits
