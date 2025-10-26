@@ -57,14 +57,13 @@
       "@semantic-release/changelog",
       {
         "changelogFile": "CHANGELOG.md",
-        "changelogTitle": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\nand this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)."
+        "changelogTitle": "# Changelog\n\nTodos los cambios notables de este proyecto serán documentados en este archivo.\n\nEl formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\ny este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html)."
       }
     ],
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i 's/version = \".*\"/version = \"${nextRelease.version}\"/' build.gradle.kts",
-        "publishCmd": "echo 'Version ${nextRelease.version} released'"
+        "prepareCmd": "sed -i 's/version = \".*\"/version = \"${nextRelease.version}\"/' build.gradle.kts"
       }
     ],
     [
@@ -72,11 +71,9 @@
       {
         "assets": [
           "CHANGELOG.md",
-          "build.gradle.kts",
-          "package.json"
+          "build.gradle.kts"
         ],
-        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
-        "push": false
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
     [
@@ -96,31 +93,5 @@
     ]
   ],
   "tagFormat": "v${version}",
-  "repositoryUrl": "https://github.com/lgzarturo/springboot-course",
-  "debug": false,
-  "ci": true,
-  "dryRun": false,
-  "verifyConditions": [
-    "@semantic-release/changelog",
-    "@semantic-release/git",
-    "@semantic-release/github"
-  ],
-  "analyzeCommits": [
-    "@semantic-release/commit-analyzer"
-  ],
-  "generateNotes": [
-    "@semantic-release/release-notes-generator"
-  ],
-  "prepare": [
-    "@semantic-release/changelog",
-    "@semantic-release/exec",
-    "@semantic-release/git"
-  ],
-  "publish": [
-    "@semantic-release/github"
-  ],
-  "success": [
-    "@semantic-release/github"
-  ],
-  "fail": false
+  "repositoryUrl": "https://github.com/lgzarturo/springboot-course"
 }
