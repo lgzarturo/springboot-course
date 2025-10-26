@@ -2,7 +2,9 @@
 
 ## Prólogo: La Llamada de los Arquitectos
 
-En el mundo digital, existen leyendas sobre los "Arquitectos de Soluciones". No son simples escribas de código; son
+En el mundo digital, existen leyendas sobre los _"Arquitectos de Soluciones"_. 
+
+No son simples escribas de código; son
 visionarios que construyen los cimientos de nuestro día a día. Crean los sistemas complejos altamente escalables y
 conectar a millones de personas.
 
@@ -11,7 +13,7 @@ las soluciones que entregan. Exploran constantemente nuevas tecnologías, contri
 conocimiento open source y nunca olvidan que cada línea que escriben puede mejorar la vida de miles.
 
 Tú, joven programador, has sentido esta llamada. Sientes la curiosidad de ir más allá del "Hola, Mundo", de construir
-algo robusto, escalable y significativo. Este curso es tu mapa, tu "Pokédex" de herramientas para iniciar tu propio
+algo robusto, escalable y significativo. Este curso es tu mapa, tu _"Pokédex"_ de herramientas para iniciar tu propio
 viaje. Tu misión, si decides aceptarla, es forjar tu propio **Legado del Desarrollador**.
 
 ## Introducción: El Llamado del Legado
@@ -56,7 +58,7 @@ Al abrirlo, descubres los artefactos legendarios:
    muestra atajos para evitar los caminos tediosos y peligrosos de la configuración manual, permitiéndote levantar
    servicios complejos con una facilidad asombrosa.
 2. **La Navaja Suiza de Kotlin:** Una herramienta multifuncional, elegante y segura. Es más concisa que el antiguo
-   lenguaje Java, previene los temidos ataques de los `NullPointerException` (los "Zubat" de la programación) y te
+   lenguaje Java, previene los temidos ataques de los `NullPointerException` (los _"Zubat"_ de la programación) y te
    permite escribir código expresivo y poderoso.
 
 Tu primera tarea es preparar tu mochila. Siguiendo las siguientes instrucciones del mapa:
@@ -96,7 +98,7 @@ hechizo simple, pero al verlo funcionar, sientes el verdadero poder que tienes e
 comunicarse a través de la red. Has superado tu primera prueba y ganado la **Insignia Lógica**.
 
 **Desafío:** Evitar que un **Muk** (simulación de error 500) contamine las rutas.  
-**Recompensa:** La *Ruta de las 1000 Peticiones*, que le enseña a estructurar APIs como un *Gimnasio de Desarrollo*.
+**Recompensa:** La *Ruta de las 1000 Peticiones*, que le enseña a estructurar API's como un *Gimnasio de Desarrollo*.
 
 ---
 
@@ -166,7 +168,9 @@ como nombre (¡error ortográfico!), el sistema debe responder con gracia. Usa:
 **Misión del Curso: Seguridad con Spring Security**
 
 Has llegado a la imponente **Fortaleza de Ciudad Azafrán**. Tu aplicación es valiosa y debes protegerla de intrusos.
-Aquí te enfrentas al guardián más formidable hasta ahora: **Spring Security**, deberás usarlo para proteger el API del *
+Aquí te enfrentas al guardián más formidable hasta ahora:
+
+**Spring Security**, deberás usarlo para proteger la API del *
 *Hotel Pokémon**.
 
 Para entrar, debes aprender el secreto de la autenticación y la autorización. Forjas un **Token JWT**, una llave mágica
@@ -228,7 +232,7 @@ Un gran arquitecto no solo construye, sino que también crea los planos para que
 creación. Tu siguiente tarea es crear el **Mapa del Merodeador** para tu API.
 
 Con la ayuda de **SpringDoc OpenAPI**, este proceso es mágico. Con unas pocas anotaciones (`@Operation`,
-`@ApiResponse`), un mapa interactivo y detallado de tu API se genera automáticamente. Otros desarrolladores (y tu yo del
+`@ApiResponse`), un mapa interactivo y detallado de tu API se genera automáticamente. Otros desarrolladores (y tú yo del
 futuro) ahora pueden explorar tu API, entender cada ruta y probar cada función sin perderse. Tu trabajo ya no es una
 caja negra; es un territorio bien documentado y abierto a la colaboración. Has ganado la **Insignia Tierra**.
 
@@ -261,7 +265,7 @@ servicio vivo y monitoreado. Has ganado la **Insignia Pantano**.
 El objetivo es que puedas desplegar la API y usa **Actuator** para monitorearla:
 
 - `/health` como un *Check-Up de Pokémon*.
-- `/metrics` para medir el rendimiento, como si fueran *Estatísticas de Combate*.
+- `/metrics` para medir el rendimiento, como si fueran *Estadísticas de Combate*.
 
 **Desafío:** Detener un **Kyogre** (simulación de *outage*) con *Auto-Scaling*.  
 **Recompensa:** La *Puerta de los Sistemas en Vivo*, que lleva al **Proyecto Final**.
@@ -305,8 +309,7 @@ Implementa un sistema de **notificaciones** para avisar a los entrenadores cuand
 **Misión del Curso: API para Gestión Hotelera**
 
 Ha llegado el momento de tu prueba final. Tu misión es aplicar todo lo que has aprendido para construir algo real, algo
-que selle tu legado: la **API para el "Snorlax Sanctuary", un hotel de lujo para entrenadores Pokémon y sus compañeros
-**.
+que selle tu legado: la **API para el "Snorlax Sanctuary", un hotel de lujo para entrenadores Pokémon y sus compañeros**.
 
 Este proyecto lo tiene todo:
 
@@ -332,7 +335,7 @@ aprendido, resuelve el problema y recibe el **Legado**:
 > *"No eres solo un desarrollador. Eres un arquitecto que mejora la vida de miles. El mundo necesita más como tú."*
 
 **Recompensa Final:** La *Corona del Arquitecto*, que le permite **contribuir al código abierto** y comenzar un nuevo
-viaje... ¡con *Spring Cloud*!
+viaje... ¡Con *Spring Cloud*!
 
 ---
 
@@ -341,8 +344,9 @@ viaje... ¡con *Spring Cloud*!
 Al completar el proyecto final, podrás mirar hacia atrás. Verás que el camino ha sido largo, lleno de desafíos, errores
 y descubrimientos. Pero, no eres el mismo que empezó en la Aldea Paleta.
 
-Tu Legado Comienza Ahora, comparte tu proyecto en GitHub, inspirando a otros a unirse al **Legado**. Cada contribución (
-¡como un *Pokémon Shiny*!) mejora el sistema. La historia termina con una frase:
+Tu Legado Comienza Ahora, comparte tu proyecto en GitHub, inspirando a otros a unirse al **Legado**.
+
+Cada contribución (¡como un *Pokémon Shiny*!) mejora el sistema. La historia termina con una frase:
 
 Has aprendido que ser un desarrollador es un viaje de aprendizaje continuo. Has visto cómo las herramientas correctas
 pueden convertir una idea en un producto escalable. Y lo más importante, has creado algo útil, algo que funciona, algo
