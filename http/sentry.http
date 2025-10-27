@@ -19,7 +19,51 @@ Accept: text/plain
 
     client.test("El cuerpo de la respuesta contiene el mensaje esperado", function () {
         const expectedMessage = "Sentry event test completed!";
-        client.assert(response.body.asString().includes(expectedMessage), `El cuerpo de la respuesta debe contener '${expectedMessage}'`);
+        client.assert(response.body.includes(expectedMessage), `El cuerpo de la respuesta debe contener '${expectedMessage}'`);
+    });
+%}
+
+### 2. Enviar un evento con Breadcrumb
+GET {{baseUrl}}/api/{{apiVersion}}/sentry/breadcrumbs
+Accept: text/plain
+
+> {%
+    client.test("El cuerpo de la respuesta contiene el mensaje esperado", function () {
+        const expectedMessage = "Breadcrumbs test completed! Check Sentry for the full context.";
+        client.assert(response.body.includes(expectedMessage), `El cuerpo de la respuesta debe contener '${expectedMessage}'`);
+    });
+%}
+
+### 3. Enviar un evento con Mensaje
+GET {{baseUrl}}/api/{{apiVersion}}/sentry/message
+Accept: text/plain
+
+> {%
+    client.test("El cuerpo de la respuesta contiene el mensaje esperado", function () {
+        const expectedMessage = "Message sent to Sentry: Test message";
+        client.assert(response.body.includes(expectedMessage), `El cuerpo de la respuesta debe contener '${expectedMessage}'`);
+    });
+%}
+
+### 4. Enviar un evento de Transacción
+GET {{baseUrl}}/api/{{apiVersion}}/sentry/transaction
+Accept: text/plain
+
+> {%
+    client.test("El cuerpo de la respuesta contiene el mensaje esperado", function () {
+        const expectedMessage = "Transaction test completed! Check Sentry Performance for details.";
+        client.assert(response.body.includes(expectedMessage), `El cuerpo de la respuesta debe contener '${expectedMessage}'`);
+    });
+%}
+
+### 5. Enviar un evento personalizado
+GET {{baseUrl}}/api/{{apiVersion}}/sentry/custom-fingerprint?type=record-info
+Accept: text/plain
+
+> {%
+    client.test("El cuerpo de la respuesta contiene el mensaje esperado", function () {
+        const expectedMessage = "Custom fingerprint test completed for type: record-info";
+        client.assert(response.body.includes(expectedMessage), `El cuerpo de la respuesta debe contener '${expectedMessage}'`);
     });
 %}
 

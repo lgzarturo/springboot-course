@@ -91,10 +91,39 @@ logging:
 # Configuración de Sentry (error tracking)
 sentry:
   dsn: ${SENTRY_DSN:}
+  # Configuración de entorno
+  environment: ${SPRING_PROFILES_ACTIVE:development}
+  release: ${project.version:0.0.1}
+  server-name: ${HOSTNAME:localhost}
   send-default-pii: true                         # Enviar información personal identificable
   logs:
     enabled: true                                # Habilitar el registro de errores
+    minimum-event-level: warn                    # Solo enviar WARN y ERROR
+    minimum-breadcrumb-level: info               # Breadcrumbs desde INFO
   traces-sample-rate: 1.0                        # Habilitar el tracing para performance monitoring
+  enable-tracing: true
+  # Breadcrumbs (migas de pan)
+  enable-breadcrumbs: true
+  max-breadcrumbs: 100                           # Máximo de breadcrumbs por evento
+  # Context
+  in-app-includes:
+    - com.lgzarturo.springbootcourse             # Solo tu código como "in-app"
+  in-app-excludes:                               # Excluir paquetes de spring boot
+    - org.springframework
+    - org.hibernate
+    - com.fasterxml.jackson
+  # Filtros y sampling
+  ignored-exceptions-for-type:
+    - java.lang.IllegalArgumentException         # Ejemplo: ignorar excepciones específicas
+  # Debug (solo desarrollo)
+  debug: ${SENTRY_DEBUG:false}
+  # Tags personalizados
+  tags:
+    application: ${spring.application.name}
+    region: ${REGION:us-east-1}
+  # Contextos adicionales
+  enable-external-configuration: true
+  enable-uncaught-exception-handler: true
 
 # Configuración de Actuator
 management:

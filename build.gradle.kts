@@ -39,12 +39,15 @@ repositories {
 // Load variables from .env for local development (fallback when OS env vars are not present)
 val dotenv: Map<String, String> by lazy {
     val file = rootProject.file(".env")
-    if (!file.exists()) emptyMap() else {
+    if (!file.exists()) {
+        emptyMap()
+    } else {
         val props = Properties()
         file.inputStream().use { stream ->
             props.load(stream)
         }
-        props.stringPropertyNames()
+        props
+            .stringPropertyNames()
             .associateWith { name -> props.getProperty(name) }
             .filterValues { it != null }
             .mapValues { it.value!! }
@@ -61,7 +64,7 @@ sentry {
     // code as part of your stack traces in Sentry.
     includeSourceContext = true
 
-    //org = "arthurolg-to"
+    // org = "arthurolg-to"
     projectName = "springboot-course"
 
     // Prefer OS environment variable, then .env fallback for local dev
@@ -83,6 +86,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     // Monitoring
     implementation("io.sentry:sentry-spring-boot-starter-jakarta")
+    implementation("io.sentry:sentry-logback")
+    implementation("org.codehaus.janino:janino:3.1.8")
     implementation("io.micrometer:micrometer-registry-prometheus")
     // Development
     developmentOnly("org.springframework.boot:spring-boot-devtools")
