@@ -1,0 +1,26 @@
+### Sentry Controller Tests
+### Base URL
+@baseUrl = http://localhost:8080
+@apiVersion = v1
+
+### 1. Enviar un evento de error a Sentry
+GET {{baseUrl}}/api/{{apiVersion}}/sentry/event
+Accept: text/plain
+
+> {%
+    client.test("Solicitud ejecutada exitosamente", function () {
+        client.assert(response.status === 200, "La solicitud debe devolver un estado 200");
+    });
+
+    client.test("La respuesta es texto plano", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "text/plain", `Se esperaba 'text/plain' pero se recibió '${type}'`);
+    });
+
+    client.test("El cuerpo de la respuesta contiene el mensaje esperado", function () {
+        const expectedMessage = "Sentry event test completed!";
+        client.assert(response.body.asString().includes(expectedMessage), `El cuerpo de la respuesta debe contener '${expectedMessage}'`);
+    });
+%}
+
+###

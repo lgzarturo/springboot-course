@@ -1,6 +1,8 @@
 spring:
   application:
     name: springboot-course
+  config:
+    import: optional:file:.env[.properties]
 
   output:
     ansi:
@@ -85,6 +87,14 @@ logging:
     file.max-history: 30
     file.max-size: 10MB
     file.name: logs/springboot-course.log
+
+# Configuración de Sentry (error tracking)
+sentry:
+  dsn: ${SENTRY_DSN:}
+  send-default-pii: true                         # Enviar información personal identificable
+  logs:
+    enabled: true                                # Habilitar el registro de errores
+  traces-sample-rate: 1.0                        # Habilitar el tracing para performance monitoring
 
 # Configuración de Actuator
 management:
