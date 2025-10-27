@@ -64,7 +64,7 @@ sentry {
     // code as part of your stack traces in Sentry.
     includeSourceContext = true
 
-    // org = "arthurolg-to"
+    org = "arthurolg-to"
     projectName = "springboot-course"
 
     // Prefer OS environment variable, then .env fallback for local dev
