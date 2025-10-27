@@ -153,8 +153,13 @@ Para más detalles, consulta [ARCHITECTURE.md](docs/ARCHITECTURE.md).
     git clone https://github.com/lgzarturo/springboot-course.git
     cd springboot-course
     ```
-
-2. **Compilar el proyecto**
+2. **Configurar variables de entorno**
+    ```bash
+    # Linux/Mac
+    cp .env.example .env
+    ```
+   
+3. **Compilar el proyecto**
     ```bash
     # Linux/Mac
     ./gradlew clean build
@@ -162,8 +167,10 @@ Para más detalles, consulta [ARCHITECTURE.md](docs/ARCHITECTURE.md).
     # Windows
     .\gradlew.bat clean build
     ```
+   
+    > El objetivo es agregar las variables de entorno a tu entorno local.
 
-3. **Ejecutar la aplicación**
+4. **Ejecutar la aplicación**
     ```bash
     # Linux/Mac
     ./gradlew bootRun
@@ -172,7 +179,7 @@ Para más detalles, consulta [ARCHITECTURE.md](docs/ARCHITECTURE.md).
     .\gradlew.bat bootRun
     ```
 
-4. **Verificar que funciona**
+5. **Verificar que funciona**
     ```bash
     curl http://localhost:8080/api/v1/ping
     ```
