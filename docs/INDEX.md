@@ -114,6 +114,15 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 
 ---
 
+### 7. 🌐 Variables de Entorno
+**Archivo**: [ENV_VARIABLES.md](ENV_VARIABLES.md)
+**Propósito**: Documentar las variables de entorno necesarias
+**Contenido**:
+- Variables de entorno utilizadas en el proyecto
+- Descripción de cada variable
+
+---
+
 ## 🎓 Guías por Rol
 
 ### Para Desarrolladores Nuevos
@@ -267,8 +276,7 @@ Si tienes preguntas sobre la documentación o encuentras algo que no está claro
 
 Esta documentación es un **recurso vivo** que evoluciona con el proyecto. Si encuentras algo que falta o que podría mejorarse, ¡contribuye!
 
-**Última actualización**: 2025-10-08  
-**Versión**: 1.0.0  
+**Última actualización**: 2025-10-26
 
 ---
 

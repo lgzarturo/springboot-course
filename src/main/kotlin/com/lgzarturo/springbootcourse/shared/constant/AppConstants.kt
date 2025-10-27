@@ -9,6 +9,10 @@ object AppConstants {
     const val API_BASE_PATH = "/api/$API_VERSION"
     const val DEFAULT_PAGE_SIZE = 20
     const val MAX_PAGE_SIZE = 100
+    const val SAMPLE_CART_ITEMS = 3
+    const val SAMPLE_OP_1: Long = 100
+    const val SAMPLE_OP_2: Long = 150
+    const val SAMPLE_OP_3: Long = 50
 }
 
 /**

@@ -1,9 +1,14 @@
+import java.util.Properties
+
 plugins {
     kotlin("jvm") version "2.0.21"
     kotlin("plugin.spring") version "2.0.21"
     id("org.springframework.boot") version "3.5.6"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "2.0.21"
+
+    // Sentry plugin
+    id("io.sentry.jvm.gradle") version "5.12.1"
 
     // Herramientas de calidad y cobertura
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
@@ -31,7 +36,42 @@ repositories {
     mavenCentral()
 }
 
-extra["sentryVersion"] = "8.16.0"
+// Load variables from .env for local development (fallback when OS env vars are not present)
+val dotenv: Map<String, String> by lazy {
+    val file = rootProject.file(".env")
+    if (!file.exists()) {
+        emptyMap()
+    } else {
+        val props = Properties()
+        file.inputStream().use { stream ->
+            props.load(stream)
+        }
+        props
+            .stringPropertyNames()
+            .associateWith { name -> props.getProperty(name) }
+            .filterValues { it != null }
+            .mapValues { it.value!! }
+    }
+}
+
+extra["sentryVersion"] = "8.22.0"
+
+val sentryAuthToken: String? = System.getenv("SENTRY_AUTH_TOKEN") ?: dotenv["SENTRY_AUTH_TOKEN"]
+
+sentry {
+    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+    // This enables source context, allowing you to see your source
+    // code as part of your stack traces in Sentry.
+    includeSourceContext = true
+
+    org = "arthurolg-to"
+    projectName = "springboot-course"
+
+    // Prefer OS environment variable, then .env fallback for local dev
+    sentryAuthToken?.let { token ->
+        authToken = token
+    }
+}
 
 dependencies {
     // Spring Boot Starters
@@ -46,6 +86,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     // Monitoring
     implementation("io.sentry:sentry-spring-boot-starter-jakarta")
+    implementation("io.sentry:sentry-logback")
+    implementation("org.codehaus.janino:janino:3.1.8")
     implementation("io.micrometer:micrometer-registry-prometheus")
     // Development
     developmentOnly("org.springframework.boot:spring-boot-devtools")

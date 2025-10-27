@@ -94,6 +94,11 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
+    env:
+      # Exporta el token para que Gradle/`sentry { authToken = ... }` lo vea
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      # Opcional (coinciden con tu build.gradle.kts)
+      SENTRY_LOG_LEVEL: info
     permissions:
       contents: read
     needs: [test]

@@ -31,6 +31,7 @@
 
 **Objetivo:** Aprender a conectar y manipular bases de datos relacionales.
 
+- [Configuración de Sentry para capturar excepciones](ENV_VARIABLES.md)
 - Configuración de H2, MySQL o PostgreSQL
 - Definición de entidades con `@Entity` y repositorios con `JpaRepository`
 - Operaciones CRUD básicas
