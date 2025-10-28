@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:schema-generation
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          delimiter: ";"
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+      jakarta:
+        persistence:
+          schema-generation:
+            scripts:
+              action: create-drop
+              create-target: build/schema-create.sql
+              drop-target: build/schema-drop.sql
+              create-source: metadata
+              drop-source: metadata
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: false
+
+logging:
+  level:
+    org.hibernate: ERROR
+    org.springframework: ERROR
+
+server:
+  port: 0

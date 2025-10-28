@@ -4,6 +4,9 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}          # Perfil activo por defecto es 'dev'
+
   output:
     ansi:
       enabled: always
@@ -53,12 +56,8 @@ spring:
     hibernate:
       ddl-auto: update                              # Lo recomendable es usar 'validate' para usar migraciones con Flyway
 
-  # Configuración de H2 Database (desarrollo)
+  # Configuración default
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
     hikari:                                         # Configuración de HikariCP
       maximum-pool-size: 10                         # Tamaño máximo de conexiones en el pool
       minimum-idle: 5                               # Mantener al menos 5 conexiones inactivas en el pool
@@ -66,12 +65,18 @@ spring:
       idle-timeout: 600000                          # Tiempo máximo de inactividad antes de cerrar una conexión
       max-lifetime: 1800000                         # Tiempo máximo de vida de una conexión
       pool-name: HirakiPool-SpringbootCourse        # Definir el nombre del pool
+
   h2:
     console:
-      enabled: true
-      path: /h2-console
+      enabled: false
       settings:
         web-allow-others: false                   # Desactivar el acceso desde otros dominios (seguridad)
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    validate-migration-naming: true
 
 # Configuración de logging
 logging:
@@ -168,6 +173,22 @@ springdoc:
     display-request-duration: true                # Mostrar el tiempo de respuesta de las operaciones
     doc-expansion: false                          # Ocultar las operaciones por defecto
   show-actuator: false                            # No mostrar los endpoints de Actuator
+
+# Configuración de la aplicación
+app:
+  name: ${spring.application.name}
+  version: ${project.version:0.0.1}
+  description: "API REST para el curso de Spring Boot"
+  api:
+    title: "Spring Boot Course API"
+    version: "v1"
+    base-path: "/api/v1"
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    allow-credentials: false
+    max-age: 3600
 
 # Configuración del Servidor
 server:
