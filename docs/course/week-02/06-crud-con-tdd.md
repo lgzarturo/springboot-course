@@ -335,3 +335,48 @@ De esta forma, ahora Spring puede inyectar el servicio en el controlador, debemo
 ![Ejecución del endpoint](../../resources/images/tdd-post-endpoint-create.webp)
 
 Con estos pasos ya tenemos implementado el endpoint de creación con TDD, enlazado a la rama [feature/milestone-01-persistence](https://github.com/lgzarturo/springboot-course/tree/refs/heads/feature/milestone-01-persistence) y con trazabilidad por commits. A partir de aquí, repite el ciclo para listar, obtener por id, actualizar y eliminar (*cada uno con su prueba fallando primero, implementación mínima y refactor*).
+
+Paso 9: Agregar casos de uso para las pruebas.
+
+> Ojo: Al agregar más casos de prueba, algunos van a fallar, eso es normal, otros van a pasar, eso es bueno, pero hay que tener cuidado con todos los casos de prueba.
+> 
+> Hay que ser conscientes que hay falsos positivos y falsos negativos. Por lo que la mejor estrategia es tomar los casos de uso como guía para validar el código, pero no fiarse ciegamente de ellos.
+
+En este caso, seré sumamente detallado con los casos de uso que implementaremos, debido a que es una práctica deliberada, algo que me sirve para mejorar es prácticar una y otra vez las tecnicas de TDD.
+
+Normalmente, no es necesario implementar todos los casos de uso, en el flujo de trabajo profesional, por lo regular, se realizan algunas pruebas básicas (*casos de uso esenciales*) y se confía en que el código funciona correctamente, pero en este caso, quiero practicar TDD al máximo.
+
+Casos Implementados:
+
+- ✅ Creación exitosa completa
+
+Casos Recomendados Adicionales: 
+- 🆕 Creación sin descripción
+- 🆕 Request body vacío
+- 🆕 Campo 'name' ausente
+- 🆕 Campo 'name' vacío
+- 🆕 Campo 'name' excede límite
+- 🆕 Campo 'description' excede límite
+- 🆕 Campo 'name' solo espacios en blanco
+- 🆕 Campo 'description' solo espacios en blanco
+- 🆕 JSON malformado
+- 🆕 Content-Type incorrecto (415)
+- 🆕 Campos adicionales no esperados
+- 🆕 Campo 'name' es null
+- 🆕 Caracteres especiales en 'name'
+- 🆕 Caracteres Unicode en 'name'
+- 🆕 Excepción inesperada del servicio (500)
+- 🆕 Ejemplo duplicado (409 Conflict)
+- 🆕 Nombre con límite exacto (100 caracteres)
+- 🆕 Descripción con límite exacto (500 caracteres)
+- 🆕 Campo 'description' nulo explícito
+
+Beneficios de Implementar Estos Casos
+
+- Mayor cobertura de código (objetivo >80%)
+- Validación robusta de entrada
+- Cumplimiento de REST API best practices
+- Mejor manejo de errores
+- Documentación implícita del comportamiento esperado
+- Prevención de bugs en producción
+- Facilita el mantenimiento futuro
