@@ -2,66 +2,59 @@
 
 ## 1. Estructura esperada para el CRUD con TDD
 
-El flujo natural del CRUD bajo la arquitectura hexagonal, debe ser de la siguiente forma:
+El flujo natural del CRUD bajo la arquitectura hexagonal debe ser iterativo y verificable en cada capa. Esta es la estructura objetivo y los archivos reales del repositorio que usaremos en el proceso:
 
 ```plaintext
-domain/
- ├─ model/
- │   └─ Example.kt                    ← Modelo de dominio (no JPA)
- ├─ port/
- │   ├─ input/
- │   │   └─ ExampleUseCase.kt         ← Interfaces de entrada (casos de uso)
- │   └─ output/
- │       └─ ExampleRepositoryPort.kt  ← Interfaces de salida (persistencia)
- └─ service/
-     └─ ExampleService.kt             ← Implementación de casos de uso
+src/main/kotlin/com/lgzarturo/springbootcourse/
+└─ domain/
+   ├─ model/
+   │   └─ Example.kt                                ← Modelo de dominio (no JPA)
+   ├─ port/
+   │   ├─ input/
+   │   │   └─ ExampleUseCase.kt                     ← Interfaces de entrada (casos de uso)
+   │   └─ output/
+   │       └─ ExampleRepositoryPort.kt              ← Interfaces de salida (persistencia)
+   └─ service/
+       └─ ExampleService.kt                         ← Implementación de casos de uso
 
-infrastructure/
- ├─ persistence/
- │   ├─ entity/
- │   │   └─ ExampleEntity.kt          ← Entidad JPA
- │   ├─ repository/
- │   │   └─ ExampleJpaRepository.kt   ← Repository de Spring Data
- │   └─ adapter/
- │       └─ ExampleRepositoryAdapter.kt ← Implementa el puerto de salida
- └─ rest/
-     ├─ controller/
-     │   └─ ExampleController.kt      ← Endpoints REST
-     └─ dto/
-         └─ ExampleRequest/Response.kt
+└─ infrastructure/
+   ├─ persistence/
+   │   ├─ entity/
+   │   │   └─ ExampleEntity.kt                      ← Entidad JPA
+   │   ├─ repository/
+   │   │   └─ ExampleJpaRepository.kt               ← Repository de Spring Data
+   │   └─ adapter/
+   │       └─ ExampleRepositoryAdapter.kt           ← Implementa el puerto de salida
+   └─ rest/
+       ├─ controller/
+       │   └─ ExampleController.kt                  ← Endpoints REST
+       └─ dto/
+           ├─ request/ExampleRequest.kt
+           └─ response/ExampleResponse.kt
 
-test/
- ├─ domain/
- │   └─ service/
- │       └─ ExampleServiceTest.kt
- └─ infrastructure/
-     └─ rest/
-         └─ ExampleControllerTest.kt
+src/test/kotlin/com/lgzarturo/springbootcourse/
+└─ domain/service/ExampleServiceTest.kt
+└─ infrastructure/rest/controller/ExampleControllerTest.kt
 ```
+
+> Rama de trabajo: feature/milestone-01-persistence
+> 
+> La guía siguiente explica el flujo TDD Red → Green → Refactor por commits sobre esa rama, incluyendo ejemplos de código y rutas completas de archivos.
 
 ## 2. Creamos las pruebas unitarias básicas
 
-Es importante recordar que el TDD debe ser un proceso iterativo y seguir el siguiente flujo:
+Recordatorio del ciclo TDD:
 
 ```plaintext
 🔴 Red → 🟢 Green → 🔵 Refactor
 ```
 
-Paso 1: Crear una prueba unitaria del dominio
+Paso 1 (🔴 Red): agregamos la primera prueba unitaria del dominio
 
-Empezamos con la capa del dominio, sin el framework, solo para crear las pruebas unitarias, sin base de datos ni persistencia.
+- Archivo: `src/test/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleServiceTest.kt`
 
 ```kotlin
-package com.lgzarturo.springbootcourse.domain.service
-
-import com.lgzarturo.springbootcourse.domain.model.Example
-import com.lgzarturo.springbootcourse.domain.port.output.ExampleRepositoryPort
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import org.mockito.kotlin.*
-
 class ExampleServiceTest {
-
     private val repository = mock<ExampleRepositoryPort>()
     private val service = ExampleService(repository)
 
@@ -79,102 +72,226 @@ class ExampleServiceTest {
 }
 ```
 
-> **Nota:** Aquí usamos Mockito para simular el comportamiento del repositorio, es importante tener las siguientes dependencias en nuestro `build.gradle.kts`:
->
-> ```kotlin
-> testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
-> testImplementation("org.junit.jupiter:junit-jupiter-api")
-> testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-> testImplementation("io.kotest:kotest-assertions-core:5.9.1")
-> ```
+- Commit sugerido: test(domain): add ExampleServiceTest for create use case (falla)
+- Dependencias de prueba necesarias en build.gradle.kts:
 
-Paso 2: No se puede ejecutar la prueba unitaria.
+```kotlin
+// build.gradle.kts
+dependencies {
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("io.kotest:kotest-assertions-core:5.9.1")
+}
+```
 
-Debido a que no va a compilar el proyecto, debemos corregirlo, agregando las clases necesarias, para solucionar los errores de compilación. (🔴 Red)
+Paso 2 (🟢 Green): hacemos que compile el dominio con lo mínimo
 
-Es necesario crear las siguientes clases:
+Creamos/ajustamos las clases del dominio y el puerto de salida.
 
-- `com.lgzarturo.springbootcourse.domain.port.output.ExampleRepositoryPort` -> Interfaz del repositorio de persistencia
-- `com.lgzarturo.springbootcourse.domain.model.Example` -> Data Class con el Modelo de dominio
-- `com.lgzarturo.springbootcourse.domain.service.ExampleService` -> Clase de servicio para la capa de dominio que implementa el repositorio
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/model/Example.kt`
 
-Paso 3: Corregimos la prueba unitaria
+```kotlin
+data class Example(
+    val id: Long? = null,
+    val name: String,
+    val description: String? = null,
+)
+```
 
-Ahora podemos corregir la prueba unitaria, agregando las dependencias necesarias para que la prueba se ejecute correctamente, importando las clases necesarias.
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/output/ExampleRepositoryPort.kt`
 
-Paso 4: Implementamos la lógica mínima para pasar la prueba
+```kotlin
+interface ExampleRepositoryPort {
+    fun save(example: Example): Example
+}
+```
 
-Sin embargo, solo con importar las clases no se puede corregir la prueba, es necesario implementar la lógica mínima para que la prueba pase correctamente.
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleService.kt`
 
-Empezamos con el servicio, ya que en esta línea de código `private val service = ExampleService(repository)` se necesita un constructor, por lo que debemos crearlo.
+```kotlin
+class ExampleService(
+    private val repository: ExampleRepositoryPort,
+) {
+    fun create(example: Example): Example = repository.save(example)
+}
+```
 
-Si ejecutamos la prueba, veremos que ahora el error se traslada a la línea `val example = Example(id = null, name = "Test", description = "desc")` debido a que no se puede crear un objeto de tipo `Example` sin un `id`, por lo tanto, implementamos las propiedades necesarias.
+- Commit sugerido: feat(domain): add Example model, port and minimal ExampleService
 
-> En este punto se agregaron las propiedades `id`, `name` y `description` al modelo de dominio, además de que es una clase de datos.
+Paso 3 (🔵 Refactor): limpieza menor en dominio si aplica
 
-Una vez implementadas las propiedades, si ejecutamos la prueba, veremos que el error se traslada a la línea `whenever(repository.save(any())).thenReturn(example.copy(id = 1))` debido a que no se puede llamar al método `save` del repositorio, por lo tanto, implementamos el método en la interfaz.
+- Ajustes de estilo/nombres si fueran necesarios sin cambiar comportamiento.
+- Commit sugerido: refactor(domain): minor clean-ups around Example
 
-Ya que hayamos agregado el método `save` en la interfaz del repositorio, si ejecutamos la prueba, veremos que el error se traslada a la línea `val result = service.create(example)` debido a que no se puede llamar al método `create` del servicio, por lo tanto, implementamos el método en el servicio.
+Paso 4 (🔴 Red): prueba de infraestructura (controlador REST)
 
-Con esto, ya podemos corregir la prueba unitaria y pasarla.
-
-➡️ Ahora el test del dominio debería pasar (🟢 Green).
-
-Paso 5. Ya tenemos la prueba unitaria pasando, ahora podemos continuar con el TDD.
-
-Continuamos con el TDD, agregando las clases necesarias para que la prueba se ejecute correctamente. Ahora toca pasar con el refactoring para agregar más funcionalidades al CRUD, de momento solo tenemos la funcionalidad de crear un objeto, pero no se persiste en la base de datos. (🔵 Refactor)
-
-Paso 6. Agregamos otra prueba pero ahora de la capa de infraestructura.
-
-- `com.lgzarturo.springbootcourse.infrastructure.rest.controller.ExampleControllerTest` -> Prueba unitaria de la capa de infraestructura
-
-Ahora al definir una nueva clase, hay nuevas dependencias que se necesitan agregar, por lo tanto, debemos agregarlas:
+- Archivo: `src/test/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/controller/ExampleControllerTest.kt`
 
 ```kotlin
 @WebMvcTest(ExampleController::class)
 class ExampleControllerTest(
     @Autowired val mockMvc: MockMvc,
-    @MockBean val service: ExampleUseCase
 ) {
+    @MockBean private lateinit var service: ExampleUseCase
 
     @Test
     fun `should return 201 when creating example`() {
-        val request = ExampleRequest("Test", "Desc")
-        val response = ExampleResponse(1, "Test", "Desc")
-
         whenever(service.create(any())).thenReturn(Example(1, "Test", "Desc"))
 
-        mockMvc.perform(
-            post("/api/examples")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"name":"Test","description":"Desc"}""")
-        )
-            .andExpect(status().isCreated)
+        mockMvc
+            .perform(
+                post("/api/v1/examples")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""{"name":"Test","description":"Desc"}"""),
+            ).andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(1))
             .andExpect(jsonPath("$.name").value("Test"))
     }
 }
 ```
 
-En este caso, debemos agregar las siguientes clases:
+- Commit sugerido: test(web): add ExampleControllerTest for `POST /api/v1/examples` (falla)
 
-- ExampleController -> Clase de controlador de la capa de infraestructura
-- ExampleUseCase -> Interfaz de entrada de la capa de dominio
-- ExampleRequest -> Clase DTO de la capa de infraestructura
-- ExampleResponse -> Clase DTO de la capa de infraestructura
+Paso 5 (🟢 Green): añadimos controlador y DTOs mínimos
 
-> Las clases que ya existen no necesitan ser creadas nuevamente, solo las que no existen.
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/input/ExampleUseCase.kt`
 
-Una vez que se resuelvan las dependencias, se puede corregir la prueba unitaria, pero esta no va a pasar, debido a que no hay una implementación de la interfaz de entrada que es `ExampleUseCase`, por lo tanto, es necesario crear una implementación mínima para que la prueba pase. (🔴 Red)
+```kotlin
+interface ExampleUseCase {
+    fun create(example: Example): Example
+}
+```
 
-Paso 7. Implementar lo mínimo para pasar la prueba
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/dto/request/ExampleRequest.kt`
 
-Se agrega el servicio con la implementación mínima para que la prueba pase. Para ello se define el adaptador siguiente la estructura esperada de la arquitectura hexagonal:
+```kotlin
+data class ExampleRequest(
+    val name: String,
+    val description: String?,
+) {
+    fun toDomain() = Example(name = name, description = description)
+}
+```
 
-> Ojo: El adaptador debe implementar la interfaz de salida del repositorio. Por lo tanto, debe implementar `ExampleRepositoryPort`, y requiere una clase de dependencia la cual es `ExampleJpaRepository`.
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/dto/response/ExampleResponse.kt`
 
-- ExampleRepositoryAdapter ← Implementa el puerto de salida
+```kotlin
+data class ExampleResponse(
+    val id: Long?,
+    val name: String,
+    val description: String?,
+) {
+    companion object {
+        fun fromDomain(example: Example) = ExampleResponse(example.id, example.name, example.description)
+    }
+}
+```
 
-Paso 8. Ya tenemos la prueba unitaria pasando, ahora podemos continuar con el TDD.
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/controller/ExampleController.kt`
 
-Con estos pasos, ya tenemos la acción de crear un objeto funcionando, ahora podemos continuar con el TDD para agregar las demás funcionalidades del CRUD (Leer, Actualizar, Eliminar). (🟢 Green)
+```kotlin
+@RestController
+@RequestMapping("/api/v1/examples")
+@Tag(name = "Example", description = "Endpoints de prueba para ejemplos de TDD")
+class ExampleController(
+    private val service: ExampleUseCase,
+) {
+    @PostMapping
+    fun create(
+        @RequestBody request: ExampleRequest,
+    ): ResponseEntity<ExampleResponse> {
+        val example = service.create(request.toDomain())
+        return ResponseEntity.status(HttpStatus.CREATED).body(ExampleResponse.fromDomain(example))
+    }
+}
+```
+
+- Commit sugerido: feat(web): add ExampleController + DTOs and wire with ExampleUseCase
+
+Paso 6 (🔴 Red → 🟢 Green): persistencia mínima (adaptador + JPA)
+
+Para que el servicio realmente persista, implementamos el puerto de salida con un adaptador de infraestructura.
+
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/entity/ExampleEntity.kt`
+
+```kotlin
+@Entity
+@Table(name = "example_entity")
+data class ExampleEntity(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+    @Column(nullable = false)
+    val name: String,
+    @Column(columnDefinition = "TEXT")
+    val description: String? = null,
+    @Column(name = "created_at", nullable = false, updatable = false)
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "updated_at", nullable = false)
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
+) {
+    fun toDomain() = Example(id, name, description)
+
+    companion object {
+        fun fromDomain(example: Example) =
+            ExampleEntity(id = example.id, name = example.name, description = example.description)
+    }
+}
+```
+
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/repository/ExampleJpaRepository.kt`
+
+```kotlin
+interface ExampleJpaRepository : JpaRepository<ExampleEntity, Long>
+```
+
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/adapter/ExampleRepositoryAdapter.kt`
+
+```kotlin
+@Repository
+class ExampleRepositoryAdapter(
+    private val jpaRepository: ExampleJpaRepository,
+) : ExampleRepositoryPort {
+    override fun save(example: Example): Example {
+        val entity = ExampleEntity.fromDomain(example)
+        return jpaRepository.save(entity).toDomain()
+    }
+}
+```
+
+- Commits sugeridos:
+  - feat(persistence): add ExampleEntity and ExampleJpaRepository
+  - feat(persistence): add ExampleRepositoryAdapter implementing ExampleRepositoryPort
+
+Paso 7 (🔵 Refactor): ordenar y documentar
+
+- Revisa nombres, paquetes, y comentarios. Limpia imports y duplica la documentación si es necesario.
+- Commit sugerido: docs: update TDD guide with commit log and full paths
+
+Resultados esperados tras estos pasos
+
+- El test de dominio pasa (creación de Example en memoria mediante mock del repositorio).
+- El test del controlador pasa (`POST /api/v1/examples` retorna 201 con cuerpo JSON).
+- Hay una ruta clara para continuar de forma iterativa con Read/Update/Delete repitiendo el ciclo TDD.
+
+Ejecutar pruebas y verificar
+
+- En Windows:
+  - `gradlew.bat test`
+- En Linux/Mac:
+  - `./gradlew test`
+
+Ejemplo de solicitud HTTP (manual)
+
+```http
+POST http://localhost:8080/api/v1/examples
+Content-Type: application/json
+
+{
+  "name": "Test",
+  "description": "Desc"
+}
+```
+
+Con estos pasos ya tenemos implementado el endpoint de creación con TDD, enlazado a la rama [feature/milestone-01-persistence](https://github.com/lgzarturo/springboot-course/tree/refs/heads/feature/milestone-01-persistence) y con trazabilidad por commits. A partir de aquí, repite el ciclo para listar, obtener por id, actualizar y eliminar (*cada uno con su prueba fallando primero, implementación mínima y refactor*).

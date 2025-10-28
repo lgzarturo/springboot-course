@@ -1,0 +1,16 @@
+### Example Controller Tests
+### Base URL
+@baseUrl = http://localhost:8080
+@apiVersion = v1
+
+### 1. Crear una entidad de ejemplo
+#@no-cookie-jar
+POST {{baseUrl}}/api/{{apiVersion}}/examples
+Content-Type: application/json
+
+{
+  "name": "Test",
+  "description": "Desc"
+}
+
+###

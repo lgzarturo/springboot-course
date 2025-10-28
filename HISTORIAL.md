@@ -57,3 +57,54 @@ Kai, el programador aprendiz, llega al Hotel Pokémon, donde cada módulo es una
 - **Eventos duplicados en Sentry**: Con el sample rate por defecto del perfil base se generaban eventos redundantes en staging; se ajustó `traces-sample-rate` en prod y se deshabilitó completamente en test para evitar consumo innecesario.
 
 ---
+
+### CRUD con TDD para persistir datos
+
+**Fecha:** 2025-10-27
+
+**Logros:**
+
+- Modelo de dominio y puertos listos: se crearon `src/main/kotlin/com/lgzarturo/springbootcourse/domain/model/Example.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/output/ExampleRepositoryPort.kt` y `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/input/ExampleUseCase.kt` con responsabilidades claras en la arquitectura hexagonal.
+- Caso de uso implementado: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleService.kt` orquesta la creación delegando en el puerto de persistencia.
+- Endpoint de creación operativo: `POST /api/v1/examples` con DTOs `ExampleRequest` y `ExampleResponse` en `infrastructure/rest/dto` y controlador `ExampleController`.
+- Persistencia real con JPA: `ExampleEntity`, `ExampleJpaRepository` y `ExampleRepositoryAdapter` mapearon dominio↔JPA y persisten en tabla `example_entity`.
+- Migración de base de datos: `src/main/resources/db/migration/V1__springboot-course.sql` crea la tabla `example_entity`, alineada con la entidad JPA.
+- Pruebas automatizadas: pasan `ExampleServiceTest` (dominio) y `ExampleControllerTest` (web), cubriendo el flujo de creación.
+- Documentación TDD actualizada: guía detallada en `docs/course/week-02/06-crud-con-tdd.md` alineada a la rama `feature/milestone-01-persistence`.
+
+**Errores y soluciones:**
+
+- Ruta del endpoint inconsistente: las pruebas usaban `/api/examples` mientras el diseño establecía `/api/v1/examples`. Se normalizó a `/api/v1/examples` en controlador y tests.
+- Dependencias de pruebas faltantes: Mockito Kotlin y Kotest no estaban documentadas. Se agregaron las dependencias requeridas en los ejemplos de `build.gradle.kts` dentro de la guía.
+- Ajustes de DTOs: se definió `description` como nullable para evitar errores de deserialización y se añadieron métodos `toDomain()` y `fromDomain()` para mantener el mapeo consistente.
+- Configuración de persistencia: se verificó que el nombre de la tabla (`@Table(name = "example_entity")`) coincidiera con la migración Flyway; se ajustó y validó.
+- Estilo y linter en documentación: se corrigieron ejemplos eliminando `package`/`import` dentro de snippets para cumplir con el linter de docs.
+
+### Ciclo 🔴 Red → 🟢 Green → 🔵 Refactor
+
+- 🔴 Red (dominio): se creó `ExampleServiceTest` que falla al no existir modelo/puertos.
+  - Archivo: `src/test/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleServiceTest.kt`
+  - Commit: `test(domain): add ExampleServiceTest for create use case (falla)`
+- 🟢 Green (dominio mínimo): se añadieron `Example.kt`, `ExampleRepositoryPort.kt` y `ExampleService` con `create()` delegando en `save()`.
+  - Archivos: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/model/Example.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/output/ExampleRepositoryPort.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleService.kt`
+  - Commit: `feat(domain): add Example model, port and minimal ExampleService`
+- 🔵 Refactor (dominio): limpieza menor de nombres/estilo.
+  - Commit: `refactor(domain): minor clean-ups around Example`
+- 🔴 Red (web): se añadió `ExampleControllerTest` para `POST /api/v1/examples` que falla sin controlador/DTOs.
+  - Archivo: `src/test/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/controller/ExampleControllerTest.kt`
+  - Commit: `test(web): add ExampleControllerTest for \"POST /api/v1/examples\" (falla)`
+- 🟢 Green (web): se añadieron `ExampleUseCase.kt`, `ExampleRequest.kt`, `ExampleResponse.kt` y `ExampleController.kt`.
+  - Archivos: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/input/ExampleUseCase.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/dto/request/ExampleRequest.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/dto/response/ExampleResponse.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/controller/ExampleController.kt`
+  - Commit: `feat(web): add ExampleController + DTOs and wire with ExampleUseCase`
+- 🔴 Red → 🟢 Green (persistencia): se agregó la capa JPA y el adaptador que implementa `ExampleRepositoryPort`.
+  - Archivos: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/entity/ExampleEntity.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/repository/ExampleJpaRepository.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/adapter/ExampleRepositoryAdapter.kt`
+  - Commits: `feat(persistence): add ExampleEntity and ExampleJpaRepository`; `feat(persistence): add ExampleRepositoryAdapter implementing ExampleRepositoryPort`
+- 🔵 Refactor (docs y orden): se documentó el flujo, se normalizó la ruta y se limpiaron imports.
+  - Commit: `docs: update TDD guide with commit log and full paths`
+
+Referencias:
+- Guía detallada: [docs/course/week-02/06-crud-con-tdd.md](docs/course/week-02/06-crud-con-tdd.md)
+- Rama: [feature/milestone-01-persistence](https://github.com/lgzarturo/springboot-course/tree/refs/heads/feature/milestone-01-persistence)
+- HTTP de prueba: [http/example.http](http/example.http) (POST `/api/v1/examples`)
+
+---
