@@ -1,5 +1,6 @@
 package com.lgzarturo.springbootcourse.infrastructure.persistence.entity
 
+import com.lgzarturo.springbootcourse.domain.model.Example
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -22,4 +23,11 @@ data class ExampleEntity(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column(name = "updated_at", nullable = false)
     val updatedAt: LocalDateTime = LocalDateTime.now(),
-)
+) {
+    fun toDomain() = Example(id, name, description)
+
+    companion object {
+        fun fromDomain(example: Example) =
+            ExampleEntity(id = example.id, name = example.name, description = example.description)
+    }
+}
