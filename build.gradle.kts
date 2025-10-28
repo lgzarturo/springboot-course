@@ -231,11 +231,12 @@ tasks.register<JavaExec>("generateDDL") {
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("com.lgzarturo.springbootcourse.SpringbootCourseApplicationKt")
 
-    args = listOf(
-        "--spring.profiles.active=generate-ddl",
-        "--spring.main.web-application-type=none",
-        "--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration"
-    )
+    args =
+        listOf(
+            "--spring.profiles.active=generate-ddl",
+            "--spring.main.web-application-type=none",
+            "--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration",
+        )
 
     standardOutput = System.out
     errorOutput = System.err
@@ -269,7 +270,7 @@ tasks.register("createMigration") {
         val version = project.findProperty("migration_version")?.toString() ?: "1"
         val description = project.findProperty("description")?.toString() ?: "migration"
         val cleanDescription = description.replace(" ", "_").lowercase()
-        val fileName = "V${version}__${cleanDescription}.sql"
+        val fileName = "V${version}__$cleanDescription.sql"
 
         val sourceFile = file("build/schema-create.sql")
         val targetDir = file("src/main/resources/db/migration")
@@ -286,10 +287,11 @@ tasks.register("createMigration") {
         targetDir.mkdirs()
 
         val content = sourceFile.readText()
-        val cleanedContent = content
-            .replace(Regex("(?m)^\\s*--.*$"), "")
-            .replace(Regex("\n{3,}"), "\n\n")
-            .trim()
+        val cleanedContent =
+            content
+                .replace(Regex("(?m)^\\s*--.*$"), "")
+                .replace(Regex("\n{3,}"), "\n\n")
+                .trim()
 
         targetFile.writeText(cleanedContent)
 

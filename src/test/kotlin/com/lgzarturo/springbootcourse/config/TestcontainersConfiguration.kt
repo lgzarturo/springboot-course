@@ -10,10 +10,9 @@ import org.testcontainers.utility.DockerImageName
 class TestcontainersConfiguration {
     @Bean
     @ServiceConnection
-    fun postgresContainer(): PostgreSQLContainer<*> {
-        return PostgreSQLContainer(DockerImageName.parse("postgres:17-alpine"))
+    fun postgresContainer(): PostgreSQLContainer<*> =
+        PostgreSQLContainer(DockerImageName.parse("postgres:17-alpine"))
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test")
-    }
 }
