@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -65,6 +67,24 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
 
+    @ExceptionHandler(HttpMediaTypeNotSupportedException::class)
+    fun handleMediaTypeNotSupportedException(
+        ex: HttpMediaTypeNotSupportedException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+
+    @ExceptionHandler(IllegalStateException::class)
+    fun handleIllegalStateException(
+        ex: IllegalStateException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.CONFLICT)
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(
+        ex: HttpMessageNotReadableException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.BAD_REQUEST)
+
     /**
      * Maneja excepciones genéricas no capturadas
      */
@@ -84,5 +104,35 @@ class GlobalExceptionHandler {
             )
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+    }
+
+    private fun handleSpecificStatusCodeException(
+        ex: Exception,
+        request: HttpServletRequest,
+        status: HttpStatus,
+    ): ResponseEntity<ErrorResponse> {
+        logger.error("Unexpected error: ${ex.message}", ex)
+        val (error, message) =
+            when (status) {
+                HttpStatus.BAD_REQUEST -> "Bad Request" to "La solicitud no se pudo entender o fue malformada"
+                HttpStatus.UNAUTHORIZED -> "Unauthorized" to "No se ha proporcionado autenticación válida"
+                HttpStatus.FORBIDDEN -> "Forbidden" to "No tiene permiso para acceder a este recurso"
+                HttpStatus.NOT_FOUND -> "Not Found" to "El recurso solicitado no fue encontrado"
+                HttpStatus.CONFLICT -> "Conflict" to "La solicitud no pudo ser completada debido a un conflicto"
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE ->
+                    "Unsupported Media Type" to
+                        "El tipo de medio de la solicitud no es compatible"
+                else -> "Internal Server Error" to "Ha ocurrido un error inesperado en el servidor"
+            }
+
+        val errorResponse =
+            ErrorResponse(
+                status = status.value(),
+                error = error,
+                message = message,
+                path = request.requestURI,
+            )
+
+        return ResponseEntity.status(status).body(errorResponse)
     }
 }
