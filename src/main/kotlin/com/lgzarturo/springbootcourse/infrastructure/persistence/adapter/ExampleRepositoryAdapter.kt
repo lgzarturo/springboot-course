@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class ExampleRepositoryAdapter(
-    private val jpaRepository: ExampleJpaRepository
+    private val jpaRepository: ExampleJpaRepository,
 ) : ExampleRepositoryPort {
     override fun save(example: Example): Example {
         val entity = ExampleEntity.fromDomain(example)

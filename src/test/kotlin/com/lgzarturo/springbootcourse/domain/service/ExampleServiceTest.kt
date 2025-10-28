@@ -9,9 +9,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-
 class ExampleServiceTest {
-
     private val repository = mock<ExampleRepositoryPort>()
     private val service = ExampleService(repository)
 

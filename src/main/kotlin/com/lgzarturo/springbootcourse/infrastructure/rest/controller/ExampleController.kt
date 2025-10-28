@@ -18,7 +18,9 @@ class ExampleController(
     private val service: ExampleUseCase,
 ) {
     @PostMapping
-    fun create(@RequestBody request: ExampleRequest): ResponseEntity<ExampleResponse> {
+    fun create(
+        @RequestBody request: ExampleRequest,
+    ): ResponseEntity<ExampleResponse> {
         val example = service.create(request.toDomain())
         return ResponseEntity.status(HttpStatus.CREATED).body(ExampleResponse.fromDomain(example))
     }
