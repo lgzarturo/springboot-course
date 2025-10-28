@@ -4,6 +4,7 @@
 @apiVersion = v1
 
 ### 1. Enviar un evento de error a Sentry
+#@no-cookie-jar
 GET {{baseUrl}}/api/{{apiVersion}}/sentry/event
 Accept: text/plain
 
@@ -24,6 +25,7 @@ Accept: text/plain
 %}
 
 ### 2. Enviar un evento con Breadcrumb
+#@no-cookie-jar
 GET {{baseUrl}}/api/{{apiVersion}}/sentry/breadcrumbs
 Accept: text/plain
 
@@ -35,6 +37,7 @@ Accept: text/plain
 %}
 
 ### 3. Enviar un evento con Mensaje
+#@no-cookie-jar
 GET {{baseUrl}}/api/{{apiVersion}}/sentry/message
 Accept: text/plain
 
@@ -46,6 +49,7 @@ Accept: text/plain
 %}
 
 ### 4. Enviar un evento de Transacción
+#@no-cookie-jar
 GET {{baseUrl}}/api/{{apiVersion}}/sentry/transaction
 Accept: text/plain
 
@@ -57,6 +61,7 @@ Accept: text/plain
 %}
 
 ### 5. Enviar un evento personalizado
+#@no-cookie-jar
 GET {{baseUrl}}/api/{{apiVersion}}/sentry/custom-fingerprint?type=record-info
 Accept: text/plain
 

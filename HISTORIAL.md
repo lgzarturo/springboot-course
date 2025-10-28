@@ -32,8 +32,28 @@ Kai, el programador aprendiz, llega al Hotel Pokémon, donde cada módulo es una
 - **KLint:** Al compilar el proyecto se encontraron errores de KLint, estos errores se corrigieron. Esto es especialmente importante para mantener la calidad del código y evitar problemas de compilación.
   - Es importante corregir estos errores para que el proyecto se compile correctamente.
 
-### 🏆 Insignia - Reliquias de Entidades (Configuración de Sentry)
+#### 🏆 Insignia - Reliquias de Entidades (Configuración de Sentry)
 
 ![Insignia - Configuración de Sentry](https://raw.githubusercontent.com/wiki/lgzarturo/springboot-course/badges/badget-03-reliquias-entidades_1024x1024.webp)
+
+---
+
+### Perfiles de Spring Boot
+
+**Fecha:** 2025-10-27
+
+**Logros:**
+
+- **Definir los perfiles**: Se agregan 3 perfiles para la aplicación Spring Boot: "dev", "prod" y "test". Cada perfil tiene su propia configuración de base de datos y otras propiedades específicas, además que el archivo `application.yml` queda con la configuración base y los perfiles sobreescriben algunas propiedades y definen otras. 
+- **Cobertura completa de perfiles**: Se configuraron y validaron los perfiles dev, prod y test, con `SPRING_PROFILES_ACTIVE` apuntando a dev por defecto y prod utilizado en staging para reproducir el entorno real.
+- **Aislamiento de configuraciones sensibles**: Se incorporó `.env` como fuente opcional para credenciales, permitiendo levantar staging sin exponer datos duros y manteniendo los defaults seguros.
+- **Optimización por entorno**: Se ajustaron pools de Hikari, logging y parámetros de Hibernate según el caso de uso (diagnóstico en dev, observabilidad controlada en prod y silencio en test) para garantizar estabilidad en staging.
+- **Integración con herramientas externas**: Se activó Docker Compose automático en dev y se parametrizó Sentry por entorno, verificando en staging que sólo prod envía eventos con el sample rate esperado.
+
+**Errores y soluciones:**
+
+- **Migraciones en staging**: Al ejecutar staging con prod, Flyway intentó recrear estructuras inexistentes por heredar `ddl-auto=update`; se corrigió usando `ddl-auto=validate` en dev/prod y `create-drop` en test para aislar el esquema.
+- **Ruido de logs**: El perfil base heredaba trazas DEBUG/TRACE en staging; se normalizó en prod para dejar root en INFO y reducir la carga de almacenamiento y monitoreo.
+- **Eventos duplicados en Sentry**: Con el sample rate por defecto del perfil base se generaban eventos redundantes en staging; se ajustó `traces-sample-rate` en prod y se deshabilitó completamente en test para evitar consumo innecesario.
 
 ---

@@ -55,6 +55,7 @@ val dotenv: Map<String, String> by lazy {
 }
 
 extra["sentryVersion"] = "8.22.0"
+extra["testcontainersVersion"] = "1.20.4"
 
 val sentryAuthToken: String? = System.getenv("SENTRY_AUTH_TOKEN") ?: dotenv["SENTRY_AUTH_TOKEN"]
 
@@ -91,13 +92,21 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus")
     // Development
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     // Database
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
+    // Flyway para migraciones de base de datos
+    implementation("org.flywaydb:flyway-core")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
     // Annotation Processing
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
@@ -107,6 +116,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom("io.sentry:sentry-bom:${property("sentryVersion")}")
+        mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
     }
 }
 
@@ -124,6 +134,9 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 // --- KTLint ---
@@ -208,5 +221,99 @@ tasks.register("generateChangelog") {
         println("Para generar localmente:")
         println("npx conventional-changelog -p conventionalcommits -i CHANGELOG.md -s")
         println(separator)
+    }
+}
+
+tasks.register<JavaExec>("generateDDL") {
+    group = "database"
+    description = "Generate DDL scripts from JPA entities"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.lgzarturo.springbootcourse.SpringbootCourseApplicationKt")
+
+    args = listOf(
+        "--spring.profiles.active=generate-ddl",
+        "--spring.main.web-application-type=none",
+        "--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration"
+    )
+
+    standardOutput = System.out
+    errorOutput = System.err
+
+    doFirst {
+        delete("build/schema-create.sql", "build/schema-drop.sql")
+        println("Generating DDL scripts...")
+    }
+
+    doLast {
+        val createFile = file("build/schema-create.sql")
+        val dropFile = file("build/schema-drop.sql")
+
+        if (createFile.exists()) {
+            println("\n✓ DDL generated successfully:")
+            println("  - ${createFile.absolutePath}")
+            println("  - ${dropFile.absolutePath}")
+        } else {
+            throw GradleException("Failed to generate DDL scripts")
+        }
+    }
+}
+
+tasks.register("createMigration") {
+    group = "database"
+    description = "Create new Flyway migration from generated DDL"
+
+    dependsOn("generateDDL")
+
+    doLast {
+        val version = project.findProperty("migration_version")?.toString() ?: "1"
+        val description = project.findProperty("description")?.toString() ?: "migration"
+        val cleanDescription = description.replace(" ", "_").lowercase()
+        val fileName = "V${version}__${cleanDescription}.sql"
+
+        val sourceFile = file("build/schema-create.sql")
+        val targetDir = file("src/main/resources/db/migration")
+        val targetFile = file("$targetDir/$fileName")
+
+        if (!sourceFile.exists()) {
+            throw GradleException("Source file not found: ${sourceFile.absolutePath}")
+        }
+
+        if (targetFile.exists()) {
+            throw GradleException("Migration already exists: $fileName")
+        }
+
+        targetDir.mkdirs()
+
+        val content = sourceFile.readText()
+        val cleanedContent = content
+            .replace(Regex("(?m)^\\s*--.*$"), "")
+            .replace(Regex("\n{3,}"), "\n\n")
+            .trim()
+
+        targetFile.writeText(cleanedContent)
+
+        println("\n✓ Migration created successfully:")
+        println("  ${targetFile.absolutePath}")
+        println("\nNext steps:")
+        println("  1. Review and edit the migration file")
+        println("  2. Add indexes, constraints, or data migrations")
+        println("  3. Run: ./gradlew bootRun --args='--spring.profiles.active=dev'")
+    }
+}
+
+tasks.register("diffMigration") {
+    group = "database"
+    description = "Generate incremental migration by comparing entities with current schema"
+
+    doLast {
+        println("⚠ Manual diff required:")
+        println("  1. Run: ./gradlew generateDDL")
+        println("  2. Compare build/schema-create.sql with your current database")
+        println("  3. Create incremental migration manually")
+        println("\nTip: Use a DB diff tool like:")
+        println("  - DBeaver Schema Compare")
+        println("  - pgAdmin Schema Diff")
+        println("  - IntelliJ Database Tools")
     }
 }
