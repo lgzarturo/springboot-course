@@ -26,8 +26,8 @@ Basado en el [Temario](../README.md), se propone un calendario orientativo por s
     - [Componentes Esenciales de Spring Boot](week-02/03-spring-boot-componentes-clave.md)
     - [Perfiles en Spring Boot 3 con configuración por entorno](week-02/04-spring-boot-perfiles.md)
     - [Generar migraciones con Flyway+Hibernate Schema Generation](week-02/05-migraciones-flyway-hibernate-schema-gen.md)
-    - [CRUD con TDD - Proceso TDD para crear una entidad](week-02/06-crud-con-tdd.md)
-- Semana 3: Persistencia con Spring Data JPA (*H2/PostgreSQL, entidades y repositorios*).
+  - Semana 3: Persistencia con Spring Data JPA (*H2/PostgreSQL, entidades y repositorios*).
+    - [CRUD con TDD - Proceso TDD para crear una entidad](week-03/01-crud-con-tdd.md)
 - Semana 4: Validación y manejo de errores (Jakarta Validation, ControllerAdvice).
 - Semana 5: Seguridad con Spring Security (*JWT básico, roles y protección de endpoints*).
 - Semana 6: Pruebas (*JUnit 5, Spring Boot Test, pruebas de integración y controladores*).

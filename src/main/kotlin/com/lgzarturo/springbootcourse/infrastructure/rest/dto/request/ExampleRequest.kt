@@ -12,12 +12,13 @@ data class ExampleRequest(
     @field:Size(max = 500, message = "Description must be less than {max} characters")
     @field:Pattern(
         regexp = "^(?!\\s*$).+",
-        message = "Description cannot contain only whitespace"
+        message = "Description cannot contain only whitespace",
     )
     val description: String?,
 ) {
-    fun toDomain() = Example(
-        name = name,
-        description = description?.trim()?.takeIf { it.isNotEmpty() }
-    )
+    fun toDomain() =
+        Example(
+            name = name,
+            description = description?.trim()?.takeIf { it.isNotEmpty() },
+        )
 }

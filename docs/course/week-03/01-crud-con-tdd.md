@@ -332,7 +332,7 @@ De esta forma, ahora Spring puede inyectar el servicio en el controlador, debemo
 > 
 > Una vez que tienes las pruebas, cualquier cambio en el código que haga que las pruebas fallen te avisa de que algo no está bien, y puedes arreglarlo sin miedo a romper otras partes del código.
 
-![Ejecución del endpoint](../../resources/images/tdd-post-endpoint-create.webp)
+![Ejecución del endpoint](../../resources/images/15-tdd-post-endpoint-create.webp)
 
 Con estos pasos ya tenemos implementado el endpoint de creación con TDD, enlazado a la rama [feature/milestone-01-persistence](https://github.com/lgzarturo/springboot-course/tree/refs/heads/feature/milestone-01-persistence) y con trazabilidad por commits. A partir de aquí, repite el ciclo para listar, obtener por id, actualizar y eliminar (*cada uno con su prueba fallando primero, implementación mínima y refactor*).
 
@@ -349,27 +349,25 @@ Normalmente, no es necesario implementar todos los casos de uso, en el flujo de 
 Casos Implementados:
 
 - ✅ Creación exitosa completa
-
-Casos Recomendados Adicionales: 
-- 🆕 Creación sin descripción
-- 🆕 Request body vacío
-- 🆕 Campo 'name' ausente
-- 🆕 Campo 'name' vacío
-- 🆕 Campo 'name' excede límite
-- 🆕 Campo 'description' excede límite
-- 🆕 Campo 'name' solo espacios en blanco
-- 🆕 Campo 'description' solo espacios en blanco
-- 🆕 JSON malformado
-- 🆕 Content-Type incorrecto (415)
-- 🆕 Campos adicionales no esperados
-- 🆕 Campo 'name' es null
-- 🆕 Caracteres especiales en 'name'
-- 🆕 Caracteres Unicode en 'name'
-- 🆕 Excepción inesperada del servicio (500)
-- 🆕 Ejemplo duplicado (409 Conflict)
-- 🆕 Nombre con límite exacto (100 caracteres)
-- 🆕 Descripción con límite exacto (500 caracteres)
-- 🆕 Campo 'description' nulo explícito
+- ✅ Creación sin descripción
+- ✅ Request body vacío
+- ✅ Campo 'name' ausente
+- ✅ Campo 'name' vacío
+- ✅ Campo 'name' excede límite
+- ✅ Campo 'description' excede límite
+- ✅ Campo 'name' solo espacios en blanco
+- ✅ Campo 'description' solo espacios en blanco
+- ✅ JSON malformado
+- ✅ Content-Type incorrecto (415)
+- ✅ Campos adicionales no esperados
+- ✅ Campo 'name' es null
+- ✅ Caracteres especiales en 'name'
+- ✅ Caracteres Unicode en 'name'
+- ✅ Excepción inesperada del servicio (500)
+- ✅ Ejemplo duplicado (409 Conflict)
+- ✅ Nombre con límite exacto (100 caracteres)
+- ✅ Descripción con límite exacto (500 caracteres)
+- ✅ Campo 'description' nulo explícito
 
 Beneficios de Implementar Estos Casos
 
@@ -380,3 +378,136 @@ Beneficios de Implementar Estos Casos
 - Documentación implícita del comportamiento esperado
 - Prevención de bugs en producción
 - Facilita el mantenimiento futuro
+
+> Ahora ya sabes como implementar TDD en un proyecto Spring Boot, y como hacerlo con pruebas unitarias, este es el flujo de trabajo recomendado para TDD en proyectos Spring Boot. Es complicado definir que casos de uso son esenciales, pero es importante tenerlos en cuenta.
+> 
+> He encontrado que la mejor manera de acostumbrarse a TDD es practicarlo, y eso es lo que haremos en este curso.
+
+## 3. Porcentaje de cobertura
+
+### 📊 **Cobertura mostrada**
+
+| Tipo de cobertura | Porcentaje  |
+|-------------------|-------------|
+| **Class**         | 90% (9/10)  |
+| **Method**        | 79% (19/24) |
+| **Line**          | 71% (66/92) |
+| **Branch**        | 57% (8/14)  |
+
+---
+
+### 💡 **Qué significa cada uno**
+
+* **Class % (90%)**: De todas las clases del proyecto (10), 9 tienen al menos una línea ejecutada por los tests.
+* **Method % (79%)**: De los 24 métodos definidos, 19 se ejecutaron durante las pruebas.
+* **Line % (71%)**: De las 92 líneas de código, 66 fueron realmente ejecutadas.
+  > 👉 Este suele considerarse **el porcentaje de cobertura real**, porque refleja el código probado de manera efectiva.
+* **Branch % (57%)**: De las 14 bifurcaciones lógicas (por ejemplo, `if/else` o `when`), solo 8 fueron cubiertas por los tests.
+
+---
+
+### ✅ **Conclusión**
+
+En resumen la **cobertura real de código es del 71%**, porque:
+
+* Representa la cantidad de **líneas ejecutadas vs. líneas totales**.
+* Es el indicador más fiable para medir cuánto del código fue realmente probado.
+* Los otros porcentajes (clases, métodos, ramas) complementan la información, pero el de **líneas** es el estándar para evaluar la cobertura global.
+
+---
+
+### 📘 Ejemplo práctico
+
+De 92 líneas que existen en tu proyecto:
+
+* 66 se ejecutaron durante los tests.
+* Por eso:
+  ``` 
+  [ (66 ÷ 92) × 100 = 71.7% \approx 71% ]
+  ```
+
+> En estos casos si quisieramos mejorar esa cobertura, sería enfocarse en los tests que ejerciten las ramas condicionales (el **Branch Coverage**), que es donde estás más bajo (57%), ya que eso suele indicar caminos no probados dentro de funciones que sí se ejecutaron parcialmente. Sin embargo, puede ser que no sean necesarios todos esos casos de prueba, ya que se estarían probando caminos poco relevantes o improbables.
+> 
+> Nota: El código del framework no es necesario probarlo, ni de librerias de terceros, solo el código que tú escribes. Ese es un buen discriminador al momento de medir la cobertura. Probar entidades y repositorios no es necesario, ya que son código que se relacion con el framework o con la persistencia de datos.
+
+![Cobertura de pruebas](../../resources/images/16-tdd-varios-casos-validar-cobertura.webp)
+
+## 4. ¿Qué probar y qué no?
+
+
+### ✅ **Qué sí deberías probar (código propio)**
+
+Enfócate en probar **tu lógica de negocio** y **las ramas relevantes del flujo**, es decir, el código que **tú escribiste y puede fallar por tus decisiones**:
+
+1. **Casos con lógica condicional o validaciones**
+
+    * `if`, `when`, `switch`, `try/catch`, etc.
+    * Validaciones como tamaños, formatos, estados, permisos o reglas de negocio.
+    > 👉 Ejemplo: en tu clase `ExampleRequest`, probar los casos donde `description` es `null`, vacía, o tiene solo espacios.
+
+2. **Métodos con transformación o procesamiento de datos**
+
+    * Cualquier función que convierte, filtra o mapea datos.
+    > 👉 Ejemplo: `toDomain()` donde haces `trim()` y `takeIf`.
+
+3. **Servicios con reglas de negocio**
+
+    * Lógica central que decide *qué hacer* con los datos, no solo los pasa al repositorio.
+    > 👉 Ejemplo: `ExampleService`, validaciones de estados, cálculo de totales, etc.
+
+4. **Casos de error controlados**
+
+    * Validar que los errores esperados (por ejemplo `BadRequest`, `NotFound`) se lanzan correctamente.
+    > 👉 Ejemplo: tests que cubren “debería retornar 415 cuando el Content-Type es inválido”.
+
+5. **Controladores (mínimamente)**
+
+    * Solo los endpoints con lógica o validaciones adicionales (no todos los mapeos triviales).
+    > 👉 Ejemplo: un `POST` que hace validación antes de llamar al servicio.
+
+---
+
+### ⚙️ **Qué no necesitas probar**
+
+Estos casos **no agregan valor real a la cobertura** y solo inflan el porcentaje:
+
+1. **Código del framework o librerías**
+
+    * Spring, Hibernate, JPA, Jakarta Validation, etc.
+    > ❌ No pruebes si `@Autowired` funciona o si `@Repository` guarda en DB; eso ya está probado por sus creadores.
+
+2. **Entidades y repositorios**
+
+    * Las clases que solo representan datos (`@Entity`, DTOs simples).
+    * Interfaces `JpaRepository` o `CrudRepository`.
+    > 👉 Solo deberías testearlos **si tienen lógica adicional** (por ejemplo, queries personalizados con `@Query`).
+
+3. **Configuraciones, beans, y wiring del framework**
+
+    * Archivos de configuración, `@Configuration`, `@Bean`.
+    > 👉 Solo si agregas lógica condicional dentro (por ejemplo, `if (profile == "test")`).
+
+4. **Código generado o utilidades triviales**
+
+    * `equals()`, `hashCode()`, `toString()`, mappers sin lógica.
+    > 👉 A menos que los hayas personalizado y puedan causar un bug.
+
+---
+
+### 📈 **Cómo interpretar la cobertura**
+
+* La **cobertura de líneas (71%)** indica cuánto código propio se ejecuta.
+* La **de ramas (57%)** te muestra cuántos caminos lógicos fueron realmente ejercitados.
+  > 👉 Si una función tiene varios `if` o validaciones, cada condición cuenta como una rama.
+
+No se trata de alcanzar 100%, sino de tener una **cobertura significativa**, donde:
+
+* Las ramas **importantes** estén cubiertas.
+* Las rutas **poco probables o triviales** (como validaciones duplicadas o nulas por seguridad) se dejen fuera.
+
+---
+
+### 💡 **Regla simple para decidir**
+
+> "Si el código puede romper algo que el framework no controla, pruébalo.
+> Si el código solo pasa datos al framework, no lo pruebes."

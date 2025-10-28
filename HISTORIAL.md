@@ -103,7 +103,7 @@ Kai, el programador aprendiz, llega al Hotel Pokémon, donde cada módulo es una
   - Commit: `docs: update TDD guide with commit log and full paths`
 
 Referencias:
-- Guía detallada: [docs/course/week-02/06-crud-con-tdd.md](docs/course/week-02/06-crud-con-tdd.md)
+- Guía detallada: [docs/course/week-02/06-crud-con-tdd.md](docs/course/week-03/01-crud-con-tdd.md)
 - Rama: [feature/milestone-01-persistence](https://github.com/lgzarturo/springboot-course/tree/refs/heads/feature/milestone-01-persistence)
 - HTTP de prueba: [http/example.http](http/example.http) (POST `/api/v1/examples`)
 
