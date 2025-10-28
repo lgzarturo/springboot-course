@@ -4,6 +4,7 @@ import com.lgzarturo.springbootcourse.domain.port.input.ExampleUseCase
 import com.lgzarturo.springbootcourse.infrastructure.rest.dto.request.ExampleRequest
 import com.lgzarturo.springbootcourse.infrastructure.rest.dto.response.ExampleResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,7 +20,7 @@ class ExampleController(
 ) {
     @PostMapping
     fun create(
-        @RequestBody request: ExampleRequest,
+        @Valid @RequestBody request: ExampleRequest,
     ): ResponseEntity<ExampleResponse> {
         val example = service.create(request.toDomain())
         return ResponseEntity.status(HttpStatus.CREATED).body(ExampleResponse.fromDomain(example))

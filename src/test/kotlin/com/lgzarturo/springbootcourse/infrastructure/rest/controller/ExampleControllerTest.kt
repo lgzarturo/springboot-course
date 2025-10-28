@@ -215,7 +215,7 @@ class ExampleControllerTest(
     }
 
     @Test
-    @DisplayName("Debería retornar 400 cuando se envían campos adicionales no esperados")
+    @DisplayName("Debería retornar 201 cuando se envían campos adicionales no esperados, ignorandolos")
     fun `should handle extra fields gracefully`() {
         whenever(service.create(any())).thenReturn(Example(1, "Test", "Desc"))
 
