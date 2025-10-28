@@ -294,4 +294,44 @@ Content-Type: application/json
 }
 ```
 
+Paso 8: Ahora ye tenemos una prueba que pasa, implementamos el controlador y el puerto de salida.
+
+Sin embargo, el endpoint no funciona, hay diversas razones, pero lo mas importante es resolver la inyección de dependencias de Spring.
+
+Este es el error que vemos en la consola:
+
+```bash
+Description:
+
+Parameter 0 of constructor in com.lgzarturo.springbootcourse.infrastructure.rest.controller.ExampleController required a bean of type 'com.lgzarturo.springbootcourse.domain.port.input.ExampleUseCase' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.lgzarturo.springbootcourse.domain.port.input.ExampleUseCase' in your configuration.
+```
+
+Esto se debe a que no hemos implementado el puerto de entrada `ExampleUseCase` en ninguna clase, por lo que Spring no puede inyectarlo en el controlador.
+
+Para resolverlo, agregamos una clase de servicio que implementa `ExampleUseCase` y lo inyectamos en el controlador.
+
+- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleService.kt`
+
+```kotlin
+@Service
+class ExampleService(
+    private val repository: ExampleRepositoryPort,
+) : ExampleUseCase {
+    override fun create(example: Example): Example = repository.save(example)
+}
+```
+
+De esta forma, ahora Spring puede inyectar el servicio en el controlador, debemos hacer un `override` en el controlador para que sepa que es el puerto de entrada y que implementa `ExampleUseCase`, para que user el método `create` que ya existe en el servicio. Dandole una implementación al método `create` que devuelve el objeto creado.
+
+> Nota: Como puedes ver, la prueba pasa desde el paso 7, pero el endpoint no funciona hasta que implementamos el servicio que implementa el puerto de entrada. Ese es el flujo correcto del TDD, realizar pruebas, implementar y refactor. No quiere decir que te tengas que fiar de las pruebas, más bien usas las pruebas para aplicar un flujo de trabajo ordenado y estructurado.
+> 
+> Una vez que tienes las pruebas, cualquier cambio en el código que haga que las pruebas fallen te avisa de que algo no está bien, y puedes arreglarlo sin miedo a romper otras partes del código.
+
+![Ejecución del endpoint](../../resources/images/tdd-post-endpoint-create.webp)
+
 Con estos pasos ya tenemos implementado el endpoint de creación con TDD, enlazado a la rama [feature/milestone-01-persistence](https://github.com/lgzarturo/springboot-course/tree/refs/heads/feature/milestone-01-persistence) y con trazabilidad por commits. A partir de aquí, repite el ciclo para listar, obtener por id, actualizar y eliminar (*cada uno con su prueba fallando primero, implementación mínima y refactor*).
