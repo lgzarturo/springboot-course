@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import java.util.Properties
 
 plugins {
@@ -157,6 +158,18 @@ detekt {
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
     allRules = false
+    autoCorrect = true // Habilita la corrección automática
+}
+
+tasks.withType<Detekt>().configureEach {
+    jvmTarget = "21"
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        txt.required.set(true)
+        sarif.required.set(true)
+        md.required.set(true)
+    }
 }
 
 // --- JaCoCo ---
@@ -321,5 +334,71 @@ tasks.register("diffMigration") {
         println("  - DBeaver Schema Compare")
         println("  - pgAdmin Schema Diff")
         println("  - IntelliJ Database Tools")
+    }
+}
+
+// --- Tareas de Calidad de Código ---
+tasks.register("checkCodeStyle") {
+    group = "verification"
+    description = "Ejecuta ktlint y detekt para verificar el estilo del código"
+    dependsOn("ktlintCheck", "detekt")
+}
+
+tasks.register("formatCode") {
+    group = "formatting"
+    description = "Aplica correcciones automáticas de ktlint y detekt"
+    dependsOn("ktlintFormat", "detektAutoCorrect")
+}
+
+tasks.register<Detekt>("detektAutoCorrect") {
+    group = "formatting"
+    description = "Ejecuta detekt con auto-corrección habilitada"
+
+    autoCorrect = true
+    jvmTarget = "21"
+
+    setSource(files("src/main/kotlin", "src/test/kotlin"))
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        txt.required.set(true)
+    }
+}
+
+tasks.register("codeQuality") {
+    group = "verification"
+    description = "Ejecuta todas las verificaciones de calidad: ktlint, detekt y tests con cobertura"
+    dependsOn("ktlintCheck", "detekt", "test", "jacocoTestReport")
+}
+
+tasks.register("fixAll") {
+    group = "formatting"
+    description = "Aplica todas las correcciones automáticas disponibles"
+    dependsOn("ktlintFormat", "detektAutoCorrect")
+    doLast {
+        val separator = "=".repeat(50)
+        println(separator)
+        println("✓ Correcciones aplicadas exitosamente")
+        println(separator)
+        println("Cambios aplicados:")
+        println("  • ktlint: Formato de código")
+        println("  • detekt: Correcciones de estilo")
+        println()
+        println("⚠ Recuerda revisar los cambios antes de hacer commit")
+        println(separator)
+    }
+}
+
+tasks.register("lintReport") {
+    group = "verification"
+    description = "Genera reportes completos de análisis de código"
+    dependsOn("ktlintCheck", "detekt")
+    doLast {
+        println("\n✓ Reportes generados en:")
+        println("  • ktlint: build/reports/ktlint/")
+        println("  • detekt: build/reports/detekt/")
     }
 }
