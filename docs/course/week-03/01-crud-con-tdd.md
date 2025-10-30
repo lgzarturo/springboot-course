@@ -564,3 +564,15 @@ Se añadieron dos pruebas unitarias, con `ExampleRepositoryPort` mockeado:
     - Retornar `ResponseEntity.ok(ExampleResponse.fromDomain(service.findById(id)))`.
 4) Ahora en `GlobalExceptionHandler`, tenemos que agregar handler para `NoSuchElementException` → `404 Not Found` (construye `ErrorResponse` consistente, como ya haces para otros status mediante `handleSpecificStatusCodeException`). Hay que seguir la consistencia actual de los handlers ya implementados.
 5) Por último se ejecuta la suite de tests; se refactoriza para corregir cualquier detalle menor de mapeo y se validan que todos los casos queden en verde.
+
+## 🟢 Green - Listo
+
+El método para obtener objetos por ID ya está implementado y probado con TDD, siguiendo el flujo Red → Green → Refactor. 
+
+## 🔵 Refactor - Mejoras finales
+
+Ahora ya se puede aplicar un refactor en el código, revisando nombres, paquetes, comentarios, limpieza de imports y duplicando la documentación si es necesario, para después hacer un commit final de refactorización.
+
+## 🔴 Red - Continuamos el ciclo
+
+En este punto, es importante entender que ya tenemos pruebas robustas de mucha de la funcionalidad que ya implementamos, y que ahora solo falta implementar las nuevas rutas y controladores, reutilizar lo que ya tenemos y seguir el mismo flujo de TDD para las nuevas funcionalidades.

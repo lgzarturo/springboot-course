@@ -13,4 +13,59 @@ Content-Type: application/json
   "description": "Desc"
 }
 
+### 2. Obtener una entidad de ejemplo por ID
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/examples/1
+Accept: application/json
+
+> {%
+    client.test("Solicitud ejecutada exitosamente", function () {
+        client.assert(response.status === 200, "La solicitud debe devolver un estado 200");
+    });
+
+    client.test("La respuesta es JSON", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Se esperaba 'application/json' pero se recibió '${type}'`);
+    });
+
+    client.test("El cuerpo de la respuesta contiene la entidad esperada", function () {
+        const responseBody = response.body;
+        client.assert(responseBody.name === "Test", `El nombre debe ser 'Test' pero es '${responseBody.name}'`);
+        client.assert(responseBody.description === "Desc", `La descripción debe ser 'Desc' pero es '${responseBody.description}'`);
+    });
+%}
+
+### 3. Si se intenta obtener una entidad inexistente, devuelve 404
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/examples/9999
+Accept: application/json
+
+> {%
+    client.test("Solicitud devuelve 404 para entidad inexistente", function () {
+        client.assert(response.status === 404, "La solicitud debe devolver un estado 404");
+    });
+%}
+
+### 4. Si se intenta obtener una entidad con ID inválido, devuelve 400
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/examples/invalid-id
+Accept: application/json
+
+> {%
+    client.test("Solicitud devuelve 400 para ID inválido", function () {
+        client.assert(response.status === 400, "La solicitud debe devolver un estado 400");
+    });
+%}
+
+### 5. Si se intenta obtener una entidad con ID negativo, devuelve 400
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/examples/-1
+Accept: application/json
+
+> {%
+    client.test("Solicitud devuelve 400 para ID negativo", function () {
+        client.assert(response.status === 400, "La solicitud debe devolver un estado 400");
+    });
+%}
+
 ###

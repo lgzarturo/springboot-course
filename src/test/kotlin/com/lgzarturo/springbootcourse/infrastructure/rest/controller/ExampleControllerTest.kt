@@ -339,5 +339,4 @@ class ExampleControllerTest(
                 .andExpect(status().isInternalServerError)
         }
     }
-
 }

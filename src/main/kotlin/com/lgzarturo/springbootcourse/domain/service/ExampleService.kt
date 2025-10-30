@@ -10,5 +10,7 @@ class ExampleService(
     private val repository: ExampleRepositoryPort,
 ) : ExampleUseCase {
     override fun create(example: Example): Example = repository.save(example)
-    override fun findById(id: Long): Example = repository.findById(id)?: throw NoSuchElementException("Example with id $id not found")
+
+    override fun findById(id: Long): Example =
+        repository.findById(id) ?: throw NoSuchElementException("Example with id $id not found")
 }

@@ -91,19 +91,21 @@ class GlobalExceptionHandler {
         ex: ConstraintViolationException,
         request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> {
-        val errors = ex.constraintViolations.associate {
-            val propertyPath = it.propertyPath.toString()
-            val fieldName = propertyPath.substringAfterLast('.')
-            fieldName to it.message
-        }
+        val errors =
+            ex.constraintViolations.associate {
+                val propertyPath = it.propertyPath.toString()
+                val fieldName = propertyPath.substringAfterLast('.')
+                fieldName to it.message
+            }
 
-        val errorResponse = ErrorResponse(
-            status = HttpStatus.BAD_REQUEST.value(),
-            error = "Bad Request",
-            message = "Error de validación en parámetros",
-            path = request.requestURI,
-            errors = errors
-        )
+        val errorResponse =
+            ErrorResponse(
+                status = HttpStatus.BAD_REQUEST.value(),
+                error = "Bad Request",
+                message = "Error de validación en parámetros",
+                path = request.requestURI,
+                errors = errors,
+            )
         return ResponseEntity.badRequest().body(errorResponse)
     }
 
@@ -127,6 +129,12 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
+
+    @ExceptionHandler(NoSuchElementException::class)
+    fun handleNoSuchElementException(
+        ex: NoSuchElementException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.NOT_FOUND)
 
     private fun handleSpecificStatusCodeException(
         ex: Exception,
