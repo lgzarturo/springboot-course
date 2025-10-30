@@ -14,4 +14,8 @@ class ExampleRepositoryAdapter(
         val entity = ExampleEntity.fromDomain(example)
         return jpaRepository.save(entity).toDomain()
     }
+
+    override fun findById(id: Long): Example? {
+        TODO("Not yet implemented")
+    }
 }
