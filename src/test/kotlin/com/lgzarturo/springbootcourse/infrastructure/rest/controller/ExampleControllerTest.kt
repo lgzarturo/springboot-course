@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -270,4 +271,73 @@ class ExampleControllerTest(
                 ).andExpect(status().isConflict)
         }
     }
+
+    @Nested
+    @DisplayName("GET /api/v1/examples/{id}")
+    inner class ShowExampleTests {
+        @Test
+        @DisplayName("Debería retornar 200 y el recurso cuando el id existe")
+        fun `should return 200 when example exists`() {
+            whenever(service.findById(1)).thenReturn(Example(1, "Test", "Desc"))
+
+            mockMvc
+                .perform(get("/api/v1/examples/1"))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Test"))
+                .andExpect(jsonPath("$.description").value("Desc"))
+        }
+
+        @Test
+        @DisplayName("Debería retornar 200 y omitir 'description' cuando es null")
+        fun `should return 200 and omit description when null`() {
+            whenever(service.findById(1)).thenReturn(Example(1, "Test", null))
+
+            mockMvc
+                .perform(get("/api/v1/examples/1"))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Test"))
+                .andExpect(jsonPath("$.description").doesNotExist())
+        }
+
+        @Test
+        @DisplayName("Debería retornar 404 cuando el recurso no existe")
+        fun `should return 404 when example does not exist`() {
+            whenever(service.findById(999)).thenThrow(NoSuchElementException("Example not found"))
+
+            mockMvc
+                .perform(get("/api/v1/examples/999"))
+                .andExpect(status().isNotFound)
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+        }
+
+        @Test
+        @DisplayName("Debería retornar 400 cuando el id no es numérico")
+        fun `should return 400 when id is not numeric`() {
+            mockMvc
+                .perform(get("/api/v1/examples/abc"))
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        @DisplayName("Debería retornar 400 cuando el id es menor o igual a 0")
+        fun `should return 400 when id is less than or equal to zero`() {
+            mockMvc
+                .perform(get("/api/v1/examples/0"))
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        @DisplayName("Debería retornar 500 cuando el servicio lanza una excepción inesperada")
+        fun `should return 500 when service throws unexpected exception on get`() {
+            whenever(service.findById(1)).thenThrow(RuntimeException("Database error"))
+
+            mockMvc
+                .perform(get("/api/v1/examples/1"))
+                .andExpect(status().isInternalServerError)
+        }
+    }
+
 }

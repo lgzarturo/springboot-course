@@ -511,3 +511,56 @@ No se trata de alcanzar 100%, sino de tener una **cobertura significativa**, don
 
 > "Si el código puede romper algo que el framework no controla, pruébalo.
 > Si el código solo pasa datos al framework, no lo pruebes."
+
+---
+
+## Iteramos con TDD ahora con `GET /api/v1/examples/{id}`
+
+Ahora el siguiente paso se debe de reiniciar el flujo de TDD, ya que se va a agregar una nueva ruta, y eso significa que hay que volver a implementar el controlador y el puerto de salida.
+
+### Paso 1 (🔴 Red): agregamos los casos de uso
+
+Se han creado los casos de prueba para el endpoint `GET /api/v1/examples/{id}` y el método de servicio asociado, siguiendo el contrato que ya se definio en el proceso anterior (ahora tomaremos en cuenta lo siguiente `findById(id: Long): Example?` y lanzar `NoSuchElementException` cuando no existe):
+
+#### Controlador: `ExampleControllerTest.kt`
+
+Se añadió el bloque `ShowExampleTests` con los siguientes escenarios:
+
+- 200 OK cuando el recurso existe, validando cuerpo `id`, `name`, `description`.
+- 200 OK omitiendo `description` cuando es `null` (no debe aparecer en el JSON).
+- 404 Not Found cuando el servicio lanza `NoSuchElementException` (se valida `ErrorResponse.status` y `ErrorResponse.error`).
+- 400 Bad Request cuando el `id` no es numérico (`abc`).
+- 400 Bad Request cuando el `id` es `<= 0` (p. ej. `0`).
+- 500 Internal Server Error cuando el servicio lanza una excepción inesperada (`RuntimeException`).
+
+#### Servicio: `ExampleServiceTest.kt`
+
+Se añadieron dos pruebas unitarias, con `ExampleRepositoryPort` mockeado:
+
+- Caso exitoso: `should get an example by its id` cuando el repo devuelve un `Example`; se valida igualdad y `verify(repository).findById(1)`.
+- Caso no encontrado: `should throw NoSuchElementException when example does not exist` cuando el repo devuelve `null`; se espera `NoSuchElementException` y `verify(repository).findById(1)`.
+
+### Notas importantes (TDD – 🔴 Red)
+
+- Estas pruebas asumen la existencia de nuevos métodos que aún NO están implementados, por lo cual es normal que el proyecto no compile/los tests fallen ahora (fase ROJA de TDD):
+    - `ExampleUseCase.findById(id: Long): Example?`
+    - `ExampleService.findById(id: Long): Example` (usando el puerto, lanzando `NoSuchElementException` si `null`)
+    - `ExampleRepositoryPort.findById(id: Long): Example?`
+    - `ExampleRepositoryAdapter.findById(id: Long): Example?` (adaptando `ExampleJpaRepository`)
+    - En `ExampleController`, agregar `@GetMapping("/{id}")`, validar `id >= 1` (p. ej. `@Min(1)` o lógica que lance `IllegalArgumentException` → 400) y devolver `ExampleResponse.fromDomain(service.findById(id))` con `200 OK`.
+    - En `GlobalExceptionHandler`, manejar `NoSuchElementException` como `404 Not Found` con `ErrorResponse` (actualmente hay utilitario para mapear por `status`; agrega un `@ExceptionHandler(NoSuchElementException::class)` que retorne `handleSpecificStatusCodeException(ex, request, HttpStatus.NOT_FOUND)`).
+
+### Próximos pasos para poner todo en VERDE
+
+1) Extender el puerto de entrada `ExampleUseCase` con `findById(id: Long): Example?` y su implementación en `ExampleService`:
+   ```kotlin
+   override fun findById(id: Long): Example =
+       repository.findById(id) ?: throw NoSuchElementException("Example not found")
+   ```
+2) Extender el puerto de salida `ExampleRepositoryPort` con `findById(id: Long): Example?` y su implementación en `ExampleRepositoryAdapter` (usando tu `ExampleJpaRepository`).
+3) Agregar `GET /api/v1/examples/{id}` en `ExampleController`:
+    - `@GetMapping("/{id}")`
+    - Validar `id >= 1` (anotación `@Min(1)` o if + `IllegalArgumentException`)
+    - Retornar `ResponseEntity.ok(ExampleResponse.fromDomain(service.findById(id)))`.
+4) Ahora en `GlobalExceptionHandler`, tenemos que agregar handler para `NoSuchElementException` → `404 Not Found` (construye `ErrorResponse` consistente, como ya haces para otros status mediante `handleSpecificStatusCodeException`). Hay que seguir la consistencia actual de los handlers ya implementados.
+5) Por último se ejecuta la suite de tests; se refactoriza para corregir cualquier detalle menor de mapeo y se validan que todos los casos queden en verde.
