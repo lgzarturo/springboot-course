@@ -1,6 +1,7 @@
 package com.lgzarturo.springbootcourse.infrastructure.exception
 
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -84,6 +85,27 @@ class GlobalExceptionHandler {
         ex: HttpMessageNotReadableException,
         request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.BAD_REQUEST)
+
+    @ExceptionHandler(ConstraintViolationException::class)
+    fun handleConstraintViolation(
+        ex: ConstraintViolationException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ErrorResponse> {
+        val errors = ex.constraintViolations.associate {
+            val propertyPath = it.propertyPath.toString()
+            val fieldName = propertyPath.substringAfterLast('.')
+            fieldName to it.message
+        }
+
+        val errorResponse = ErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = "Bad Request",
+            message = "Error de validación en parámetros",
+            path = request.requestURI,
+            errors = errors
+        )
+        return ResponseEntity.badRequest().body(errorResponse)
+    }
 
     /**
      * Maneja excepciones genéricas no capturadas
