@@ -8,6 +8,6 @@ data class ExampleResponse(
     val description: String?,
 ) {
     companion object {
-        fun fromDomain(example: Example) = ExampleResponse(example.id, example.name, example.description)
+        fun fromDomain(example: Example) = ExampleResponse(example.id, example.name!!, example.description)
     }
 }

@@ -28,6 +28,6 @@ data class ExampleEntity(
 
     companion object {
         fun fromDomain(example: Example) =
-            ExampleEntity(id = example.id, name = example.name, description = example.description)
+            ExampleEntity(id = example.id, name = example.name!!, description = example.description)
     }
 }

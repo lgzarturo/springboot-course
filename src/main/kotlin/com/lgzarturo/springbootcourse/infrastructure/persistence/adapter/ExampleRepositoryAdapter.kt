@@ -4,6 +4,8 @@ import com.lgzarturo.springbootcourse.domain.model.Example
 import com.lgzarturo.springbootcourse.domain.port.output.ExampleRepositoryPort
 import com.lgzarturo.springbootcourse.infrastructure.persistence.entity.ExampleEntity
 import com.lgzarturo.springbootcourse.infrastructure.persistence.repository.ExampleJpaRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -16,4 +18,11 @@ class ExampleRepositoryAdapter(
     }
 
     override fun findById(id: Long): Example? = jpaRepository.findById(id).orElse(null)?.toDomain()
+
+    override fun findAll(
+        searchText: String?,
+        pageable: Pageable,
+    ): Page<Example> {
+        TODO("Not yet implemented")
+    }
 }
