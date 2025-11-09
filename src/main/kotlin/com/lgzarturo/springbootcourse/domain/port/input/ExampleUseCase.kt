@@ -1,6 +1,7 @@
 package com.lgzarturo.springbootcourse.domain.port.input
 
 import com.lgzarturo.springbootcourse.domain.model.Example
+import com.lgzarturo.springbootcourse.infrastructure.rest.dto.request.ExamplePatchUpdate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -23,6 +24,6 @@ interface ExampleUseCase {
 
     fun patch(
         id: Long,
-        example: Example,
+        update: ExamplePatchUpdate,
     ): Example
 }

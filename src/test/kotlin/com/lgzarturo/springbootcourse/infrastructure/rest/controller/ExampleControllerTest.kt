@@ -2,6 +2,7 @@ package com.lgzarturo.springbootcourse.infrastructure.rest.controller
 
 import com.lgzarturo.springbootcourse.domain.model.Example
 import com.lgzarturo.springbootcourse.domain.port.input.ExampleUseCase
+import com.lgzarturo.springbootcourse.infrastructure.rest.dto.request.ExamplePatchUpdate
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -520,7 +521,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 200 cuando actualiza parcialmente (solo description)")
         fun `should return 200 when patching only description`() {
-            whenever(service.patch(1, Example(name = "Ignored", description = "New Desc")))
+            whenever(service.patch(1, ExamplePatchUpdate(property = "name", value = "New")))
                 .thenReturn(Example(1, "Existing Name", "New Desc"))
 
             mockMvc
@@ -537,7 +538,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 200 cuando actualiza parcialmente (solo name)")
         fun `should return 200 when patching only name`() {
-            whenever(service.patch(1, Example(name = "New Name", description = null)))
+            whenever(service.patch(1, ExamplePatchUpdate(property = "name", value = "New")))
                 .thenReturn(Example(1, "New Name", "Old Desc"))
 
             mockMvc
@@ -564,7 +565,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 404 cuando el recurso a actualizar parcialmente no existe")
         fun `should return 404 when patching non-existent resource`() {
-            whenever(service.patch(999, Example(name = null, description = "New")))
+            whenever(service.patch(999, ExamplePatchUpdate(property = "name", value = "New")))
                 .thenThrow(NoSuchElementException("Not found"))
 
             mockMvc
@@ -578,7 +579,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 500 cuando el servicio lanza una excepción inesperada (PATCH)")
         fun `should return 500 when service throws unexpectedly on patch`() {
-            whenever(service.patch(1, Example(name = null, description = "X")))
+            whenever(service.patch(1, ExamplePatchUpdate(property = "description", value = "X")))
                 .thenThrow(RuntimeException("DB error"))
 
             mockMvc

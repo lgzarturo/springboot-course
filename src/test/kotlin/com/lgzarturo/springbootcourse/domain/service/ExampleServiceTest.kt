@@ -2,12 +2,21 @@ package com.lgzarturo.springbootcourse.domain.service
 
 import com.lgzarturo.springbootcourse.domain.model.Example
 import com.lgzarturo.springbootcourse.domain.port.output.ExampleRepositoryPort
+import com.lgzarturo.springbootcourse.infrastructure.rest.dto.request.ExamplePatchUpdate
+import io.mockk.every
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
+import org.mockito.ArgumentMatchers.nullable
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
@@ -121,8 +130,8 @@ class ExampleServiceTest {
     }
 
     @Test
-    @DisplayName("Debería listar todos los ejemplos")
-    fun `should list all examples`() {
+    @DisplayName("Debería listar todos los ejemplos cuando searchText es null")
+    fun `should list all examples when searchText is null`() {
         val pageable = PageRequest.of(0, 10)
         val items =
             listOf(
@@ -132,14 +141,79 @@ class ExampleServiceTest {
         val page = PageImpl(items, pageable, items.size.toLong())
 
         // Cuando el repositorio devuelve una página con elementos
-        whenever(repository.findAll(any(), any())).thenReturn(page)
+        whenever(repository.findAll(isNull(), any())).thenReturn(page)
 
         // Entonces el servicio debe propagar la página
         val result = service.findAll(null, pageable)
 
         assertEquals(page, result)
         // Verifica que se consultó con algún filtro (null) y el pageable
-        verify(repository).findAll(any(), any())
+        verify(repository).findAll(isNull(), any())
+    }
+
+    @Test
+    @DisplayName("Debería listar ejemplos filtrados cuando searchText tiene valor")
+    fun `should list filtered examples when searchText has value`() {
+        // Given
+        val searchText = "Alpha"
+        val pageable = PageRequest.of(0, 10)
+        val items = listOf(
+            Example(id = 1, name = "Alpha", description = null),
+        )
+        val expectedPage = PageImpl(items, pageable, items.size.toLong())
+
+        // When
+        whenever(repository.findAll(eq(searchText), eq(pageable))).thenReturn(expectedPage)
+
+        // Then
+        val result = service.findAll(searchText, pageable)
+
+        assertNotNull(result)
+        assertEquals(1, result.content.size)
+        assertEquals("Alpha", result.content[0].name)
+        verify(repository, times(1)).findAll(eq(searchText), eq(pageable))
+    }
+
+    @Test
+    @DisplayName("Debería retornar página vacía cuando no hay resultados")
+    fun `should return empty page when no results found`() {
+        // Given
+        val searchText = "NonExistent"
+        val pageable = PageRequest.of(0, 10)
+        val emptyPage = PageImpl<Example>(emptyList(), pageable, 0)
+
+        // When
+        whenever(repository.findAll(eq(searchText), eq(pageable))).thenReturn(emptyPage)
+
+        // Then
+        val result = service.findAll(searchText, pageable)
+
+        assertNotNull(result)
+        assertTrue(result.content.isEmpty())
+        assertEquals(0, result.totalElements)
+        verify(repository, times(1)).findAll(eq(searchText), eq(pageable))
+    }
+
+    @Test
+    @DisplayName("Debería listar todos cuando searchText es string vacío")
+    fun `should list all when searchText is empty string`() {
+        // Given
+        val pageable = PageRequest.of(0, 10)
+        val items = listOf(
+            Example(id = 1, name = "Alpha", description = null),
+            Example(id = 2, name = "Beta", description = "B"),
+        )
+        val expectedPage = PageImpl(items, pageable, items.size.toLong())
+
+        // When
+        whenever(repository.findAll(eq(""), eq(pageable))).thenReturn(expectedPage)
+
+        // Then
+        val result = service.findAll("", pageable)
+
+        assertNotNull(result)
+        assertEquals(2, result.content.size)
+        verify(repository, times(1)).findAll(eq(""), eq(pageable))
     }
 
     @Test
@@ -148,13 +222,13 @@ class ExampleServiceTest {
         val pageable = PageRequest.of(0, 10)
         val page = PageImpl(emptyList<Example>(), pageable, 0)
 
-        whenever(repository.findAll(any(), any())).thenReturn(page)
+        whenever(repository.findAll(isNull(), any())).thenReturn(page)
 
         val result = service.findAll(null, pageable)
 
         assertEquals(0, result.totalElements)
         assertEquals(0, result.content.size)
-        verify(repository).findAll(any(), any())
+        verify(repository).findAll(isNull(), any())
     }
 
     @Test
@@ -191,7 +265,7 @@ class ExampleServiceTest {
     @DisplayName("Debería poder actualizar solo la descripción de un ejemplo")
     fun `should update only the description of an example`() {
         val existing = Example(id = 1, name = "Name", description = "Old")
-        val patch = Example(id = null, name = "Name", description = "New")
+        val patch = ExamplePatchUpdate(property = "name", value = "New")
         val updated = Example(id = 1, name = "Name", description = "New")
 
         whenever(repository.findById(1)).thenReturn(existing)
@@ -210,7 +284,7 @@ class ExampleServiceTest {
         whenever(repository.findById(999)).thenReturn(null)
 
         assertThrows<NoSuchElementException> {
-            service.patch(999, Example(id = null, name = "Any", description = "New"))
+            service.patch(999, ExamplePatchUpdate(property = "name", value = "New Title"))
         }
         verify(repository).findById(999)
     }
