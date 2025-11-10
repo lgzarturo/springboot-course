@@ -33,16 +33,14 @@ class ExampleService(
     override fun findAll(
         searchText: String?,
         pageable: Pageable,
-    ): Page<Example> {
-        return repository.findAll(searchText, pageable)
-    }
+    ): Page<Example> = repository.findAll(searchText, pageable)
 
     override fun patch(
         id: Long,
-        update: ExamplePatchUpdate
+        update: ExamplePatchUpdate,
     ): Example {
         val existingExample = findById(id)
-        return when(update.property) {
+        return when (update.property) {
             "name" -> repository.save(existingExample.copy(name = update.value))
             "description" -> repository.save(existingExample.copy(description = update.value))
             else -> throw NoSuchElementException("Property ${update.property} not found")

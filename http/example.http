@@ -9,8 +9,8 @@ POST {{baseUrl}}/api/{{apiVersion}}/examples
 Content-Type: application/json
 
 {
-  "name": "Test",
-  "description": "Desc"
+  "name": "Prueba",
+  "description": "Descripción de prueba"
 }
 
 ### 2. Obtener una entidad de ejemplo por ID
@@ -67,5 +67,54 @@ Accept: application/json
         client.assert(response.status === 400, "La solicitud debe devolver un estado 400");
     });
 %}
+
+### 6. Obtener todas las entidades de ejemplo
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/examples
+Accept: application/json
+
+### 7. Obteber una entidad por su ID
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/examples/1
+Accept: application/json
+
+### 8. Actualizar una entidad de ejemplo por ID
+#@no-cookie-jar
+PUT {{baseUrl}}/api/{{apiVersion}}/examples/1
+Content-Type: application/json
+
+{
+  "name": "Test Updated",
+  "description": "Desc Updated"
+}
+
+### 9. Actualizar el nombre de una entidad de ejemplo por ID
+#@no-cookie-jar
+PATCH {{baseUrl}}/api/{{apiVersion}}/examples/1
+Content-Type: application/json
+
+{
+  "property": "name",
+  "value": "Test Patched"
+}
+
+### 10. Actualizar la descripción de una entidad de ejemplo por ID
+#@no-cookie-jar
+PATCH {{baseUrl}}/api/{{apiVersion}}/examples/1
+Content-Type: application/json
+
+{
+  "property": "description",
+  "value": "Desc Patched"
+}
+
+### 11. Buscar entidades de ejemplo por nombre
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/examples?searchText=test
+Accept: application/json
+
+### 12. Eliminar una entidad de ejemplo por ID
+#@no-cookie-jar
+DELETE {{baseUrl}}/api/{{apiVersion}}/examples/3
 
 ###

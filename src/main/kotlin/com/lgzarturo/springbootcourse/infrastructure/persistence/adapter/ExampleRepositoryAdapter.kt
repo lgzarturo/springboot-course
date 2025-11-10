@@ -30,34 +30,41 @@ class ExampleRepositoryAdapter(
             return jpaRepository.findAll(pageable).map { it.toDomain() }
         }
 
-        val matcher = ExampleMatcher.matching()
-            .withIgnoreNullValues()
-            .withIgnoreCase()
-            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
-            .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
+        val matcher =
+            ExampleMatcher
+                .matching()
+                .withIgnoreNullValues()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withIgnorePaths("id", "createdAt", "updatedAt", "description")
 
-        val exampleEntity = ExampleEntity(
-            name = searchText,
-            description = null,
-        )
+        val exampleEntity =
+            ExampleEntity(
+                name = searchText,
+                description = null,
+            )
 
-        val example = org.springframework.data.domain.Example.of(exampleEntity, matcher)
+        val example =
+            org.springframework.data.domain.Example
+                .of(exampleEntity, matcher)
 
-        return jpaRepository.findAll(example, pageable)
+        return jpaRepository
+            .findAll(example, pageable)
             .map { it.toDomain() }
     }
 
     override fun update(
         id: Long,
-        example: ExampleRequest
-    ): Example {
-        return jpaRepository.findById(id).orElseThrow { NoSuchElementException("Example with id $id not found") }
+        example: ExampleRequest,
+    ): Example =
+        jpaRepository
+            .findById(id)
+            .orElseThrow { NoSuchElementException("Example with id $id not found") }
             .copy(
                 name = example.name,
                 description = example.description,
-            )
-            .let { jpaRepository.save(it).toDomain() }
-    }
+            ).let { jpaRepository.save(it).toDomain() }
 
     override fun delete(id: Long) {
         jpaRepository.deleteById(id)
@@ -65,15 +72,19 @@ class ExampleRepositoryAdapter(
 
     override fun patch(
         id: Long,
-        update: ExamplePatchUpdate
+        update: ExamplePatchUpdate,
     ): Example {
-        val existingExample = jpaRepository.findById(id).orElseThrow { NoSuchElementException("Example with id $id not found") }
-        val updatedExample = when (update.property) {
-            "name" -> existingExample.copy(name = update.value)
-            "description" -> existingExample.copy(description = update.value)
-            else -> throw NoSuchElementException("Property ${update.property} not found")
-        }
+        val existingExample =
+            jpaRepository
+                .findById(
+                    id,
+                ).orElseThrow { NoSuchElementException("Example with id $id not found") }
+        val updatedExample =
+            when (update.property) {
+                "name" -> existingExample.copy(name = update.value)
+                "description" -> existingExample.copy(description = update.value)
+                else -> throw NoSuchElementException("Property ${update.property} not found")
+            }
         return jpaRepository.save(updatedExample).toDomain()
     }
-
 }

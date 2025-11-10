@@ -157,9 +157,10 @@ class ExampleServiceTest {
         // Given
         val searchText = "Alpha"
         val pageable = PageRequest.of(0, 10)
-        val items = listOf(
-            Example(id = 1, name = "Alpha", description = null),
-        )
+        val items =
+            listOf(
+                Example(id = 1, name = "Alpha", description = null),
+            )
         val expectedPage = PageImpl(items, pageable, items.size.toLong())
 
         // When
@@ -199,10 +200,11 @@ class ExampleServiceTest {
     fun `should list all when searchText is empty string`() {
         // Given
         val pageable = PageRequest.of(0, 10)
-        val items = listOf(
-            Example(id = 1, name = "Alpha", description = null),
-            Example(id = 2, name = "Beta", description = "B"),
-        )
+        val items =
+            listOf(
+                Example(id = 1, name = "Alpha", description = null),
+                Example(id = 2, name = "Beta", description = "B"),
+            )
         val expectedPage = PageImpl(items, pageable, items.size.toLong())
 
         // When

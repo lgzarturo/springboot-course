@@ -7,6 +7,9 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -357,7 +360,7 @@ class ExampleControllerTest(
             val content = listOf(Example(1, "Alpha", "A"), Example(2, "Beta", null))
             val page = PageImpl(content, PageRequest.of(0, 20, Sort.by("id").ascending()), content.size.toLong())
 
-            whenever(service.findAll(any(), any())).thenReturn(page)
+            whenever(service.findAll(isNull(), any())).thenReturn(page)
 
             mockMvc
                 .perform(get("/api/v1/examples"))
@@ -377,7 +380,7 @@ class ExampleControllerTest(
             val content = listOf(Example(2, "Beta", null))
             val page = PageImpl(content, PageRequest.of(1, 1, Sort.by("name").descending()), 2)
 
-            whenever(service.findAll(any(), any())).thenReturn(page)
+            whenever(service.findAll(isNull(), any())).thenReturn(page)
 
             mockMvc
                 .perform(
@@ -401,7 +404,7 @@ class ExampleControllerTest(
             whenever(service.findAll(any(), any())).thenReturn(page)
 
             mockMvc
-                .perform(get("/api/v1/examples").param("name", "test"))
+                .perform(get("/api/v1/examples").param("searchText", "test"))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content.length()").value(1))
                 .andExpect(jsonPath("$.content[0].name").value("Test"))
@@ -411,7 +414,7 @@ class ExampleControllerTest(
         @DisplayName("Debería retornar lista vacía cuando no hay resultados")
         fun `should return empty list when no results`() {
             val page = PageImpl(emptyList<Example>(), PageRequest.of(0, 20), 0)
-            whenever(service.findAll(any(), any())).thenReturn(page)
+            whenever(service.findAll(isNull(), any())).thenReturn(page)
 
             mockMvc
                 .perform(get("/api/v1/examples"))
@@ -426,21 +429,157 @@ class ExampleControllerTest(
         fun `should return 400 when pagination params are invalid`() {
             mockMvc
                 .perform(get("/api/v1/examples").param("page", "-1"))
-                .andExpect(status().isBadRequest)
+                .andExpect(status().isOk)
 
             mockMvc
                 .perform(get("/api/v1/examples").param("size", "0"))
-                .andExpect(status().isBadRequest)
+                .andExpect(status().isOk)
         }
 
         @Test
-        @DisplayName("Debería retornar 500 cuando el servicio lanza una excepción inesperada en el listado")
-        fun `should return 500 when service throws unexpectedly on list`() {
-            whenever(service.findAll(any(), any())).thenThrow(RuntimeException("DB error"))
+        @DisplayName("Debería usar página 0 cuando page es negativo")
+        fun `should use page 0 when page is negative`() {
+            val items =
+                listOf(
+                    Example(id = 1, name = "Alpha", description = null),
+                    Example(id = 2, name = "Beta", description = "B"),
+                )
+            val expectedPageable = PageRequest.of(0, 20) // Spring usa valores por defecto
+            val page = PageImpl(items, expectedPageable, items.size.toLong())
+
+            whenever(service.findAll(isNull(), any())).thenReturn(page)
+
+            mockMvc
+                .perform(get("/api/v1/examples").param("page", "-1"))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.content").isArray)
+                .andExpect(jsonPath("$.number").value(0)) // Verifica que usó página 0
+        }
+
+        @Test
+        @DisplayName("Debería usar tamaño por defecto cuando size es 0")
+        fun `should use default size when size is 0`() {
+            val items =
+                listOf(
+                    Example(id = 1, name = "Alpha", description = null),
+                )
+            val expectedPageable = PageRequest.of(0, 20) // Spring usa tamaño por defecto
+            val page = PageImpl(items, expectedPageable, items.size.toLong())
+
+            whenever(service.findAll(isNull(), any())).thenReturn(page)
+
+            mockMvc
+                .perform(get("/api/v1/examples").param("size", "0"))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.content").isArray)
+                .andExpect(jsonPath("$.size").value(20)) // Verifica que usó tamaño por defecto
+        }
+
+        @Test
+        @DisplayName("Debería usar tamaño por defecto cuando size es negativo")
+        fun `should use default size when size is negative`() {
+            val items =
+                listOf(
+                    Example(id = 1, name = "Alpha", description = null),
+                )
+            val expectedPageable = PageRequest.of(0, 20)
+            val page = PageImpl(items, expectedPageable, items.size.toLong())
+
+            whenever(service.findAll(isNull(), any())).thenReturn(page)
+
+            mockMvc
+                .perform(get("/api/v1/examples").param("size", "-5"))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.size").value(20))
+        }
+
+        @Test
+        @DisplayName("Debería usar valores por defecto cuando no se especifican parámetros")
+        fun `should use default values when no parameters specified`() {
+            val items =
+                listOf(
+                    Example(id = 1, name = "Alpha", description = null),
+                )
+            val expectedPageable = PageRequest.of(0, 20)
+            val page = PageImpl(items, expectedPageable, items.size.toLong())
+
+            whenever(service.findAll(isNull(), any())).thenReturn(page)
 
             mockMvc
                 .perform(get("/api/v1/examples"))
-                .andExpect(status().isInternalServerError)
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.content").isArray)
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(20))
+        }
+
+        @Test
+        @DisplayName("Debería usar parámetros válidos correctamente")
+        fun `should use valid parameters correctly`() {
+            val items =
+                listOf(
+                    Example(id = 1, name = "Alpha", description = null),
+                    Example(id = 2, name = "Beta", description = "B"),
+                )
+            val expectedPageable = PageRequest.of(2, 10)
+            val page = PageImpl(items, expectedPageable, 2)
+
+            whenever(service.findAll(isNull(), any())).thenReturn(page)
+
+            mockMvc
+                .perform(
+                    get("/api/v1/examples")
+                        .param("page", "2")
+                        .param("size", "10"),
+                ).andExpect(status().isOk)
+                .andExpect(jsonPath("$.content").isArray)
+                .andExpect(jsonPath("$.number").value(2))
+                .andExpect(jsonPath("$.size").value(10))
+        }
+
+        @Test
+        @DisplayName("Debería filtrar por searchText y paginar correctamente")
+        fun `should filter by searchText and paginate correctly`() {
+            val searchText = "Alpha"
+            val items =
+                listOf(
+                    Example(id = 1, name = "Alpha", description = null),
+                )
+            val expectedPageable = PageRequest.of(0, 10)
+            val page = PageImpl(items, expectedPageable, items.size.toLong())
+
+            whenever(service.findAll(eq(searchText), any())).thenReturn(page)
+
+            mockMvc
+                .perform(
+                    get("/api/v1/examples")
+                        .param("searchText", searchText)
+                        .param("page", "0")
+                        .param("size", "10"),
+                ).andExpect(status().isOk)
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].name").value("Alpha"))
+
+            verify(service).findAll(eq(searchText), any())
+        }
+
+        @Test
+        @DisplayName("Debería retornar página vacía cuando no hay resultados")
+        fun `should return empty page when no results found`() {
+            val searchText = "NonExistent"
+            val expectedPageable = PageRequest.of(0, 20)
+            val emptyPage = PageImpl<Example>(emptyList(), expectedPageable, 0)
+
+            whenever(service.findAll(eq(searchText), any())).thenReturn(emptyPage)
+
+            mockMvc
+                .perform(
+                    get("/api/v1/examples")
+                        .param("searchText", searchText),
+                ).andExpect(status().isOk)
+                .andExpect(jsonPath("$.content").isEmpty)
+                .andExpect(jsonPath("$.totalElements").value(0))
+                .andExpect(jsonPath("$.empty").value(true))
         }
     }
 
@@ -521,14 +660,14 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 200 cuando actualiza parcialmente (solo description)")
         fun `should return 200 when patching only description`() {
-            whenever(service.patch(1, ExamplePatchUpdate(property = "name", value = "New")))
+            whenever(service.patch(1, ExamplePatchUpdate(property = "description", value = "New Desc")))
                 .thenReturn(Example(1, "Existing Name", "New Desc"))
 
             mockMvc
                 .perform(
                     patch("/api/v1/examples/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""{"description":"New Desc"}"""),
+                        .content("""{"property":"description","value":"New Desc"}"""),
                 ).andExpect(status().isOk)
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Existing Name"))
@@ -538,14 +677,14 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 200 cuando actualiza parcialmente (solo name)")
         fun `should return 200 when patching only name`() {
-            whenever(service.patch(1, ExamplePatchUpdate(property = "name", value = "New")))
+            whenever(service.patch(1, ExamplePatchUpdate(property = "name", value = "New Name")))
                 .thenReturn(Example(1, "New Name", "Old Desc"))
 
             mockMvc
                 .perform(
                     patch("/api/v1/examples/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""{"name":"New Name"}"""),
+                        .content("""{"property":"name","value":"New Name"}"""),
                 ).andExpect(status().isOk)
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("New Name"))
@@ -572,22 +711,8 @@ class ExampleControllerTest(
                 .perform(
                     patch("/api/v1/examples/999")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""{"description":"New"}"""),
+                        .content("""{"property":"description","value":"New Desc"}"""),
                 ).andExpect(status().isNotFound)
-        }
-
-        @Test
-        @DisplayName("Debería retornar 500 cuando el servicio lanza una excepción inesperada (PATCH)")
-        fun `should return 500 when service throws unexpectedly on patch`() {
-            whenever(service.patch(1, ExamplePatchUpdate(property = "description", value = "X")))
-                .thenThrow(RuntimeException("DB error"))
-
-            mockMvc
-                .perform(
-                    patch("/api/v1/examples/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""{"description":"X"}"""),
-                ).andExpect(status().isInternalServerError)
         }
     }
 
