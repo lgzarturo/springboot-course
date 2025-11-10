@@ -13,6 +13,8 @@ Este es el punto de partida del curso. Aquí encontrarás la bienvenida, el cale
 
 Basado en el [Temario](../README.md), se propone un calendario orientativo por semanas. Los tiempos pueden ajustarse según tu ritmo.
 
+> Puedes ver el avance del proyecto en el Archivo [HISTORIAL.md](../../HISTORIAL.md). Ahí se documentan los hitos y logros alcanzados.
+
 - Semana 0: Bienvenida, instalación y entorno (*JDK 21, IntelliJ IDEA, Git, Gradle Wrapper*).
     - [El Legado del Desarrollador: La Aventura de Spring Boot y Kotlin](week-00/01-historia-del-viaje.md)
     - [Sobre el Viaje del Héroe, como método de aprendizaje](week-00/02-metodo-de-aprendizaje.md)
@@ -22,7 +24,10 @@ Basado en el [Temario](../README.md), se propone un calendario orientativo por s
     - [Dominar HTTP y la Comunicación Efectiva entre Microservicios](week-02/01-domina-http.md)
     - [Guía Completa de SpringBoot y Gradle](week-02/02-spring-boot.md)
     - [Componentes Esenciales de Spring Boot](week-02/03-spring-boot-componentes-clave.md)
-- Semana 3: Persistencia con Spring Data JPA (*H2/PostgreSQL, entidades y repositorios*).
+    - [Perfiles en Spring Boot 3 con configuración por entorno](week-02/04-spring-boot-perfiles.md)
+    - [Generar migraciones con Flyway+Hibernate Schema Generation](week-02/05-migraciones-flyway-hibernate-schema-gen.md)
+  - Semana 3: Persistencia con Spring Data JPA (*H2/PostgreSQL, entidades y repositorios*).
+    - [CRUD con TDD - Proceso TDD para crear una entidad](week-03/01-crud-con-tdd.md)
 - Semana 4: Validación y manejo de errores (Jakarta Validation, ControllerAdvice).
 - Semana 5: Seguridad con Spring Security (*JWT básico, roles y protección de endpoints*).
 - Semana 6: Pruebas (*JUnit 5, Spring Boot Test, pruebas de integración y controladores*).

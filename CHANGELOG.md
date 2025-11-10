@@ -5,6 +5,49 @@ Todos los cambios notables del proyecto serán documentados aquí.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto se basa en [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.2] - 2025-11-09
+
+Milestone 1: Fundamentos de persistencia y configuración básica — continuación y cierre. En esta versión se consolida la persistencia, los perfiles de Spring, la configuración de Gradle y Sentry, y se practica TDD con un CRUD completo para la entidad `Example`.
+
+### Added
+- Persistencia (JPA/Hibernate) y adaptación hexagonal para Example:
+  - Entidad `ExampleEntity`, puerto `ExampleRepositoryPort` y adaptador `ExampleRepositoryAdapter`.
+  - Repositorio `ExampleJpaRepository` y migración inicial con Flyway.
+- Caso de uso `ExampleUseCase` y servicio de dominio `ExampleService` con operaciones CRUD.
+- Controlador REST `ExampleController` con endpoints para CRUD de `Example`:
+  - GET /api/v1/examples
+  - GET /api/v1/examples/{id}
+  - POST /api/v1/examples
+  - PUT /api/v1/examples/{id}
+  - PATCH /api/v1/examples/{id} — actualizaciones parciales
+  - DELETE /api/v1/examples/{id}
+- DTOs `ExampleRequest`, `ExamplePatchUpdate` y `ExampleResponse` con validaciones.
+- Manejo de errores y validaciones específicas (incluye `ConstraintViolationException`).
+- Perfiles de configuración (`application-dev.yaml`, `application-prod.yaml`, `application-tests.yaml`) y configuración por entorno.
+- Integración de Sentry con endpoints de prueba en `SentryController` y variables de entorno en CI.
+- Integración de Detekt y tareas de calidad de código.
+- Archivos HTTP para pruebas (`http/example.http`, `http/sentry.http`).
+- Documentación del curso:
+  - Semana 2: perfiles y configuración.
+  - Semana 3: CRUD con TDD y entidades.
+
+### Changed
+- Ampliación de puertos y servicio de dominio (`ExampleService`) con nuevas operaciones, incluyendo `findById`.
+- Organización de pruebas con clases anidadas y mayor legibilidad.
+- Ajustes de formato y simplificación de métodos en múltiples clases.
+- Actualización de README y guías (TDD, entidades, commits, contribución).
+
+### Fixed
+- Correcciones menores en la aplicación y en validaciones de entrada.
+
+### Tests
+- Enfoque TDD: pruebas unitarias y de integración completas para `ExampleService` y `ExampleController`, cubriendo casos del CRUD y manejo de errores.
+
+### Configuration
+- Perfiles activados por entorno y variables de entorno documentadas.
+- Configuración de CI ajustada para Sentry y publicación.
+- Gradle: nuevas tareas de verificación estática (Detekt) y calidad.
+
 ## [0.0.1] - 2025-10-25
 
 ### Added
@@ -65,3 +108,5 @@ y este proyecto se basa en [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - Manejo global de excepciones
 
 [0.0.1]: https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.1
+
+[0.0.2]: https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.2

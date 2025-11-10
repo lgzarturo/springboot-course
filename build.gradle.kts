@@ -1,9 +1,15 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import java.util.Properties
+
 plugins {
     kotlin("jvm") version "2.0.21"
     kotlin("plugin.spring") version "2.0.21"
     id("org.springframework.boot") version "3.5.6"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "2.0.21"
+
+    // Sentry plugin
+    id("io.sentry.jvm.gradle") version "5.12.1"
 
     // Herramientas de calidad y cobertura
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
@@ -12,7 +18,7 @@ plugins {
 }
 
 group = "com.lgzarturo"
-version = "0.0.1"
+version = "0.0.2"
 description = "springboot-course"
 
 java {
@@ -31,7 +37,43 @@ repositories {
     mavenCentral()
 }
 
-extra["sentryVersion"] = "8.16.0"
+// Load variables from .env for local development (fallback when OS env vars are not present)
+val dotenv: Map<String, String> by lazy {
+    val file = rootProject.file(".env")
+    if (!file.exists()) {
+        emptyMap()
+    } else {
+        val props = Properties()
+        file.inputStream().use { stream ->
+            props.load(stream)
+        }
+        props
+            .stringPropertyNames()
+            .associateWith { name -> props.getProperty(name) }
+            .filterValues { it != null }
+            .mapValues { it.value!! }
+    }
+}
+
+extra["sentryVersion"] = "8.22.0"
+extra["testcontainersVersion"] = "1.20.4"
+
+val sentryAuthToken: String? = System.getenv("SENTRY_AUTH_TOKEN") ?: dotenv["SENTRY_AUTH_TOKEN"]
+
+sentry {
+    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+    // This enables source context, allowing you to see your source
+    // code as part of your stack traces in Sentry.
+    includeSourceContext = true
+
+    org = "arthurolg-to"
+    projectName = "springboot-course"
+
+    // Prefer OS environment variable, then .env fallback for local dev
+    sentryAuthToken?.let { token ->
+        authToken = token
+    }
+}
 
 dependencies {
     // Spring Boot Starters
@@ -46,16 +88,30 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     // Monitoring
     implementation("io.sentry:sentry-spring-boot-starter-jakarta")
+    implementation("io.sentry:sentry-logback")
+    implementation("org.codehaus.janino:janino:3.1.8")
     implementation("io.micrometer:micrometer-registry-prometheus")
     // Development
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     // Database
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
+    // Flyway para migraciones de base de datos
+    implementation("org.flywaydb:flyway-core")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
     // Annotation Processing
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("io.kotest:kotest-assertions-core:5.9.1")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
@@ -65,6 +121,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom("io.sentry:sentry-bom:${property("sentryVersion")}")
+        mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
     }
 }
 
@@ -82,6 +139,9 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 // --- KTLint ---
@@ -98,6 +158,18 @@ detekt {
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
     allRules = false
+    autoCorrect = true // Habilita la corrección automática
+}
+
+tasks.withType<Detekt>().configureEach {
+    jvmTarget = "21"
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        txt.required.set(true)
+        sarif.required.set(true)
+        md.required.set(true)
+    }
 }
 
 // --- JaCoCo ---
@@ -166,5 +238,167 @@ tasks.register("generateChangelog") {
         println("Para generar localmente:")
         println("npx conventional-changelog -p conventionalcommits -i CHANGELOG.md -s")
         println(separator)
+    }
+}
+
+tasks.register<JavaExec>("generateDDL") {
+    group = "database"
+    description = "Generate DDL scripts from JPA entities"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.lgzarturo.springbootcourse.SpringbootCourseApplicationKt")
+
+    args =
+        listOf(
+            "--spring.profiles.active=generate-ddl",
+            "--spring.main.web-application-type=none",
+            "--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration",
+        )
+
+    standardOutput = System.out
+    errorOutput = System.err
+
+    doFirst {
+        delete("build/schema-create.sql", "build/schema-drop.sql")
+        println("Generating DDL scripts...")
+    }
+
+    doLast {
+        val createFile = file("build/schema-create.sql")
+        val dropFile = file("build/schema-drop.sql")
+
+        if (createFile.exists()) {
+            println("\n✓ DDL generated successfully:")
+            println("  - ${createFile.absolutePath}")
+            println("  - ${dropFile.absolutePath}")
+        } else {
+            throw GradleException("Failed to generate DDL scripts")
+        }
+    }
+}
+
+tasks.register("createMigration") {
+    group = "database"
+    description = "Create new Flyway migration from generated DDL"
+
+    dependsOn("generateDDL")
+
+    doLast {
+        val version = project.findProperty("migration_version")?.toString() ?: "1"
+        val description = project.findProperty("description")?.toString() ?: "migration"
+        val cleanDescription = description.replace(" ", "_").lowercase()
+        val fileName = "V${version}__$cleanDescription.sql"
+
+        val sourceFile = file("build/schema-create.sql")
+        val targetDir = file("src/main/resources/db/migration")
+        val targetFile = file("$targetDir/$fileName")
+
+        if (!sourceFile.exists()) {
+            throw GradleException("Source file not found: ${sourceFile.absolutePath}")
+        }
+
+        if (targetFile.exists()) {
+            throw GradleException("Migration already exists: $fileName")
+        }
+
+        targetDir.mkdirs()
+
+        val content = sourceFile.readText()
+        val cleanedContent =
+            content
+                .replace(Regex("(?m)^\\s*--.*$"), "")
+                .replace(Regex("\n{3,}"), "\n\n")
+                .trim()
+
+        targetFile.writeText(cleanedContent)
+
+        println("\n✓ Migration created successfully:")
+        println("  ${targetFile.absolutePath}")
+        println("\nNext steps:")
+        println("  1. Review and edit the migration file")
+        println("  2. Add indexes, constraints, or data migrations")
+        println("  3. Run: ./gradlew bootRun --args='--spring.profiles.active=dev'")
+    }
+}
+
+tasks.register("diffMigration") {
+    group = "database"
+    description = "Generate incremental migration by comparing entities with current schema"
+
+    doLast {
+        println("⚠ Manual diff required:")
+        println("  1. Run: ./gradlew generateDDL")
+        println("  2. Compare build/schema-create.sql with your current database")
+        println("  3. Create incremental migration manually")
+        println("\nTip: Use a DB diff tool like:")
+        println("  - DBeaver Schema Compare")
+        println("  - pgAdmin Schema Diff")
+        println("  - IntelliJ Database Tools")
+    }
+}
+
+// --- Tareas de Calidad de Código ---
+tasks.register("checkCodeStyle") {
+    group = "verification"
+    description = "Ejecuta ktlint y detekt para verificar el estilo del código"
+    dependsOn("ktlintCheck", "detekt")
+}
+
+tasks.register("formatCode") {
+    group = "formatting"
+    description = "Aplica correcciones automáticas de ktlint y detekt"
+    dependsOn("ktlintFormat", "detektAutoCorrect")
+}
+
+tasks.register<Detekt>("detektAutoCorrect") {
+    group = "formatting"
+    description = "Ejecuta detekt con auto-corrección habilitada"
+
+    autoCorrect = true
+    jvmTarget = "21"
+
+    setSource(files("src/main/kotlin", "src/test/kotlin"))
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        txt.required.set(true)
+    }
+}
+
+tasks.register("codeQuality") {
+    group = "verification"
+    description = "Ejecuta todas las verificaciones de calidad: ktlint, detekt y tests con cobertura"
+    dependsOn("ktlintCheck", "detekt", "test", "jacocoTestReport")
+}
+
+tasks.register("fixAll") {
+    group = "formatting"
+    description = "Aplica todas las correcciones automáticas disponibles"
+    dependsOn("ktlintFormat", "detektAutoCorrect")
+    doLast {
+        val separator = "=".repeat(50)
+        println(separator)
+        println("✓ Correcciones aplicadas exitosamente")
+        println(separator)
+        println("Cambios aplicados:")
+        println("  • ktlint: Formato de código")
+        println("  • detekt: Correcciones de estilo")
+        println()
+        println("⚠ Recuerda revisar los cambios antes de hacer commit")
+        println(separator)
+    }
+}
+
+tasks.register("lintReport") {
+    group = "verification"
+    description = "Genera reportes completos de análisis de código"
+    dependsOn("ktlintCheck", "detekt")
+    doLast {
+        println("\n✓ Reportes generados en:")
+        println("  • ktlint: build/reports/ktlint/")
+        println("  • detekt: build/reports/detekt/")
     }
 }

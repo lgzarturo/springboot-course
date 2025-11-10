@@ -153,8 +153,13 @@ Para más detalles, consulta [ARCHITECTURE.md](docs/ARCHITECTURE.md).
     git clone https://github.com/lgzarturo/springboot-course.git
     cd springboot-course
     ```
-
-2. **Compilar el proyecto**
+2. **Configurar variables de entorno**
+    ```bash
+    # Linux/Mac
+    cp .env.example .env
+    ```
+   
+3. **Compilar el proyecto**
     ```bash
     # Linux/Mac
     ./gradlew clean build
@@ -162,8 +167,10 @@ Para más detalles, consulta [ARCHITECTURE.md](docs/ARCHITECTURE.md).
     # Windows
     .\gradlew.bat clean build
     ```
+   
+    > El objetivo es agregar las variables de entorno a tu entorno local.
 
-3. **Ejecutar la aplicación**
+4. **Ejecutar la aplicación**
     ```bash
     # Linux/Mac
     ./gradlew bootRun
@@ -172,7 +179,7 @@ Para más detalles, consulta [ARCHITECTURE.md](docs/ARCHITECTURE.md).
     .\gradlew.bat bootRun
     ```
 
-4. **Verificar que funciona**
+5. **Verificar que funciona**
     ```bash
     curl http://localhost:8080/api/v1/ping
     ```
@@ -283,9 +290,14 @@ curl http://localhost:8080/api/v1/ping/health
 ### Workflow y Versionado
 
 - **[WORKFLOW.md](WORKFLOW.md)** - Flujo de trabajo completo: commits, versionado y releases
+  - **[TDD Aplicado](docs/course/week-03/01-crud-con-tdd.md)** - Se define el flujo de trabajo con TDD
 - **[COMMIT_GUIDE.md](COMMIT_GUIDE.md)** - Guía de commits convencionales
 - **[COMMIT_FIXING_GUIDE.md](COMMIT_FIXING_GUIDE.md)** - Cómo corregir errores en el historial de commits
 - **[CHANGELOG.md](CHANGELOG.md)** - Historial de cambios del proyecto
+
+### Persistencia
+
+- **[DOMINIOS DE LA APLICACION](docs/course/week-03/02-entidades.md)** - Definición de entidades y relaciones
 
 ### Seguridad
 
@@ -302,6 +314,8 @@ En el directorio `http/` encontrarás ejemplos de peticiones HTTP que puedes eje
 
 - **[ping.http](http/ping.http)** - Ejemplos de peticiones al PingController
 - **[actuator.http](http/actuator.http)** - Endpoints de Actuator
+- **[sentry.http](http/sentry.http)** - Ejemplos de integración con Sentry
+- **[example.http](http/example.http)** - Ejemplos adicionales de un CRUD de ejemplo con TDD
 
 ### Curso y Aprendizaje
 
@@ -411,11 +425,15 @@ Plan de desarrollo completo: [IMPLEMENTATION_CHECKLIST.md](docs/IMPLEMENTATION_C
 
 ### Próximas Versiones
 
-- 🔄 v0.1.0: Gestión de habitaciones (CRUD completo)
-- 🔄 v0.2.0: Sistema de reservas
-- 🔄 v0.3.0: Gestión de usuarios y autenticación
-- 🔄 v0.4.0: Sistema de pagos
-- 🔄 v0.5.0: Catálogo de productos/servicios
+- ✅ v0.0.1: Proyecto base con un Endpoint de ejemplo (Ping API)
+- 🔄 v0.0.2: Fundaments de persistencia, configuración de base de datos y entidades
+- 🔄 v0.0.3: Gestión de entidades, validaciones, manejo de errores, seguridad básica (CRUD completo)
+- 🔄 v0.0.4: Actualizando pruebas unitarias y usando testcontainers para pruebas de integración
+- 🔄 v0.0.5: Seguridad reforzada, configuración de CORS, rate limiting y headers de navegación
+- 🔄 v0.0.6: Cache de información con Spring Cache y Redis, integracion de mensajería
+- ... Próximas versiones con nuevas funcionalidades y mejoras (opcional)
+- 🔄 v1.0.0: Liberacion a producción, cobertura de pruebas del 85%, documentación completa y optimizaciones finales
+- ... Futuras versiones con mejoras y mejoras (opcional)
 
 Para más detalles, consulta el [CHANGELOG.md](CHANGELOG.md) y los [Issues](https://github.com/lgzarturo/springboot-course/issues).
 

@@ -123,7 +123,8 @@ style:
     ignoreExtensionFunctions: true
   MaxLineLength:
     active: true
-    maxLineLength: 120
+    maxLineLength: 140
+    excludeCommentStatements: true
   ReturnCount:
     active: true
     max: 3

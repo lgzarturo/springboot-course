@@ -1,0 +1,83 @@
+# Perfil: test (Pruebas)
+# Objetivo: ejecutar pruebas con Testcontainers para PostgreSQL
+# Principales ajustes:
+# - Configuración para Testcontainers
+# - Flyway deshabilitado (las pruebas manejan su propio schema)
+# - jpa.hibernate.ddl-auto=create-drop para un schema limpio por prueba
+# - Logs más silenciosos para reducir ruido en salidas de test
+# - Sentry deshabilitado (sin envío de eventos)
+# - Puerto aleatorio (server.port=0) cuando se levante contexto web
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  # La configuración de datasource será sobrescrita por Testcontainers
+  # pero mantenemos valores por defecto para compatibilidad
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      pool-name: HikariPool-Test
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+
+  flyway:
+    enabled: false
+
+  docker:
+    compose:
+      enabled: false
+
+  h2:
+    console:
+      enabled: false
+
+logging:
+  level:
+    root: WARN
+    com.lgzarturo.springbootcourse: INFO
+    org.springframework: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: ERROR
+    org.testcontainers: INFO
+    com.github.dockerjava: WARN
+    org.flywaydb: WARN
+
+sentry:
+  enabled: false
+  dsn: ""
+  environment: tests
+  debug: false
+  send-default-pii: false
+  logs:
+    enabled: false
+  traces-sample-rate: 0.0
+  enable-tracing: false
+
+server:
+  port: 0
+
+management:
+  endpoint:
+    health:
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: health,info

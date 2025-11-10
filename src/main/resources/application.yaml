@@ -1,6 +1,11 @@
 spring:
   application:
     name: springboot-course
+  config:
+    import: optional:file:.env[.properties]
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}          # Perfil activo por defecto es 'dev'
 
   output:
     ansi:
@@ -51,12 +56,8 @@ spring:
     hibernate:
       ddl-auto: update                              # Lo recomendable es usar 'validate' para usar migraciones con Flyway
 
-  # Configuración de H2 Database (desarrollo)
+  # Configuración default
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
     hikari:                                         # Configuración de HikariCP
       maximum-pool-size: 10                         # Tamaño máximo de conexiones en el pool
       minimum-idle: 5                               # Mantener al menos 5 conexiones inactivas en el pool
@@ -64,12 +65,18 @@ spring:
       idle-timeout: 600000                          # Tiempo máximo de inactividad antes de cerrar una conexión
       max-lifetime: 1800000                         # Tiempo máximo de vida de una conexión
       pool-name: HirakiPool-SpringbootCourse        # Definir el nombre del pool
+
   h2:
     console:
-      enabled: true
-      path: /h2-console
+      enabled: false
       settings:
         web-allow-others: false                   # Desactivar el acceso desde otros dominios (seguridad)
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    validate-migration-naming: true
 
 # Configuración de logging
 logging:
@@ -85,6 +92,43 @@ logging:
     file.max-history: 30
     file.max-size: 10MB
     file.name: logs/springboot-course.log
+
+# Configuración de Sentry (error tracking)
+sentry:
+  dsn: ${SENTRY_DSN:}
+  # Configuración de entorno
+  environment: ${SPRING_PROFILES_ACTIVE:development}
+  release: ${project.version:0.0.1}
+  server-name: ${HOSTNAME:localhost}
+  send-default-pii: true                         # Enviar información personal identificable
+  logs:
+    enabled: true                                # Habilitar el registro de errores
+    minimum-event-level: warn                    # Solo enviar WARN y ERROR
+    minimum-breadcrumb-level: info               # Breadcrumbs desde INFO
+  traces-sample-rate: 1.0                        # Habilitar el tracing para performance monitoring
+  enable-tracing: true
+  # Breadcrumbs (migas de pan)
+  enable-breadcrumbs: true
+  max-breadcrumbs: 100                           # Máximo de breadcrumbs por evento
+  # Context
+  in-app-includes:
+    - com.lgzarturo.springbootcourse             # Solo tu código como "in-app"
+  in-app-excludes:                               # Excluir paquetes de spring boot
+    - org.springframework
+    - org.hibernate
+    - com.fasterxml.jackson
+  # Filtros y sampling
+  ignored-exceptions-for-type:
+    - java.lang.IllegalArgumentException         # Ejemplo: ignorar excepciones específicas
+  # Debug (solo desarrollo)
+  debug: ${SENTRY_DEBUG:false}
+  # Tags personalizados
+  tags:
+    application: ${spring.application.name}
+    region: ${REGION:us-east-1}
+  # Contextos adicionales
+  enable-external-configuration: true
+  enable-uncaught-exception-handler: true
 
 # Configuración de Actuator
 management:
@@ -129,6 +173,22 @@ springdoc:
     display-request-duration: true                # Mostrar el tiempo de respuesta de las operaciones
     doc-expansion: false                          # Ocultar las operaciones por defecto
   show-actuator: false                            # No mostrar los endpoints de Actuator
+
+# Configuración de la aplicación
+app:
+  name: ${spring.application.name}
+  version: ${project.version:0.0.1}
+  description: "API REST para el curso de Spring Boot"
+  api:
+    title: "Spring Boot Course API"
+    version: "v1"
+    base-path: "/api/v1"
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    allow-credentials: false
+    max-age: 3600
 
 # Configuración del Servidor
 server:

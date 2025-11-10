@@ -24,7 +24,8 @@ Actualmente damos soporte de seguridad a las siguientes versiones del proyecto:
 | Versión | Soportada          | Estado               |
 |---------|--------------------|----------------------|
 | 0.0.x   | :white_check_mark: | En desarrollo activo |
-| < 0.0.1 | :x:                | No soportada         |
+| < 0.0.1 | :x:                | OK Configuración     |
+| < 0.0.2 | :x:                | OK TDD               |
 
 **Nota**: Este es un proyecto educativo en desarrollo activo. Todas las versiones futuras recibirán actualizaciones de seguridad hasta que se marquen como obsoletas.
 

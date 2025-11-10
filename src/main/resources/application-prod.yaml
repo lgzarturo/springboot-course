@@ -1,0 +1,107 @@
+# Perfil: prod (Producción)
+# Este archivo contiene overrides para un despliegue en producción.
+# Principales cambios vs application.yaml:
+# - PostgreSQL como datasource por defecto (configurable por variables de entorno)
+# - Flyway habilitado con configuración más estricta
+# - jpa.hibernate.ddl-auto=validate
+# - Menos logs y sin SQL/params en logs
+# - Sentry con menor sample rate y sin PII por defecto
+# - Health details restringidos
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    # Usa variables de entorno o valores por defecto razonables
+    url: ${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:springboot_course}}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: SpringbootCoursePool-Prod
+      leak-detection-threshold: 60000
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        jdbc:
+          batch_size: 50
+          fetch_size: 100
+        order_inserts: true
+        order_updates: true
+        query:
+          in_clause_parameter_padding: true
+          plan_cache_max_size: 2048
+          plan_parameter_metadata_max_size: 128
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+    locations: classpath:db/migration
+    validate-migration-naming: true
+    out-of-order: false
+    clean-disabled: true
+    validate-on-migrate: true
+
+  h2:
+    console:
+      enabled: false
+
+logging:
+  level:
+    root: INFO
+    com.lgzarturo.springbootcourse: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+    org.flywaydb: INFO
+  file:
+    name: ${LOG_FILE:logs/springboot-course.log}
+
+sentry:
+  dsn: ${SENTRY_DSN:}
+  environment: prod
+  debug: false
+  send-default-pii: false
+  logs:
+    enabled: true
+    minimum-event-level: error
+    minimum-breadcrumb-level: info
+  traces-sample-rate: ${SENTRY_TRACES_SAMPLE_RATE:0.1}
+  enable-tracing: true
+
+server:
+  port: ${PORT:8080}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+management:
+  endpoint:
+    health:
+      show-details: when-authorized
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+# Deshabilitar documentación pública en producción
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
