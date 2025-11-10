@@ -13,4 +13,5 @@ data class ErrorResponse(
     val message: String,
     val path: String,
     val details: List<String>? = null,
+    val errors: Map<String, String>? = null,
 )
