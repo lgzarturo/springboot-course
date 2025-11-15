@@ -235,7 +235,7 @@ Es necesario crear las entidades necesarias para el proyecto. A continuación se
 
 Siguiendo el camino del proyecto, podemos confirmar que ya tenemos la estructura implementada con la arquitectura Hexagonal, y se estableció el flujo del desarrollo TDD, se documentaron los principios SOLID y se establecieron las pruebas unitarias. En este punto, ya podemos empezar a desarrollar las funcionalidades, tenemos una base sólida de código, así como el manejo de errores y pruebas que nos permiten avanzar con confianza.
 
-Estamos en la semana 3, y ahora toca avanzar con las entidades, sus relaciones y sus atributos. Terminando la persistencia de los datos se creará un release con la versión 0.0.2 del proyecto.
+Estamos en la semana 3, y ahora toca avanzar con las entidades, sus relaciones y sus atributos. Terminando la persistencia de los datos se creará un release con la [versión 0.0.2 del proyecto](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.2).
 
 Acorde a la narrativa del curso, se deben crear las entidades necesarias para el proyecto, que en este caso son:
 
@@ -535,7 +535,7 @@ Para cada paso encontrarás objetivos, competencias clave y entregables sugerido
 - Entregables:
   - Pipeline CI que ejecute tests, linters y genere reportes (JaCoCo, changelog y release semántico).
 
-> Sugerencia de práctica guiada: Sigue la narrativa y ejemplos del proyecto Hotel Pokémon en este repositorio. En la semana 3 definiste entidades y persistencia (ver `02-entidades.md`) y aplicaste TDD para un CRUD de ejemplo (ver `01-crud-con-tdd.md`). El siguiente hito es cerrar la versión v0.0.2 con persistencia y pruebas básicas funcionando.
+> Sugerencia de práctica guiada: Sigue la narrativa y ejemplos del proyecto Hotel Pokémon en este repositorio. En la semana 3 definiste entidades y persistencia (ver [02-entidades.md](02-entidades.md)) y aplicaste TDD para un CRUD de ejemplo (ver [01-crud-con-tdd.md](01-crud-con-tdd.md)). El siguiente hito es cerrar la versión v0.0.2 con persistencia y pruebas básicas funcionando.
 
 ---
 
@@ -727,7 +727,7 @@ void shouldCreateReservation() {
 }
 ```
 
-> Nota: En este repositorio ya encontrarás ejemplos reales en `01-crud-con-tdd.md` y tests de controladores/servicios en `src/test/`.
+> Nota: En este repositorio ya encontrarás ejemplos reales en [01-crud-con-tdd.md](01-crud-con-tdd.md) y tests de controladores/servicios en `src/test/`.
 
 ---
 
@@ -777,8 +777,8 @@ void shouldCreateReservation() {
 - Unitarias (rápidas): servicios de dominio y funciones puras sin cargar Spring.
 - Integración (selectivas): controladores con MockMvc, adaptadores de persistencia, mapeos y excepciones.
 - E2E (futuro): flujos de negocio clave.
-- Cobertura: utiliza JaCoCo; apunta a cobertura significativa en lógica de negocio (>70% de líneas es un buen inicio), priorizando ramas críticas. Revisa la sección “¿Qué probar y qué no?” en `01-crud-con-tdd.md`.
-- Automatización: integra tests y linters en GitHub Actions (ver `WORKFLOW.md`).
+- Cobertura: utiliza JaCoCo; apunta a cobertura significativa en lógica de negocio (>70% de líneas es un buen inicio), priorizando ramas críticas. Revisa la sección “¿Qué probar y qué no?” en [01-crud-con-tdd.md](01-crud-con-tdd.md).
+- Automatización: integra tests y linters en GitHub Actions (ver [WORKFLOW.md](../../../WORKFLOW.md)).
 
 ## Checklist Rápido para tus PR
 
