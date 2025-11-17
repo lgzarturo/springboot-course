@@ -20,6 +20,8 @@ Este curso te guiará para construir, paso a paso, una API REST real con Spring 
 ¿Listo para empezar? Aquí no solo aprenderás código: resolverás problemas, optimizarás procesos y crearás soluciones que impacten. ¡Vamos a ello!
 
 > Me gusto la idea de crear un curso basado en código, porque vi un repositorio con una idea similar y me parecio interesante.
+> 
+> **Importante para leer**: [Justificación del proyecto y la práctica deliberada](PROJECT_JUSTIFICATION.md)
 
 ---
 
