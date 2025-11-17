@@ -2,7 +2,7 @@ package com.lgzarturo.springbootcourse.ping.adapters.rest
 
 import com.lgzarturo.springbootcourse.ping.adapters.rest.dto.PingResponse
 import com.lgzarturo.springbootcourse.ping.adapters.rest.mapper.PingMapper
-import com.lgzarturo.springbootcourse.ping.application.ports.input.PingUseCase
+import com.lgzarturo.springbootcourse.ping.application.ports.input.PingUseCasePort
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/ping")
 @Tag(name = "Ping", description = "Endpoints para verificar el estado de la API")
 class PingController(
-    private val pingUseCase: PingUseCase,
+    private val pingUseCasePort: PingUseCasePort,
     private val pingMapper: PingMapper,
 ) {
     /**
@@ -35,7 +35,7 @@ class PingController(
         description = "Retorna un pong simple para verificar que la API está funcionando",
     )
     fun ping(): ResponseEntity<PingResponse> {
-        val ping = pingUseCase.getPing()
+        val ping = pingUseCasePort.getPing()
         val response = pingMapper.toResponse(ping)
         return ResponseEntity.ok(response)
     }
@@ -55,7 +55,7 @@ class PingController(
     fun pingWithMessage(
         @PathVariable message: String,
     ): ResponseEntity<PingResponse> {
-        val ping = pingUseCase.getPingWithMessage(message)
+        val ping = pingUseCasePort.getPingWithMessage(message)
         val response = pingMapper.toResponse(ping)
         return ResponseEntity.ok(response)
     }

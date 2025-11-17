@@ -6,7 +6,7 @@ import com.lgzarturo.springbootcourse.ping.domain.Ping
  * Puerto de entrada (Use Case) para operaciones de Ping
  * Define el contrato de lo que se puede hacer con Ping
  */
-interface PingUseCase {
+interface PingUseCasePort {
     /**
      * Obtiene un ping simple
      * @return Ping con información básica

@@ -1,7 +1,7 @@
 package com.lgzarturo.springbootcourse.ping.adapters.rest
 
 import com.lgzarturo.springbootcourse.ping.adapters.rest.mapper.PingMapper
-import com.lgzarturo.springbootcourse.ping.application.ports.input.PingUseCase
+import com.lgzarturo.springbootcourse.ping.application.ports.input.PingUseCasePort
 import com.lgzarturo.springbootcourse.ping.domain.Ping
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
@@ -28,7 +28,7 @@ class PingControllerTest {
     private lateinit var mockMvc: MockMvc
 
     @MockkBean
-    private lateinit var pingUseCase: PingUseCase
+    private lateinit var pingUseCasePort: PingUseCasePort
 
     @Autowired // Usa el mapper real
     private lateinit var pingMapper: PingMapper
@@ -38,7 +38,7 @@ class PingControllerTest {
     fun `should return pong message when calling ping endpoint`() {
         // Given
         val ping = Ping(message = "pong")
-        every { pingUseCase.getPing() } returns ping
+        every { pingUseCasePort.getPing() } returns ping
         assertNotNull(pingMapper.toResponse(ping))
 
         // When & Then
@@ -57,7 +57,7 @@ class PingControllerTest {
         // Given
         val customMessage = "hello"
         val ping = Ping(message = "pong: $customMessage")
-        every { pingUseCase.getPingWithMessage(customMessage) } returns ping
+        every { pingUseCasePort.getPingWithMessage(customMessage) } returns ping
 
         // When & Then
         mockMvc

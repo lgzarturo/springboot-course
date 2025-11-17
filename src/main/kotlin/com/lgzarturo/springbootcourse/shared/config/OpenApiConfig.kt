@@ -20,17 +20,17 @@ class OpenApiConfig {
             .info(
                 Info()
                     .title("Spring Boot Course API")
-                    .version("1.0.0")
+                    .version("0.0.2")
                     .description("API REST para el curso de Spring Boot con Kotlin")
                     .contact(
                         Contact()
                             .name("Arturo López")
-                            .email("arturo@example.com")
+                            .email("lgzarturo@gmail.com")
                             .url("https://github.com/lgzarturo"),
                     ).license(
                         License()
-                            .name("MIT License")
-                            .url("https://opensource.org/licenses/MIT"),
+                            .name("Creative Commons Attribution 4.0 International (CC BY 4.0)")
+                            .url("https://creativecommons.org/licenses/by/4.0/deed.en"),
                     ),
             ).servers(
                 listOf(

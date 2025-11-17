@@ -314,14 +314,9 @@ src/
 │   │       │
 │   │       ├── ping/                            # ✅ Feature: Ping/Health
 │   │       │   ├── domain/
-│   │       │   │   ├── Ping.kt
-│   │       │   │   └── exceptions/
-│   │       │   │       └── PingException.kt
+│   │       │   │   └── Ping.kt
 │   │       │   │
 │   │       │   ├── application/                 # Casos de uso
-│   │       │   │   ├── GetPingUseCase.kt
-│   │       │   │   ├── GetPingWithMessageUseCase.kt
-│   │       │   │   ├── HealthCheckUseCase.kt
 │   │       │   │   └── ports/
 │   │       │   │       ├── input/
 │   │       │   │       │   └── PingUseCasePort.kt
@@ -329,20 +324,12 @@ src/
 │   │       │   │           └── PingRepositoryPort.kt (si aplica)
 │   │       │   │
 │   │       │   └── adapters/                    # Adaptadores
-│   │       │       ├── rest/                    # Entrada: REST
-│   │       │       │   ├── PingController.kt
-│   │       │       │   ├── dto/
-│   │       │       │   │   ├── PingRequest.kt
-│   │       │       │   │   └── PingResponse.kt
-│   │       │       │   └── mapper/
-│   │       │       │       └── PingMapper.kt
-│   │       │       │
-│   │       │       └── persistence/             # Salida: DB (si aplica)
-│   │       │           ├── JpaPingRepository.kt
-│   │       │           ├── entity/
-│   │       │           │   └── PingEntity.kt
+│   │       │       └── rest/                    # Entrada: REST
+│   │       │           ├── PingController.kt
+│   │       │           ├── dto/
+│   │       │           │   └── PingResponse.kt
 │   │       │           └── mapper/
-│   │       │               └── PingEntityMapper.kt
+│   │       │               └── PingMapper.kt
 │   │       │
 │   │       ├── bookings/                        # ✅ Feature: Reservas
 │   │       │   ├── domain/
@@ -632,20 +619,6 @@ class BookingService(
    }
    ```
 
-4. **Configurar Spring para escanear features**
-   ```kotlin
-   // SpringbootCourseApplication.kt
-   @SpringBootApplication(
-       scanBasePackages = [
-           "com.lgzarturo.springbootcourse.ping",
-           "com.lgzarturo.springbootcourse.bookings",
-           "com.lgzarturo.springbootcourse.rooms",
-           "com.lgzarturo.springbootcourse.shared"
-       ]
-   )
-   class SpringbootCourseApplication
-   ```
-
 ---
 
 #### **Fase 3: Migración Feature "Ping"** (Duración: 4 horas)
@@ -667,9 +640,6 @@ ping/
 │       └── PingException.kt
 │
 ├── application/
-│   ├── GetPingUseCase.kt           # Implementación
-│   ├── GetPingWithMessageUseCase.kt
-│   ├── HealthCheckUseCase.kt
 │   └── ports/
 │       └── input/
 │           └── PingUseCasePort.kt  # Interfaz
@@ -678,7 +648,6 @@ ping/
     └── rest/
         ├── PingController.kt
         ├── dto/
-        │   ├── PingRequest.kt
         │   └── PingResponse.kt
         └── mapper/
             └── PingMapper.kt
@@ -772,38 +741,6 @@ interface PingUseCasePort {
 }
 ```
 
-```kotlin
-// ping/application/GetPingUseCase.kt
-package com.lgzarturo.springbootcourse.ping.application
-
-import com.lgzarturo.springbootcourse.ping.application.ports.input.PingUseCasePort
-import com.lgzarturo.springbootcourse.ping.domain.Ping
-import org.springframework.stereotype.Service
-
-/**
- * Caso de uso: Obtener Ping
- */
-@Service
-class GetPingUseCase : PingUseCasePort {
-    
-    override fun getPing(): Ping {
-        return Ping(message = "pong")
-    }
-    
-    override fun getPingWithMessage(message: String): Ping {
-        return Ping(message = message)
-    }
-    
-    override fun healthCheck(): Map<String, Any> {
-        return mapOf(
-            "status" to "UP",
-            "service" to "springboot-course",
-            "version" to "1.0.0"
-        )
-    }
-}
-```
-
 **Test asociado**:
 ```kotlin
 // test/kotlin/com/lgzarturo/springbootcourse/ping/application/GetPingUseCaseTest.kt
@@ -852,7 +789,7 @@ class GetPingUseCaseTest {
 
 **Ejecutar test**:
 ```bash
-./gradlew test --tests "GetPingUseCaseTest"
+./gradlew test
 # Debe PASAR ✅
 ```
 
