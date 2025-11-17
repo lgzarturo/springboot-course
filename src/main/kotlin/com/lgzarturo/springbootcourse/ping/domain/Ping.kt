@@ -1,4 +1,4 @@
-package com.lgzarturo.springbootcourse.domain.model
+package com.lgzarturo.springbootcourse.ping.domain
 
 import java.time.LocalDateTime
 
@@ -9,5 +9,9 @@ import java.time.LocalDateTime
 data class Ping(
     val message: String,
     val timestamp: LocalDateTime = LocalDateTime.now(),
-    val version: String = "1.0.0",
-)
+    val version: String = "0.0.2",
+) {
+    init {
+        require(message.isNotBlank()) { "El mensaje no puede estar vacío" }
+    }
+}

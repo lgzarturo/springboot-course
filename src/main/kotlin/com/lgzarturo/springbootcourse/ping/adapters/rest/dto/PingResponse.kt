@@ -1,4 +1,4 @@
-package com.lgzarturo.springbootcourse.infrastructure.rest.dto.response
+package com.lgzarturo.springbootcourse.ping.adapters.rest.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime

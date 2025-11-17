@@ -1,4 +1,4 @@
-package com.lgzarturo.springbootcourse.config
+package com.lgzarturo.springbootcourse.shared.config
 
 import com.lgzarturo.springbootcourse.shared.constant.CorsConstants
 import org.springframework.context.annotation.Configuration

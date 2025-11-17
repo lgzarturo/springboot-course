@@ -1,6 +1,6 @@
-package com.lgzarturo.springbootcourse.domain.port.input
+package com.lgzarturo.springbootcourse.ping.application.ports.input
 
-import com.lgzarturo.springbootcourse.domain.model.Ping
+import com.lgzarturo.springbootcourse.ping.domain.Ping
 
 /**
  * Puerto de entrada (Use Case) para operaciones de Ping

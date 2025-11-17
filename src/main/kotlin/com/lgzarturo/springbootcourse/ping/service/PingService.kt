@@ -1,7 +1,7 @@
-package com.lgzarturo.springbootcourse.domain.service
+package com.lgzarturo.springbootcourse.ping.service
 
-import com.lgzarturo.springbootcourse.domain.model.Ping
-import com.lgzarturo.springbootcourse.domain.port.input.PingUseCase
+import com.lgzarturo.springbootcourse.ping.application.ports.input.PingUseCase
+import com.lgzarturo.springbootcourse.ping.domain.Ping
 import org.springframework.stereotype.Service
 
 /**

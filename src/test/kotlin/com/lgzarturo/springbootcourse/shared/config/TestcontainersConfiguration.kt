@@ -1,4 +1,4 @@
-package com.lgzarturo.springbootcourse.config
+package com.lgzarturo.springbootcourse.shared.config
 
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection

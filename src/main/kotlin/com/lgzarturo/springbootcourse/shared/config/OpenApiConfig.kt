@@ -1,4 +1,4 @@
-package com.lgzarturo.springbootcourse.config
+package com.lgzarturo.springbootcourse.shared.config
 
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Contact

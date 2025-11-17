@@ -1,6 +1,6 @@
 package com.lgzarturo.springbootcourse.infrastructure.rest.controller
 
-import com.lgzarturo.springbootcourse.infrastructure.exception.SentryTestException
+import com.lgzarturo.springbootcourse.shared.exception.SentryTestException
 import com.lgzarturo.springbootcourse.shared.constant.AppConstants
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
@@ -8,7 +8,6 @@ import io.sentry.SentryLevel
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController

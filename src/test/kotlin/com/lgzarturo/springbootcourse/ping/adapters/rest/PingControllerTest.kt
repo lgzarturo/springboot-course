@@ -1,8 +1,8 @@
-package com.lgzarturo.springbootcourse.infrastructure.rest.controller
+package com.lgzarturo.springbootcourse.ping.adapters.rest
 
-import com.lgzarturo.springbootcourse.domain.model.Ping
-import com.lgzarturo.springbootcourse.domain.port.input.PingUseCase
-import com.lgzarturo.springbootcourse.infrastructure.rest.mapper.PingMapper
+import com.lgzarturo.springbootcourse.ping.adapters.rest.mapper.PingMapper
+import com.lgzarturo.springbootcourse.ping.application.ports.input.PingUseCase
+import com.lgzarturo.springbootcourse.ping.domain.Ping
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.junit.jupiter.api.DisplayName
@@ -13,10 +13,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 /**
  * Tests de integración para PingController
@@ -45,12 +43,12 @@ class PingControllerTest {
 
         // When & Then
         mockMvc
-            .perform(get("/api/v1/ping"))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.message").value("pong"))
-            .andExpect(jsonPath("$.version").value("1.0.0"))
-            .andExpect(jsonPath("$.timestamp").exists())
+            .perform(MockMvcRequestBuilders.get("/api/v1/ping"))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("pong"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.version").value("0.0.2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists())
     }
 
     @Test
@@ -63,12 +61,12 @@ class PingControllerTest {
 
         // When & Then
         mockMvc
-            .perform(get("/api/v1/ping/$customMessage"))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.message").value("pong: hello"))
-            .andExpect(jsonPath("$.version").value("1.0.0"))
-            .andExpect(jsonPath("$.timestamp").exists())
+            .perform(MockMvcRequestBuilders.get("/api/v1/ping/$customMessage"))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("pong: hello"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.version").value("0.0.2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists())
     }
 
     @Test
@@ -76,10 +74,10 @@ class PingControllerTest {
     fun `should return UP status when calling health endpoint`() {
         // When & Then
         mockMvc
-            .perform(get("/api/v1/ping/health"))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.status").value("UP"))
-            .andExpect(jsonPath("$.service").value("springboot-course"))
+            .perform(MockMvcRequestBuilders.get("/api/v1/ping/health"))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("UP"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.service").value("springboot-course"))
     }
 }

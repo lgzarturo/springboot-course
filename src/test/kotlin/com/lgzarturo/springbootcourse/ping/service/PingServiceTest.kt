@@ -1,9 +1,7 @@
-package com.lgzarturo.springbootcourse.domain.service
+package com.lgzarturo.springbootcourse.ping.service
 
-import com.lgzarturo.springbootcourse.domain.model.Ping
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
+import com.lgzarturo.springbootcourse.ping.domain.Ping
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -22,10 +20,10 @@ class PingServiceTest {
         val result = pingService.getPing()
 
         // Then
-        assertNotNull(result)
-        assertEquals("pong", result.message)
-        assertNotNull(result.timestamp)
-        assertEquals("1.0.0", result.version)
+        Assertions.assertNotNull(result)
+        Assertions.assertEquals("pong", result.message)
+        Assertions.assertNotNull(result.timestamp)
+        Assertions.assertEquals("0.0.2", result.version)
     }
 
     @Test
@@ -38,10 +36,10 @@ class PingServiceTest {
         val result = pingService.getPingWithMessage(customMessage)
 
         // Then
-        assertNotNull(result)
-        assertEquals("pong: hello", result.message)
-        assertNotNull(result.timestamp)
-        assertEquals("1.0.0", result.version)
+        Assertions.assertNotNull(result)
+        Assertions.assertEquals("pong: hello", result.message)
+        Assertions.assertNotNull(result.timestamp)
+        Assertions.assertEquals("0.0.2", result.version)
     }
 
     @Test
@@ -51,9 +49,9 @@ class PingServiceTest {
         val result = pingService.getPing()
 
         // Then
-        assertTrue(result is Ping)
-        assertNotNull(result.message)
-        assertNotNull(result.timestamp)
-        assertNotNull(result.version)
+        Assertions.assertTrue(result is Ping)
+        Assertions.assertNotNull(result.message)
+        Assertions.assertNotNull(result.timestamp)
+        Assertions.assertNotNull(result.version)
     }
 }

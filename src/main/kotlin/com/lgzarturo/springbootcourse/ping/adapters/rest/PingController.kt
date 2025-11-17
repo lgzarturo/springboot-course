@@ -1,8 +1,8 @@
-package com.lgzarturo.springbootcourse.infrastructure.rest.controller
+package com.lgzarturo.springbootcourse.ping.adapters.rest
 
-import com.lgzarturo.springbootcourse.domain.port.input.PingUseCase
-import com.lgzarturo.springbootcourse.infrastructure.rest.dto.response.PingResponse
-import com.lgzarturo.springbootcourse.infrastructure.rest.mapper.PingMapper
+import com.lgzarturo.springbootcourse.ping.adapters.rest.dto.PingResponse
+import com.lgzarturo.springbootcourse.ping.adapters.rest.mapper.PingMapper
+import com.lgzarturo.springbootcourse.ping.application.ports.input.PingUseCase
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus

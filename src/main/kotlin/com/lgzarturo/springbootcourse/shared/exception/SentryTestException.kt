@@ -1,4 +1,4 @@
-package com.lgzarturo.springbootcourse.infrastructure.exception
+package com.lgzarturo.springbootcourse.shared.exception
 
 /**
  * Excepción personalizada para pruebas de Sentry

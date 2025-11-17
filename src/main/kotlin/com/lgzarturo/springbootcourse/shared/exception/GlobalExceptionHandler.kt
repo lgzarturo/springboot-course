@@ -1,4 +1,4 @@
-package com.lgzarturo.springbootcourse.infrastructure.exception
+package com.lgzarturo.springbootcourse.shared.exception
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException

@@ -1,7 +1,7 @@
-package com.lgzarturo.springbootcourse.infrastructure.rest.mapper
+package com.lgzarturo.springbootcourse.ping.adapters.rest.mapper
 
-import com.lgzarturo.springbootcourse.domain.model.Ping
-import com.lgzarturo.springbootcourse.infrastructure.rest.dto.response.PingResponse
+import com.lgzarturo.springbootcourse.ping.adapters.rest.dto.PingResponse
+import com.lgzarturo.springbootcourse.ping.domain.Ping
 import org.springframework.stereotype.Component
 
 /**
