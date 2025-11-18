@@ -39,7 +39,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isCreated)
@@ -56,7 +57,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isCreated)
@@ -72,7 +74,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test-123_#@","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isCreated)
@@ -86,7 +89,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Tëst 测试 🚀","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isCreated)
@@ -101,7 +105,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"$exactLimitName","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isCreated)
@@ -115,7 +120,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test","description":"$exactLimitDescription"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isCreated)
@@ -126,7 +132,8 @@ class ExampleControllerTest(
         fun `should return 400 when request body is empty`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
         }
@@ -136,7 +143,8 @@ class ExampleControllerTest(
         fun `should return 400 when request is invalid`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -147,7 +155,8 @@ class ExampleControllerTest(
         fun `should return 400 when name is empty`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -161,7 +170,8 @@ class ExampleControllerTest(
             val longName = "a".repeat(101) // Suponiendo que el límite es 100 caracteres
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"$longName","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -175,7 +185,8 @@ class ExampleControllerTest(
             val longDescription = "a".repeat(501) // Suponiendo que el límite es 500 caracteres
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test","description":"$longDescription"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -186,7 +197,8 @@ class ExampleControllerTest(
         fun `should return 400 when name contains only whitespace`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"   ","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -197,7 +209,8 @@ class ExampleControllerTest(
         fun `should return 400 when description contains only whitespace`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test","description":"   "}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -208,7 +221,8 @@ class ExampleControllerTest(
         fun `should return 400 when JSON is malformed`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test","description":}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -219,7 +233,8 @@ class ExampleControllerTest(
         fun `should return 415 when Content-Type is not application json`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.TEXT_PLAIN)
                         .content("""{"name":"Test","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isUnsupportedMediaType)
@@ -232,7 +247,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test","description":"Desc","extraField":"value"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isCreated)
@@ -245,7 +261,8 @@ class ExampleControllerTest(
         fun `should return 400 when name is null`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":null,"description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -258,7 +275,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isInternalServerError)
@@ -271,7 +289,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.post("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .post("/api/v1/examples")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Test","description":"Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isConflict)
@@ -379,7 +398,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.get("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .get("/api/v1/examples")
                         .param("page", "1")
                         .param("size", "1")
                         .param("sort", "name,desc"),
@@ -523,7 +543,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.get("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .get("/api/v1/examples")
                         .param("page", "2")
                         .param("size", "10"),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
@@ -547,7 +568,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.get("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .get("/api/v1/examples")
                         .param("searchText", searchText)
                         .param("page", "0")
                         .param("size", "10"),
@@ -569,7 +591,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.get("/api/v1/examples")
+                    MockMvcRequestBuilders
+                        .get("/api/v1/examples")
                         .param("searchText", searchText),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content").isEmpty)
@@ -589,7 +612,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.put("/api/v1/examples/1")
+                    MockMvcRequestBuilders
+                        .put("/api/v1/examples/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Updated","description":"New"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
@@ -603,7 +627,8 @@ class ExampleControllerTest(
         fun `should return 400 when body is invalid`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.put("/api/v1/examples/1")
+                    MockMvcRequestBuilders
+                        .put("/api/v1/examples/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"","description":"New"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -617,7 +642,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.put("/api/v1/examples/999")
+                    MockMvcRequestBuilders
+                        .put("/api/v1/examples/999")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Updated","description":"New"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -631,7 +657,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.put("/api/v1/examples/1")
+                    MockMvcRequestBuilders
+                        .put("/api/v1/examples/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"name":"Duplicated","description":"New"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isConflict)
@@ -642,7 +669,8 @@ class ExampleControllerTest(
         fun `should return 415 when content type is not json on put`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.put("/api/v1/examples/1")
+                    MockMvcRequestBuilders
+                        .put("/api/v1/examples/1")
                         .contentType(MediaType.TEXT_PLAIN)
                         .content("name=Updated&description=New"),
                 ).andExpect(MockMvcResultMatchers.status().isUnsupportedMediaType)
@@ -660,7 +688,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.patch("/api/v1/examples/1")
+                    MockMvcRequestBuilders
+                        .patch("/api/v1/examples/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"property":"description","value":"New Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
@@ -677,7 +706,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.patch("/api/v1/examples/1")
+                    MockMvcRequestBuilders
+                        .patch("/api/v1/examples/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"property":"name","value":"New Name"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
@@ -690,7 +720,8 @@ class ExampleControllerTest(
         fun `should return 400 when patch payload is invalid`() {
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.patch("/api/v1/examples/1")
+                    MockMvcRequestBuilders
+                        .patch("/api/v1/examples/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{}"""),
                 ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -704,7 +735,8 @@ class ExampleControllerTest(
 
             mockMvc
                 .perform(
-                    MockMvcRequestBuilders.patch("/api/v1/examples/999")
+                    MockMvcRequestBuilders
+                        .patch("/api/v1/examples/999")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""{"property":"description","value":"New Desc"}"""),
                 ).andExpect(MockMvcResultMatchers.status().isNotFound)

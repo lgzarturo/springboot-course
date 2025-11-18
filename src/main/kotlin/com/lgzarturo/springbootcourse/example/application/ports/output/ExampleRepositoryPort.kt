@@ -1,8 +1,8 @@
 package com.lgzarturo.springbootcourse.example.application.ports.output
 
-import com.lgzarturo.springbootcourse.example.domain.Example
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExamplePatchUpdate
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExampleRequest
+import com.lgzarturo.springbootcourse.example.domain.Example
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 

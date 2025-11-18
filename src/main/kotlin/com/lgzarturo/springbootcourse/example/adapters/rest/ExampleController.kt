@@ -1,10 +1,10 @@
 package com.lgzarturo.springbootcourse.example.adapters.rest
 
-import com.lgzarturo.springbootcourse.example.domain.Example
-import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCase
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExamplePatchUpdate
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExampleRequest
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.response.ExampleResponse
+import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCase
+import com.lgzarturo.springbootcourse.example.domain.Example
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min

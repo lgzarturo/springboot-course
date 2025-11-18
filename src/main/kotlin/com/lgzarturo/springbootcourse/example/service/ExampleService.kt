@@ -1,9 +1,9 @@
 package com.lgzarturo.springbootcourse.example.service
 
+import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExamplePatchUpdate
 import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCase
 import com.lgzarturo.springbootcourse.example.application.ports.output.ExampleRepositoryPort
 import com.lgzarturo.springbootcourse.example.domain.Example
-import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExamplePatchUpdate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service

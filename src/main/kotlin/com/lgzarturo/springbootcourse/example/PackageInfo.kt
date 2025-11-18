@@ -7,4 +7,6 @@
  * - Ejemplo de caso de uso 1
  * - Ejemplo de caso de uso 2
  */
+@file:Suppress("unused")
+
 package com.lgzarturo.springbootcourse.example

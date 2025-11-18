@@ -9,4 +9,6 @@
  * - Health check
  *
  */
+@file:Suppress("unused")
+
 package com.lgzarturo.springbootcourse.ping
