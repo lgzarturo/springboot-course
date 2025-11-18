@@ -1,6 +1,6 @@
 package com.lgzarturo.springbootcourse
 
-import com.lgzarturo.springbootcourse.config.TestcontainersConfiguration
+import com.lgzarturo.springbootcourse.shared.config.TestcontainersConfiguration
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
