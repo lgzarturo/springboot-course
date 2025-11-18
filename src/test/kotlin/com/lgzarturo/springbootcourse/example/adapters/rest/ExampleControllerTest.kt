@@ -1,7 +1,7 @@
 package com.lgzarturo.springbootcourse.example.adapters.rest
 
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExamplePatchUpdate
-import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCase
+import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCasePort
 import com.lgzarturo.springbootcourse.example.domain.Example
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -27,7 +27,7 @@ class ExampleControllerTest(
     @Autowired val mockMvc: MockMvc,
 ) {
     @MockBean
-    private lateinit var service: ExampleUseCase
+    private lateinit var service: ExampleUseCasePort
 
     @Nested
     @DisplayName("POST /api/v1/examples")

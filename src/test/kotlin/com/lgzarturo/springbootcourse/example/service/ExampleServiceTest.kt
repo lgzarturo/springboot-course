@@ -20,7 +20,7 @@ import org.springframework.data.domain.PageRequest
 
 class ExampleServiceTest {
     private val repository = mock<ExampleRepositoryPort>()
-    private val service = ExampleService(repository)
+    private val service = ExampleServicePort(repository)
 
     @Test
     @DisplayName("Debería crear un nuevo ejemplo")

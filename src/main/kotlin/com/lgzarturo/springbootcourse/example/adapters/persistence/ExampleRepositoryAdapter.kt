@@ -10,12 +10,15 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 
+/**
+ * Repository para manejar la capa de persistencia de los datos de ejemplo.
+ */
 @Repository
 class ExampleRepositoryAdapter(
     private val jpaRepository: ExampleJpaRepository,
 ) : ExampleRepositoryPort {
     override fun save(example: Example): Example {
-        val entity = ExampleEntity.Companion.fromDomain(example)
+        val entity = ExampleEntity.fromDomain(example)
         return jpaRepository.save(entity).toDomain()
     }
 
