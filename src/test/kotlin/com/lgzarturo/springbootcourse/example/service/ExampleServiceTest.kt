@@ -3,23 +3,19 @@ package com.lgzarturo.springbootcourse.example.service
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExamplePatchUpdate
 import com.lgzarturo.springbootcourse.example.application.ports.output.ExampleRepositoryPort
 import com.lgzarturo.springbootcourse.example.domain.Example
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.isNull
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 
 class ExampleServiceTest {
-    private val repository = mock<ExampleRepositoryPort>()
+    private val repository = mockk<ExampleRepositoryPort>()
     private val service = ExampleServicePort(repository)
 
     @Test
@@ -27,22 +23,25 @@ class ExampleServiceTest {
     fun `should create a new example`() {
         val example = Example(id = null, name = "Test", description = "desc")
 
-        whenever(repository.save(any())).thenReturn(example.copy(id = 1))
+        every { repository.save(any()) } returns example.copy(id = 1)
 
         val result = service.create(example)
 
         Assertions.assertEquals(1, result.id)
-        verify(repository).save(any())
+        verify { repository.save(any()) }
     }
 
     @Test
     @DisplayName("Debería crear un nuevo ejemplo con descripción nula")
     fun `should create a new example with null description`() {
         val example = Example(id = null, name = "Test", description = null)
-        whenever(repository.save(any())).thenReturn(example.copy(id = 1))
+
+        every { repository.save(any()) } returns example.copy(id = 1)
+
         val result = service.create(example)
         Assertions.assertEquals(1, result.id)
-        verify(repository).save(any())
+
+        verify { repository.save(any()) }
         Assertions.assertEquals(null, result.description)
         Assertions.assertEquals("Test", result.name)
     }
@@ -52,23 +51,23 @@ class ExampleServiceTest {
     fun `should get an example by its id`() {
         val example = Example(id = 1, name = "Test", description = "desc")
 
-        whenever(repository.findById(1)).thenReturn(example)
+        every { repository.findById(1) } returns example
 
         val result = service.findById(1)
 
         Assertions.assertEquals(example, result)
-        verify(repository).findById(1)
+        verify { repository.findById(1) }
     }
 
     @Test
     @DisplayName("Debería lanzar NoSuchElementException cuando el ejemplo no existe")
     fun `should throw NoSuchElementException when example does not exist`() {
-        whenever(repository.findById(1)).thenReturn(null)
+        every { repository.findById(1) } returns null
 
         assertThrows<NoSuchElementException> {
             service.findById(1)
         }
-        verify(repository).findById(1)
+        verify { repository.findById(1) }
     }
 
     @Test
@@ -78,50 +77,50 @@ class ExampleServiceTest {
         val update = Example(id = null, name = "New", description = "New desc")
         val updated = Example(id = 1, name = "New", description = "New desc")
 
-        whenever(repository.findById(1)).thenReturn(existing)
-        whenever(repository.save(any())).thenReturn(updated)
+        every { repository.findById(1) } returns existing
+        every { repository.save(any()) } returns updated
 
         val result = service.update(1, update)
 
         Assertions.assertEquals(updated, result)
-        verify(repository).findById(1)
-        verify(repository).save(any())
+        verify { repository.findById(1) }
+        verify { repository.save(any()) }
     }
 
     @Test
     @DisplayName("Debería lanzar excepción al actualizar un ejemplo inexistente")
     fun `should throw exception when updating a non-existent example`() {
-        whenever(repository.findById(999)).thenReturn(null)
+        every { repository.findById(999) } returns null
 
         assertThrows<NoSuchElementException> {
             service.update(999, Example(id = null, name = "New", description = "New desc"))
         }
-        verify(repository).findById(999)
+        verify { repository.findById(999) }
     }
 
     @Test
     @DisplayName("Debería poder eliminar un ejemplo por su id")
     fun `should delete an example by its id`() {
         val existing = Example(id = 1, name = "To Delete", description = null)
-        whenever(repository.findById(1)).thenReturn(existing)
+        every { repository.findById(1) } returns existing
 
         // Acción
         service.delete(1)
 
         // Verificación básica de búsqueda previa
-        verify(repository).findById(1)
+        verify { repository.findById(1) }
         // Nota: la verificación de deleteById pertenecerá al puerto cuando exista el método
     }
 
     @Test
     @DisplayName("Debería lanzar excepción al eliminar un ejemplo inexistente")
     fun `should throw exception when deleting a non-existent example`() {
-        whenever(repository.findById(999)).thenReturn(null)
+        every { repository.findById(999) } returns null
 
         assertThrows<NoSuchElementException> {
             service.delete(999)
         }
-        verify(repository).findById(999)
+        verify { repository.findById(999) }
     }
 
     @Test
@@ -136,14 +135,14 @@ class ExampleServiceTest {
         val page = PageImpl(items, pageable, items.size.toLong())
 
         // Cuando el repositorio devuelve una página con elementos
-        whenever(repository.findAll(isNull(), any())).thenReturn(page)
+        every { repository.findAll(isNull(), any()) } returns page
 
         // Entonces el servicio debe propagar la página
         val result = service.findAll(null, pageable)
 
         Assertions.assertEquals(page, result)
         // Verifica que se consultó con algún filtro (null) y el pageable
-        verify(repository).findAll(isNull(), any())
+        verify { repository.findAll(isNull(), any()) }
     }
 
     @Test
@@ -159,7 +158,7 @@ class ExampleServiceTest {
         val expectedPage = PageImpl(items, pageable, items.size.toLong())
 
         // When
-        whenever(repository.findAll(eq(searchText), eq(pageable))).thenReturn(expectedPage)
+        every { repository.findAll(eq(searchText), eq(pageable)) } returns expectedPage
 
         // Then
         val result = service.findAll(searchText, pageable)
@@ -167,7 +166,7 @@ class ExampleServiceTest {
         assertNotNull(result)
         Assertions.assertEquals(1, result.content.size)
         Assertions.assertEquals("Alpha", result.content[0].name)
-        verify(repository, times(1)).findAll(eq(searchText), eq(pageable))
+        verify(exactly = 1) { repository.findAll(eq(searchText), eq(pageable)) }
     }
 
     @Test
@@ -179,7 +178,7 @@ class ExampleServiceTest {
         val emptyPage = PageImpl<Example>(emptyList(), pageable, 0)
 
         // When
-        whenever(repository.findAll(eq(searchText), eq(pageable))).thenReturn(emptyPage)
+        every { repository.findAll(eq(searchText), eq(pageable)) } returns emptyPage
 
         // Then
         val result = service.findAll(searchText, pageable)
@@ -187,7 +186,7 @@ class ExampleServiceTest {
         assertNotNull(result)
         Assertions.assertTrue(result.content.isEmpty())
         Assertions.assertEquals(0, result.totalElements)
-        verify(repository, times(1)).findAll(eq(searchText), eq(pageable))
+        verify(exactly = 1) { repository.findAll(eq(searchText), eq(pageable)) }
     }
 
     @Test
@@ -203,14 +202,14 @@ class ExampleServiceTest {
         val expectedPage = PageImpl(items, pageable, items.size.toLong())
 
         // When
-        whenever(repository.findAll(eq(""), eq(pageable))).thenReturn(expectedPage)
+        every { repository.findAll(eq(""), eq(pageable)) } returns expectedPage
 
         // Then
         val result = service.findAll("", pageable)
 
         assertNotNull(result)
         Assertions.assertEquals(2, result.content.size)
-        verify(repository, times(1)).findAll(eq(""), eq(pageable))
+        verify(exactly = 1) { repository.findAll(eq(""), eq(pageable)) }
     }
 
     @Test
@@ -219,13 +218,13 @@ class ExampleServiceTest {
         val pageable = PageRequest.of(0, 10)
         val page = PageImpl(emptyList<Example>(), pageable, 0)
 
-        whenever(repository.findAll(isNull(), any())).thenReturn(page)
+        every { repository.findAll(isNull(), any()) } returns page
 
         val result = service.findAll(null, pageable)
 
         Assertions.assertEquals(0, result.totalElements)
         Assertions.assertEquals(0, result.content.size)
-        verify(repository).findAll(isNull(), any())
+        verify { repository.findAll(any(), any()) }
     }
 
     @Test
@@ -235,13 +234,13 @@ class ExampleServiceTest {
         val items = listOf(Example(id = 3, name = "Test", description = "Desc"))
         val page = PageImpl(items, pageable, 1)
 
-        whenever(repository.findAll(any(), any())).thenReturn(page)
+        every { repository.findAll(any(), any()) } returns page
 
         val result = service.findAll("test", pageable)
 
         Assertions.assertEquals(1, result.totalElements)
         Assertions.assertEquals("Test", result.content.first().name)
-        verify(repository).findAll(any(), any())
+        verify { repository.findAll(any(), any()) }
     }
 
     @Test
@@ -250,12 +249,12 @@ class ExampleServiceTest {
         val pageable = PageRequest.of(0, 10)
         val page = PageImpl(emptyList<Example>(), pageable, 0)
 
-        whenever(repository.findAll(any(), any())).thenReturn(page)
+        every { repository.findAll(any(), any()) } returns page
 
         val result = service.findAll("unknown", pageable)
 
         Assertions.assertEquals(0, result.totalElements)
-        verify(repository).findAll(any(), any())
+        verify { repository.findAll(any(), any()) }
     }
 
     @Test
@@ -265,24 +264,24 @@ class ExampleServiceTest {
         val patch = ExamplePatchUpdate(property = "name", value = "New")
         val updated = Example(id = 1, name = "Name", description = "New")
 
-        whenever(repository.findById(1)).thenReturn(existing)
-        whenever(repository.save(any())).thenReturn(updated)
+        every { repository.findById(1) } returns existing
+        every { repository.save(any()) } returns updated
 
         val result = service.patch(1, patch)
 
         Assertions.assertEquals(updated, result)
-        verify(repository).findById(1)
-        verify(repository).save(any())
+        verify { repository.findById(1) }
+        verify { repository.save(any()) }
     }
 
     @Test
     @DisplayName("Debería lazar excepción al actualizar la descripción de un ejemplo inexistente")
     fun `should throw exception when updating the description of a non-existent example`() {
-        whenever(repository.findById(999)).thenReturn(null)
+        every { repository.findById(999) } returns null
 
         assertThrows<NoSuchElementException> {
             service.patch(999, ExamplePatchUpdate(property = "name", value = "New Title"))
         }
-        verify(repository).findById(999)
+        verify { repository.findById(999) }
     }
 }
