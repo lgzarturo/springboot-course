@@ -45,7 +45,7 @@ class ExampleController(
     @PostMapping
     @Operation(
         summary = "Crear un nuevo ejemplo",
-        description = "Crea un nuevo ejemplo en la base de datos"
+        description = "Crea un nuevo ejemplo en la base de datos",
     )
     fun create(
         @Valid @RequestBody request: ExampleRequest,
@@ -63,7 +63,7 @@ class ExampleController(
      */
     @Operation(
         summary = "Obtener un ejemplo por su ID",
-        description = "Obtiene un ejemplo por su ID en la base de datos"
+        description = "Obtiene un ejemplo por su ID en la base de datos",
     )
     @GetMapping("/{id}")
     fun getById(
@@ -85,7 +85,7 @@ class ExampleController(
      */
     @Operation(
         summary = "Obtener todos los ejemplos",
-        description = "Obtiene todos los ejemplos en la base de datos"
+        description = "Obtiene todos los ejemplos en la base de datos",
     )
     @GetMapping
     fun getAll(
@@ -106,7 +106,7 @@ class ExampleController(
      */
     @Operation(
         summary = "Actualizar un ejemplo",
-        description = "Actualiza un ejemplo en la base de datos"
+        description = "Actualiza un ejemplo en la base de datos",
     )
     @PutMapping("/{id}")
     fun update(
@@ -126,7 +126,7 @@ class ExampleController(
      */
     @Operation(
         summary = "Eliminar un ejemplo",
-        description = "Elimina un ejemplo en la base de datos"
+        description = "Elimina un ejemplo en la base de datos",
     )
     @DeleteMapping("/{id}")
     fun delete(
@@ -148,7 +148,7 @@ class ExampleController(
      */
     @Operation(
         summary = "Actualizar parcialmente un ejemplo",
-        description = "Actualiza parcialmente un ejemplo en la base de datos"
+        description = "Actualiza parcialmente un ejemplo en la base de datos",
     )
     @PatchMapping("/{id}")
     fun patch(
