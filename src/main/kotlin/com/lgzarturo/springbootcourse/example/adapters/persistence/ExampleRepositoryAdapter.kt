@@ -5,6 +5,8 @@ import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExampleP
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExampleRequest
 import com.lgzarturo.springbootcourse.example.application.ports.output.ExampleRepositoryPort
 import com.lgzarturo.springbootcourse.example.domain.Example
+import com.lgzarturo.springbootcourse.shared.domain.PageRequest
+import com.lgzarturo.springbootcourse.shared.domain.PageResult
 import org.springframework.data.domain.ExampleMatcher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -26,10 +28,12 @@ class ExampleRepositoryAdapter(
 
     override fun findAll(
         searchText: String?,
-        pageable: Pageable,
-    ): Page<Example> {
+        pageRequest: PageRequest,
+    ): PageResult<Example> {
+        val pageable = pageRequest.toPageable()
+
         if (searchText.isNullOrBlank()) {
-            return jpaRepository.findAll(pageable).map { it.toDomain() }
+            return PageResult.fromPage(jpaRepository.findAll(pageable).map { it.toDomain() })
         }
 
         val matcher =
@@ -51,9 +55,11 @@ class ExampleRepositoryAdapter(
             org.springframework.data.domain.Example
                 .of(exampleEntity, matcher)
 
-        return jpaRepository
-            .findAll(example, pageable)
-            .map { it.toDomain() }
+        return PageResult.fromPage(
+            jpaRepository
+                .findAll(example, pageable)
+                .map { it.toDomain() },
+        )
     }
 
     override fun update(

@@ -30,8 +30,8 @@ Accept: application/json
 
     client.test("El cuerpo de la respuesta contiene la entidad esperada", function () {
         const responseBody = response.body;
-        client.assert(responseBody.name === "Test", `El nombre debe ser 'Test' pero es '${responseBody.name}'`);
-        client.assert(responseBody.description === "Desc", `La descripción debe ser 'Desc' pero es '${responseBody.description}'`);
+        client.assert(responseBody.name === "Test Patched", `El nombre debe ser 'Test' pero es '${responseBody.name}'`);
+        client.assert(responseBody.description === "Desc Patched", `La descripción debe ser 'Desc' pero es '${responseBody.description}'`);
     });
 %}
 

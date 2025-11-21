@@ -3,6 +3,7 @@ package com.lgzarturo.springbootcourse.example.adapters.rest
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExamplePatchUpdate
 import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCasePort
 import com.lgzarturo.springbootcourse.example.domain.Example
+import com.lgzarturo.springbootcourse.shared.domain.PageResult
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -14,9 +15,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -372,19 +370,19 @@ class ExampleControllerTest(
         @DisplayName("Debería retornar 200 con paginación por defecto y sin filtros")
         fun `should return 200 with default pagination and no filters`() {
             val content = listOf(Example(1, "Alpha", "A"), Example(2, "Beta", null))
-            val page = PageImpl(content, PageRequest.of(0, 20, Sort.by("id").ascending()), content.size.toLong())
+            val page = PageResult(content, 2, 0, 20)
 
             whenever(service.findAll(isNull(), any())).thenReturn(page)
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Alpha"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].description").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("Alpha"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].description").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.page").value(0))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(20))
         }
 
@@ -392,7 +390,7 @@ class ExampleControllerTest(
         @DisplayName("Debería retornar 200 con paginación y ordenación explícitas")
         fun `should return 200 with explicit pagination and sorting`() {
             val content = listOf(Example(2, "Beta", null))
-            val page = PageImpl(content, PageRequest.of(1, 1, Sort.by("name").descending()), 2)
+            val page = PageResult(content, 1, 0, 1)
 
             whenever(service.findAll(isNull(), any())).thenReturn(page)
 
@@ -404,9 +402,9 @@ class ExampleControllerTest(
                         .param("size", "1")
                         .param("sort", "name,desc"),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(1))
         }
 
@@ -414,29 +412,29 @@ class ExampleControllerTest(
         @DisplayName("Debería filtrar por nombre exacto (case-insensitive)")
         fun `should filter by exact name ignoring case`() {
             val content = listOf(Example(3, "Test", "Desc"))
-            val page = PageImpl(content, PageRequest.of(0, 20), 1)
+            val page = PageResult(content, 1, 0, 1)
 
             whenever(service.findAll(any(), any())).thenReturn(page)
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples").param("searchText", "test"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Test"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("Test"))
         }
 
         @Test
         @DisplayName("Debería retornar lista vacía cuando no hay resultados")
         fun `should return empty list when no results`() {
-            val page = PageImpl(emptyList<Example>(), PageRequest.of(0, 20), 0)
+            val page = PageResult(emptyList<Example>(), 0, 0, 0)
             whenever(service.findAll(isNull(), any())).thenReturn(page)
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(0))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(0))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pages").value(0))
         }
 
         @Test
@@ -459,16 +457,15 @@ class ExampleControllerTest(
                     Example(id = 1, name = "Alpha", description = null),
                     Example(id = 2, name = "Beta", description = "B"),
                 )
-            val expectedPageable = PageRequest.of(0, 20) // Spring usa valores por defecto
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 2)
 
             whenever(service.findAll(isNull(), any())).thenReturn(page)
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples").param("page", "-1"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(0)) // Verifica que usó página 0
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isArray)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(2)) // Verifica que usó página 0
         }
 
         @Test
@@ -478,15 +475,14 @@ class ExampleControllerTest(
                 listOf(
                     Example(id = 1, name = "Alpha", description = null),
                 )
-            val expectedPageable = PageRequest.of(0, 20) // Spring usa tamaño por defecto
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 20)
 
             whenever(service.findAll(isNull(), any())).thenReturn(page)
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples").param("size", "0"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isArray)
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(20)) // Verifica que usó tamaño por defecto
         }
 
@@ -497,8 +493,7 @@ class ExampleControllerTest(
                 listOf(
                     Example(id = 1, name = "Alpha", description = null),
                 )
-            val expectedPageable = PageRequest.of(0, 20)
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 20)
 
             whenever(service.findAll(isNull(), any())).thenReturn(page)
 
@@ -515,16 +510,15 @@ class ExampleControllerTest(
                 listOf(
                     Example(id = 1, name = "Alpha", description = null),
                 )
-            val expectedPageable = PageRequest.of(0, 20)
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 20)
 
             whenever(service.findAll(isNull(), any())).thenReturn(page)
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isArray)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(20))
         }
 
@@ -536,8 +530,7 @@ class ExampleControllerTest(
                     Example(id = 1, name = "Alpha", description = null),
                     Example(id = 2, name = "Beta", description = "B"),
                 )
-            val expectedPageable = PageRequest.of(2, 10)
-            val page = PageImpl(items, expectedPageable, 2)
+            val page = PageResult(items, items.size.toLong(), 0, 10)
 
             whenever(service.findAll(isNull(), any())).thenReturn(page)
 
@@ -548,8 +541,8 @@ class ExampleControllerTest(
                         .param("page", "2")
                         .param("size", "10"),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isArray)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(2))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(10))
         }
 
@@ -561,8 +554,7 @@ class ExampleControllerTest(
                 listOf(
                     Example(id = 1, name = "Alpha", description = null),
                 )
-            val expectedPageable = PageRequest.of(0, 10)
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 1)
 
             whenever(service.findAll(eq(searchText), any())).thenReturn(page)
 
@@ -574,8 +566,8 @@ class ExampleControllerTest(
                         .param("page", "0")
                         .param("size", "10"),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Alpha"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("Alpha"))
 
             verify(service).findAll(eq(searchText), any())
         }
@@ -584,8 +576,7 @@ class ExampleControllerTest(
         @DisplayName("Debería retornar página vacía cuando no hay resultados")
         fun `should return empty page when no results found`() {
             val searchText = "NonExistent"
-            val expectedPageable = PageRequest.of(0, 20)
-            val emptyPage = PageImpl<Example>(emptyList(), expectedPageable, 0)
+            val emptyPage = PageResult(emptyList<Example>(), 0, 0, 2)
 
             whenever(service.findAll(eq(searchText), any())).thenReturn(emptyPage)
 
@@ -595,8 +586,8 @@ class ExampleControllerTest(
                         .get("/api/v1/examples")
                         .param("searchText", searchText),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isEmpty)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isEmpty)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(0))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.empty").value(true))
         }
     }

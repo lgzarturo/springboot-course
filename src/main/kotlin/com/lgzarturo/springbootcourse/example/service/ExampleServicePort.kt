@@ -4,11 +4,9 @@ import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExampleP
 import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCasePort
 import com.lgzarturo.springbootcourse.example.application.ports.output.ExampleRepositoryPort
 import com.lgzarturo.springbootcourse.example.domain.Example
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.stereotype.Service
+import com.lgzarturo.springbootcourse.shared.domain.PageRequest
+import com.lgzarturo.springbootcourse.shared.domain.PageResult
 
-@Service
 class ExampleServicePort(
     private val repository: ExampleRepositoryPort,
 ) : ExampleUseCasePort {
@@ -32,8 +30,8 @@ class ExampleServicePort(
 
     override fun findAll(
         searchText: String?,
-        pageable: Pageable,
-    ): Page<Example> = repository.findAll(searchText, pageable)
+        pageable: PageRequest,
+    ): PageResult<Example> = repository.findAll(searchText, pageable)
 
     override fun patch(
         id: Long,
