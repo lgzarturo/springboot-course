@@ -5,6 +5,9 @@ import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExampleR
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.response.ExampleResponse
 import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCasePort
 import com.lgzarturo.springbootcourse.example.domain.Example
+import com.lgzarturo.springbootcourse.shared.domain.PageRequest
+import com.lgzarturo.springbootcourse.shared.domain.PageResult
+import com.lgzarturo.springbootcourse.shared.domain.SortOrder
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -51,7 +54,7 @@ class ExampleController(
         @Valid @RequestBody request: ExampleRequest,
     ): ResponseEntity<ExampleResponse> {
         val example = service.create(request.toDomain())
-        return ResponseEntity.status(HttpStatus.CREATED).body(ExampleResponse.Companion.fromDomain(example))
+        return ResponseEntity.status(HttpStatus.CREATED).body(ExampleResponse.fromDomain(example))
     }
 
     /**
@@ -72,7 +75,7 @@ class ExampleController(
         id: Long,
     ): ResponseEntity<ExampleResponse> {
         val example = service.findById(id)
-        return ResponseEntity.ok(ExampleResponse.Companion.fromDomain(example))
+        return ResponseEntity.ok(ExampleResponse.fromDomain(example))
     }
 
     /**
@@ -91,8 +94,25 @@ class ExampleController(
     fun getAll(
         @RequestParam(required = false) searchText: String?,
         pageable: Pageable,
-    ): ResponseEntity<Page<Example>> {
-        val examples = service.findAll(searchText, pageable)
+    ): ResponseEntity<PageResult<Example>> {
+        val sortOrders =
+            pageable.sort
+                .stream()
+                .map { order ->
+                    SortOrder(
+                        property = order.property,
+                        direction = if (order.isAscending) SortOrder.Direction.ASC else SortOrder.Direction.DESC,
+                    )
+                }.toList()
+
+        val domainPageRequest =
+            PageRequest(
+                page = pageable.pageNumber,
+                size = pageable.pageSize,
+                sort = sortOrders,
+            )
+
+        val examples = service.findAll(searchText, domainPageRequest)
         return ResponseEntity.ok(examples)
     }
 
@@ -115,7 +135,7 @@ class ExampleController(
     ): ResponseEntity<ExampleResponse> {
         val example = exampleRequest.toDomain()
         val exampleUpdated = service.update(id, example)
-        return ResponseEntity.ok(ExampleResponse.Companion.fromDomain(exampleUpdated))
+        return ResponseEntity.ok(ExampleResponse.fromDomain(exampleUpdated))
     }
 
     /**
@@ -157,7 +177,7 @@ class ExampleController(
     ): ResponseEntity<ExampleResponse> {
         try {
             val exampleUpdated = service.patch(id, update)
-            return ResponseEntity.ok(ExampleResponse.Companion.fromDomain(exampleUpdated))
+            return ResponseEntity.ok(ExampleResponse.fromDomain(exampleUpdated))
         } catch (_: Exception) {
             return ResponseEntity.notFound().build()
         }
