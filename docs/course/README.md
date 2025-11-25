@@ -33,7 +33,9 @@ Basado en el [Temario](../README.md), se propone un calendario orientativo por s
   - [Refactorizar con Screaming Architecture y Buenas Prácticas](week-04/01-screaming-architecture.md)
   - [Corrección de Swagger UI, por incompatibilidad de versiones](week-04/02-swagger-ui.md)
   - [Implementación de funcionalidades](week-04/03-implementacion-funcionalidades.md)
+  - [Validación de payloads con Jakarta Validation](week-04/05-validar-datos.md)
 - Semana 5: Seguridad con Spring Security (*JWT básico, roles y protección de endpoints*).
+  - [Documento sobre la implementación de seguridad con Spring Security y JWT](week-05/01-spring-security.md)
 - Semana 6: Pruebas (*JUnit 5, Spring Boot Test, pruebas de integración y controladores*).
 - Semana 7: Documentación de API (*OpenAPI/Swagger con SpringDoc*).
 - Semana 8: Despliegue |y monitoreo (*Actuator, empaquetado y despliegue; a definir*).
