@@ -14,7 +14,7 @@ class UserMapper {
             firstName = user.firstName,
             lastName = user.lastName,
             phoneNumber = user.phoneNumber?.value,
-            role = user.role.name
+            role = user.role.name,
         )
     }
 }
