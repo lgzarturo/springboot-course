@@ -6,7 +6,10 @@ import com.lgzarturo.springbootcourse.example.domain.Example
 import com.lgzarturo.springbootcourse.shared.domain.PageRequest
 import com.lgzarturo.springbootcourse.shared.domain.PageResult
 import io.mockk.every
+import io.mockk.just
+import io.mockk.justRun
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
@@ -102,13 +105,17 @@ class ExampleServiceTest {
     @DisplayName("Debería poder eliminar un ejemplo por su id")
     fun `should delete an example by its id`() {
         val existing = Example(id = 1, name = "To Delete", description = null)
-        every { repository.findById(1) } returns existing
 
-        // Acción
+        // Mock del repository
+        every { repository.findById(1) } returns existing
+        every { repository.delete(1) } just runs
+
+        // Acción: llamar al service REAL (no mockeado)
         service.delete(1)
 
-        // Verificación básica de búsqueda previa
-        verify { repository.findById(1) }
+        // Verificación: que se llamaron ambos métodos
+        verify(exactly = 1) { repository.findById(1) }
+        verify(exactly = 1) { repository.delete(1) }
         // Nota: la verificación de deleteById pertenecerá al puerto cuando exista el método
     }
 

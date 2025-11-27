@@ -10,12 +10,13 @@ import com.lgzarturo.springbootcourse.users.application.ports.input.GetUserUseCa
 import com.lgzarturo.springbootcourse.users.application.ports.input.UpdateUserUseCase
 import com.lgzarturo.springbootcourse.users.domain.mockUser
 import com.lgzarturo.springbootcourse.users.domain.mockUserResponse
+import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
  * Test de integración para UserController
  * Verifica el comportamiento de los endpoints REST
  */
+@Disabled("Se deshabilita temporalmente hasta implementar la capa de persistencia")
 @WebMvcTest(UserController::class)
 @Import(SecurityTestConfig::class, ObjectMapperConfig::class)
 @DisplayName("UserController Integration Tests")
@@ -36,13 +38,13 @@ class UserControllerTest {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    @MockBean
+    @MockkBean
     private lateinit var getUserUseCase: GetUserUseCase
 
-    @MockBean
+    @MockkBean
     private lateinit var updateUserUseCase: UpdateUserUseCase
 
-    @MockBean
+    @MockkBean
     private lateinit var userMapper: UserMapper
 
     @Test

@@ -4,14 +4,17 @@ import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExampleP
 import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCasePort
 import com.lgzarturo.springbootcourse.example.domain.Example
 import com.lgzarturo.springbootcourse.shared.domain.PageResult
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -21,8 +24,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 class ExampleControllerTest(
     @Autowired val mockMvc: MockMvc,
 ) {
-    @MockBean
+    @MockkBean
     private lateinit var service: ExampleUseCasePort
+
+    @BeforeEach
+    fun setUp() {
+        clearMocks(service)
+    }
 
     @Nested
     @DisplayName("POST /api/v1/examples")
@@ -437,6 +445,9 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 400 cuando los parámetros de paginación son inválidos")
         fun `should return 400 when pagination params are invalid`() {
+
+            every { service.findAll(isNull(), any()) } returns PageResult(emptyList(), 0, 0, 20)
+
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples").param("page", "-1"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
@@ -737,9 +748,11 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 204 cuando elimina un recurso existente")
         fun `should return 204 when deleting existing resource`() {
+            justRun { service.delete(1) }
             mockMvc
                 .perform(MockMvcRequestBuilders.delete("/api/v1/examples/1"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent)
+            verify(exactly = 1) { service.delete(1) }
         }
 
         @Test
