@@ -445,7 +445,6 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 400 cuando los parámetros de paginación son inválidos")
         fun `should return 400 when pagination params are invalid`() {
-
             every { service.findAll(isNull(), any()) } returns PageResult(emptyList(), 0, 0, 20)
 
             mockMvc
