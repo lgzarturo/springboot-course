@@ -37,6 +37,7 @@ Basado en el [Temario](../README.md), se propone un calendario orientativo por s
 - Semana 5: Seguridad con Spring Security (*JWT básico, roles y protección de endpoints*).
   - [Documento sobre la implementación de seguridad con Spring Security y JWT](week-05/01-spring-security.md)
   - [Retos para este 2026 en el desarrollo con Spring Boot y Kotlin](week-05/03-retos.md)
+  - [Cuestionario sobre SpringBoot y Kotlin](week-05/04-cuestionario.md)
 - Semana 6: Pruebas (*JUnit 5, Spring Boot Test, pruebas de integración y controladores*).
 - Semana 7: Documentación de API (*OpenAPI/Swagger con SpringDoc*).
 - Semana 8: Despliegue |y monitoreo (*Actuator, empaquetado y despliegue; a definir*).
