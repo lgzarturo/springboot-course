@@ -27,6 +27,14 @@ java {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/kotlin")
+        }
+    }
+}
+
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
@@ -84,8 +92,9 @@ dependencies {
     // Kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     // OpenAPI/Swagger Documentation
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
     // Monitoring
     implementation("io.sentry:sentry-spring-boot-starter-jakarta")
     implementation("io.sentry:sentry-logback")
@@ -104,7 +113,6 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("io.kotest:kotest-assertions-core:5.9.1")
@@ -187,6 +195,16 @@ tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
         html.required.set(true)
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.85".toBigDecimal()
+            }
+        }
     }
 }
 

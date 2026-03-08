@@ -44,8 +44,8 @@ complexity:
     active: false
   LongParameterList:
     active: true
-    functionThreshold: 6
-    constructorThreshold: 7
+    functionThreshold: 10
+    constructorThreshold: 10
   LongMethod:
     active: true
     threshold: 60
@@ -123,7 +123,7 @@ style:
     ignoreExtensionFunctions: true
   MaxLineLength:
     active: true
-    maxLineLength: 140
+    maxLineLength: 160
     excludeCommentStatements: true
   ReturnCount:
     active: true

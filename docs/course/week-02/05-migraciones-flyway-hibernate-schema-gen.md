@@ -1,4 +1,4 @@
-# Cómo integrar Flyway y Hibernate para generar migraciones
+# Cómo integrar Flyway & Hibernate para generar migraciones
 
 Uno de los mayores retos en el desarrollo de aplicaciones Java con Spring Boot es mantener la base de datos sincronizada con el modelo de entidades JPA. Hibernate puede generar el esquema automáticamente, pero hacerlo directamente sobre la base de datos en entornos productivos es arriesgado.
 
