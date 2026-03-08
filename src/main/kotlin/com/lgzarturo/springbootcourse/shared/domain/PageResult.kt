@@ -9,7 +9,7 @@ data class PageResult<T>(
     val pages: Int = if (size == 0) 0 else ((total + size - 1) / size).toInt(),
 ) {
     companion object {
-        fun <T> fromPage(page: org.springframework.data.domain.Page<T>): PageResult<T> =
+        fun <T : Any> fromPage(page: org.springframework.data.domain.Page<T>): PageResult<T> =
             PageResult(
                 items = page.content,
                 total = page.totalElements,
