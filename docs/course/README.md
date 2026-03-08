@@ -29,9 +29,15 @@ Basado en el [Temario](../README.md), se propone un calendario orientativo por s
 - Semana 3: Persistencia con Spring Data JPA (*H2/PostgreSQL, entidades y repositorios*).
   - [CRUD con TDD - Proceso TDD para crear una entidad](week-03/01-crud-con-tdd.md)
 - Semana 4: Validación y manejo de errores (Jakarta Validation, ControllerAdvice).
+  - [Definición de entidades del proyecto](week-03/02-entidades.md)
   - [Refactorizar con Screaming Architecture y Buenas Prácticas](week-04/01-screaming-architecture.md)
   - [Corrección de Swagger UI, por incompatibilidad de versiones](week-04/02-swagger-ui.md)
+  - [Implementación de funcionalidades](week-04/03-implementacion-funcionalidades.md)
+  - [Validación de payloads con Jakarta Validation](week-04/05-validar-datos.md)
 - Semana 5: Seguridad con Spring Security (*JWT básico, roles y protección de endpoints*).
+  - [Documento sobre la implementación de seguridad con Spring Security y JWT](week-05/01-spring-security.md)
+  - [Retos para este 2026 en el desarrollo con Spring Boot y Kotlin](week-05/03-retos.md)
+  - [Cuestionario sobre SpringBoot y Kotlin](week-05/04-cuestionario.md)
 - Semana 6: Pruebas (*JUnit 5, Spring Boot Test, pruebas de integración y controladores*).
 - Semana 7: Documentación de API (*OpenAPI/Swagger con SpringDoc*).
 - Semana 8: Despliegue |y monitoreo (*Actuator, empaquetado y despliegue; a definir*).

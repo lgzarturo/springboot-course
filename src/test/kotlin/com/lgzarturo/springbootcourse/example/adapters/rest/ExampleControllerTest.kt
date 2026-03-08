@@ -3,20 +3,18 @@ package com.lgzarturo.springbootcourse.example.adapters.rest
 import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExamplePatchUpdate
 import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCasePort
 import com.lgzarturo.springbootcourse.example.domain.Example
+import com.lgzarturo.springbootcourse.shared.domain.PageResult
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.clearMocks
+import io.mockk.every
+import io.mockk.justRun
+import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.isNull
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -26,8 +24,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 class ExampleControllerTest(
     @Autowired val mockMvc: MockMvc,
 ) {
-    @MockBean
+    @MockkBean
     private lateinit var service: ExampleUseCasePort
+
+    @BeforeEach
+    fun setUp() {
+        clearMocks(service)
+    }
 
     @Nested
     @DisplayName("POST /api/v1/examples")
@@ -35,7 +38,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 201 cuando se crea un objeto en la base de datos")
         fun `should return 201 when creating example`() {
-            whenever(service.create(any())).thenReturn(Example(1, "Test", "Desc"))
+            every { service.create(any()) } returns Example(1, "Test", "Desc")
 
             mockMvc
                 .perform(
@@ -53,7 +56,7 @@ class ExampleControllerTest(
             "Debería retornar 201 cuando se crea un objeto en la base de datos, aunque el campo 'description' esté ausente",
         )
         fun `should return 201 when creating example without description`() {
-            whenever(service.create(any())).thenReturn(Example(1, "Test", null))
+            every { service.create(any()) } returns Example(1, "Test", null)
 
             mockMvc
                 .perform(
@@ -70,7 +73,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería aceptar caracteres especiales en el campo 'name'")
         fun `should accept special characters in name`() {
-            whenever(service.create(any())).thenReturn(Example(1, "Test-123_#@", "Desc"))
+            every { service.create(any()) } returns Example(1, "Test-123_#@", "Desc")
 
             mockMvc
                 .perform(
@@ -85,7 +88,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería aceptar caracteres Unicode en el campo 'name'")
         fun `should accept Unicode characters in name`() {
-            whenever(service.create(any())).thenReturn(Example(1, "Tëst 测试 🚀", "Desc"))
+            every { service.create(any()) } returns Example(1, "Tëst 测试 🚀", "Desc")
 
             mockMvc
                 .perform(
@@ -101,7 +104,7 @@ class ExampleControllerTest(
         @DisplayName("Debería aceptar el nombre con el límite máximo exacto de caracteres (100)")
         fun `should accept name with exact character limit`() {
             val exactLimitName = "a".repeat(100)
-            whenever(service.create(any())).thenReturn(Example(1, exactLimitName, "Desc"))
+            every { service.create(any()) } returns Example(1, exactLimitName, "Desc")
 
             mockMvc
                 .perform(
@@ -116,7 +119,7 @@ class ExampleControllerTest(
         @DisplayName("Debería aceptar la descripción con el límite máximo exacto de caracteres (500)")
         fun `should accept description with exact character limit`() {
             val exactLimitDescription = "a".repeat(500)
-            whenever(service.create(any())).thenReturn(Example(1, "Test", exactLimitDescription))
+            every { service.create(any()) } returns Example(1, "Test", exactLimitDescription)
 
             mockMvc
                 .perform(
@@ -243,7 +246,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 201 cuando se envían campos adicionales no esperados, ignorandolos")
         fun `should handle extra fields gracefully`() {
-            whenever(service.create(any())).thenReturn(Example(1, "Test", "Desc"))
+            every { service.create(any()) } returns Example(1, "Test", "Desc")
 
             mockMvc
                 .perform(
@@ -271,7 +274,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 500 cuando el servicio lanza una excepción inesperada")
         fun `should return 500 when service throws unexpected exception`() {
-            whenever(service.create(any())).thenThrow(RuntimeException("Database error"))
+            every { service.create(any()) } throws RuntimeException("Database error")
 
             mockMvc
                 .perform(
@@ -285,7 +288,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 409 cuando se intenta crear un ejemplo duplicado")
         fun `should return 409 when example already exists`() {
-            whenever(service.create(any())).thenThrow(IllegalStateException("Example already exists"))
+            every { service.create(any()) } throws IllegalStateException("Example already exists")
 
             mockMvc
                 .perform(
@@ -303,7 +306,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 200 y el recurso cuando el id existe")
         fun `should return 200 when example exists`() {
-            whenever(service.findById(1)).thenReturn(Example(1, "Test", "Desc"))
+            every { service.findById(1) } returns Example(1, "Test", "Desc")
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples/1"))
@@ -316,7 +319,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 200 y omitir 'description' cuando es null")
         fun `should return 200 and omit description when null`() {
-            whenever(service.findById(1)).thenReturn(Example(1, "Test", null))
+            every { service.findById(1) } returns Example(1, "Test", null)
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples/1"))
@@ -329,7 +332,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 404 cuando el recurso no existe")
         fun `should return 404 when example does not exist`() {
-            whenever(service.findById(999)).thenThrow(NoSuchElementException("Example not found"))
+            every { service.findById(999) } throws NoSuchElementException("Example not found")
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples/999"))
@@ -357,7 +360,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 500 cuando el servicio lanza una excepción inesperada")
         fun `should return 500 when service throws unexpected exception on get`() {
-            whenever(service.findById(1)).thenThrow(RuntimeException("Database error"))
+            every { service.findById(1) } throws RuntimeException("Database error")
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples/1"))
@@ -372,19 +375,19 @@ class ExampleControllerTest(
         @DisplayName("Debería retornar 200 con paginación por defecto y sin filtros")
         fun `should return 200 with default pagination and no filters`() {
             val content = listOf(Example(1, "Alpha", "A"), Example(2, "Beta", null))
-            val page = PageImpl(content, PageRequest.of(0, 20, Sort.by("id").ascending()), content.size.toLong())
+            val page = PageResult(content, 2, 0, 20)
 
-            whenever(service.findAll(isNull(), any())).thenReturn(page)
+            every { service.findAll(isNull(), any()) } returns page
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Alpha"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].description").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("Alpha"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[1].description").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.page").value(0))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(20))
         }
 
@@ -392,9 +395,9 @@ class ExampleControllerTest(
         @DisplayName("Debería retornar 200 con paginación y ordenación explícitas")
         fun `should return 200 with explicit pagination and sorting`() {
             val content = listOf(Example(2, "Beta", null))
-            val page = PageImpl(content, PageRequest.of(1, 1, Sort.by("name").descending()), 2)
+            val page = PageResult(content, 1, 0, 1)
 
-            whenever(service.findAll(isNull(), any())).thenReturn(page)
+            every { service.findAll(isNull(), any()) } returns page
 
             mockMvc
                 .perform(
@@ -404,9 +407,9 @@ class ExampleControllerTest(
                         .param("size", "1")
                         .param("sort", "name,desc"),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(1))
         }
 
@@ -414,34 +417,36 @@ class ExampleControllerTest(
         @DisplayName("Debería filtrar por nombre exacto (case-insensitive)")
         fun `should filter by exact name ignoring case`() {
             val content = listOf(Example(3, "Test", "Desc"))
-            val page = PageImpl(content, PageRequest.of(0, 20), 1)
+            val page = PageResult(content, 1, 0, 1)
 
-            whenever(service.findAll(any(), any())).thenReturn(page)
+            every { service.findAll(any(), any()) } returns page
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples").param("searchText", "test"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Test"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("Test"))
         }
 
         @Test
         @DisplayName("Debería retornar lista vacía cuando no hay resultados")
         fun `should return empty list when no results`() {
-            val page = PageImpl(emptyList<Example>(), PageRequest.of(0, 20), 0)
-            whenever(service.findAll(isNull(), any())).thenReturn(page)
+            val page = PageResult(emptyList<Example>(), 0, 0, 0)
+            every { service.findAll(isNull(), any()) } returns page
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(0))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(0))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pages").value(0))
         }
 
         @Test
         @DisplayName("Debería retornar 400 cuando los parámetros de paginación son inválidos")
         fun `should return 400 when pagination params are invalid`() {
+            every { service.findAll(isNull(), any()) } returns PageResult(emptyList(), 0, 0, 20)
+
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples").param("page", "-1"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
@@ -459,16 +464,15 @@ class ExampleControllerTest(
                     Example(id = 1, name = "Alpha", description = null),
                     Example(id = 2, name = "Beta", description = "B"),
                 )
-            val expectedPageable = PageRequest.of(0, 20) // Spring usa valores por defecto
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 2)
 
-            whenever(service.findAll(isNull(), any())).thenReturn(page)
+            every { service.findAll(isNull(), any()) } returns page
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples").param("page", "-1"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(0)) // Verifica que usó página 0
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isArray)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(2)) // Verifica que usó página 0
         }
 
         @Test
@@ -478,15 +482,14 @@ class ExampleControllerTest(
                 listOf(
                     Example(id = 1, name = "Alpha", description = null),
                 )
-            val expectedPageable = PageRequest.of(0, 20) // Spring usa tamaño por defecto
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 20)
 
-            whenever(service.findAll(isNull(), any())).thenReturn(page)
+            every { service.findAll(isNull(), any()) } returns page
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples").param("size", "0"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isArray)
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(20)) // Verifica que usó tamaño por defecto
         }
 
@@ -497,10 +500,9 @@ class ExampleControllerTest(
                 listOf(
                     Example(id = 1, name = "Alpha", description = null),
                 )
-            val expectedPageable = PageRequest.of(0, 20)
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 20)
 
-            whenever(service.findAll(isNull(), any())).thenReturn(page)
+            every { service.findAll(isNull(), any()) } returns page
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples").param("size", "-5"))
@@ -515,16 +517,15 @@ class ExampleControllerTest(
                 listOf(
                     Example(id = 1, name = "Alpha", description = null),
                 )
-            val expectedPageable = PageRequest.of(0, 20)
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 20)
 
-            whenever(service.findAll(isNull(), any())).thenReturn(page)
+            every { service.findAll(isNull(), any()) } returns page
 
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/examples"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isArray)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(20))
         }
 
@@ -536,10 +537,9 @@ class ExampleControllerTest(
                     Example(id = 1, name = "Alpha", description = null),
                     Example(id = 2, name = "Beta", description = "B"),
                 )
-            val expectedPageable = PageRequest.of(2, 10)
-            val page = PageImpl(items, expectedPageable, 2)
+            val page = PageResult(items, items.size.toLong(), 0, 10)
 
-            whenever(service.findAll(isNull(), any())).thenReturn(page)
+            every { service.findAll(isNull(), any()) } returns page
 
             mockMvc
                 .perform(
@@ -548,8 +548,8 @@ class ExampleControllerTest(
                         .param("page", "2")
                         .param("size", "10"),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isArray)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isArray)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(2))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(10))
         }
 
@@ -561,10 +561,9 @@ class ExampleControllerTest(
                 listOf(
                     Example(id = 1, name = "Alpha", description = null),
                 )
-            val expectedPageable = PageRequest.of(0, 10)
-            val page = PageImpl(items, expectedPageable, items.size.toLong())
+            val page = PageResult(items, items.size.toLong(), 0, 1)
 
-            whenever(service.findAll(eq(searchText), any())).thenReturn(page)
+            every { service.findAll(eq(searchText), any()) } returns page
 
             mockMvc
                 .perform(
@@ -574,20 +573,19 @@ class ExampleControllerTest(
                         .param("page", "0")
                         .param("size", "10"),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Alpha"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items[0].name").value("Alpha"))
 
-            verify(service).findAll(eq(searchText), any())
+            verify { service.findAll(eq(searchText), any()) }
         }
 
         @Test
         @DisplayName("Debería retornar página vacía cuando no hay resultados")
         fun `should return empty page when no results found`() {
             val searchText = "NonExistent"
-            val expectedPageable = PageRequest.of(0, 20)
-            val emptyPage = PageImpl<Example>(emptyList(), expectedPageable, 0)
+            val emptyPage = PageResult(emptyList<Example>(), 0, 0, 2)
 
-            whenever(service.findAll(eq(searchText), any())).thenReturn(emptyPage)
+            every { service.findAll(eq(searchText), any()) } returns emptyPage
 
             mockMvc
                 .perform(
@@ -595,8 +593,8 @@ class ExampleControllerTest(
                         .get("/api/v1/examples")
                         .param("searchText", searchText),
                 ).andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isEmpty)
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.items").isEmpty)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.total").value(0))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.empty").value(true))
         }
     }
@@ -607,8 +605,8 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 200 cuando actualiza un recurso existente")
         fun `should return 200 when updating existing resource`() {
-            whenever(service.update(1, Example(name = "Updated", description = "New")))
-                .thenReturn(Example(1, "Updated", "New"))
+            every { service.update(1, Example(name = "Updated", description = "New")) } returns
+                Example(1, "Updated", "New")
 
             mockMvc
                 .perform(
@@ -637,8 +635,8 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 404 cuando el recurso a actualizar no existe")
         fun `should return 404 when updating non-existent resource`() {
-            whenever(service.update(999, Example(name = "Updated", description = "New")))
-                .thenThrow(NoSuchElementException("Not found"))
+            every { service.update(999, Example(name = "Updated", description = "New")) } throws
+                NoSuchElementException("Not found")
 
             mockMvc
                 .perform(
@@ -652,8 +650,8 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 409 cuando existe un conflicto (duplicado)")
         fun `should return 409 when conflict occurs`() {
-            whenever(service.update(1, Example(name = "Duplicated", description = "New")))
-                .thenThrow(IllegalStateException("Duplicate name"))
+            every { service.update(1, Example(name = "Duplicated", description = "New")) } throws
+                IllegalStateException("Duplicate name")
 
             mockMvc
                 .perform(
@@ -683,8 +681,8 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 200 cuando actualiza parcialmente (solo description)")
         fun `should return 200 when patching only description`() {
-            whenever(service.patch(1, ExamplePatchUpdate(property = "description", value = "New Desc")))
-                .thenReturn(Example(1, "Existing Name", "New Desc"))
+            every { service.patch(1, ExamplePatchUpdate(property = "description", value = "New Desc")) } returns
+                Example(1, "Existing Name", "New Desc")
 
             mockMvc
                 .perform(
@@ -701,8 +699,8 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 200 cuando actualiza parcialmente (solo name)")
         fun `should return 200 when patching only name`() {
-            whenever(service.patch(1, ExamplePatchUpdate(property = "name", value = "New Name")))
-                .thenReturn(Example(1, "New Name", "Old Desc"))
+            every { service.patch(1, ExamplePatchUpdate(property = "name", value = "New Name")) } returns
+                Example(1, "New Name", "Old Desc")
 
             mockMvc
                 .perform(
@@ -730,8 +728,8 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 404 cuando el recurso a actualizar parcialmente no existe")
         fun `should return 404 when patching non-existent resource`() {
-            whenever(service.patch(999, ExamplePatchUpdate(property = "name", value = "New")))
-                .thenThrow(NoSuchElementException("Not found"))
+            every { service.patch(999, ExamplePatchUpdate(property = "name", value = "New")) } throws
+                NoSuchElementException("Not found")
 
             mockMvc
                 .perform(
@@ -749,15 +747,17 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 204 cuando elimina un recurso existente")
         fun `should return 204 when deleting existing resource`() {
+            justRun { service.delete(1) }
             mockMvc
                 .perform(MockMvcRequestBuilders.delete("/api/v1/examples/1"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent)
+            verify(exactly = 1) { service.delete(1) }
         }
 
         @Test
         @DisplayName("Debería retornar 404 cuando el recurso a eliminar no existe")
         fun `should return 404 when deleting non-existent resource`() {
-            whenever(service.delete(999)).thenThrow(NoSuchElementException("Not found"))
+            every { service.delete(999) } throws NoSuchElementException("Not found")
 
             mockMvc
                 .perform(MockMvcRequestBuilders.delete("/api/v1/examples/999"))
@@ -783,7 +783,7 @@ class ExampleControllerTest(
         @Test
         @DisplayName("Debería retornar 500 cuando el servicio lanza error inesperado (DELETE)")
         fun `should return 500 when service throws unexpectedly on delete`() {
-            whenever(service.delete(1)).thenThrow(RuntimeException("DB error"))
+            every { service.delete(1) } throws RuntimeException("DB error")
 
             mockMvc
                 .perform(MockMvcRequestBuilders.delete("/api/v1/examples/1"))
