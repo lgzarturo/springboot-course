@@ -1,6 +1,5 @@
 package com.lgzarturo.springbootcourse.hotels.adapters.rest
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.lgzarturo.springbootcourse.hotels.adapters.rest.dto.request.CreateHotelRequest
 import com.lgzarturo.springbootcourse.hotels.adapters.rest.dto.request.UpdateHotelRequest
 import com.lgzarturo.springbootcourse.hotels.domain.Hotel
@@ -23,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import tools.jackson.databind.ObjectMapper
 
 /**
  * Tests de integración para HotelController

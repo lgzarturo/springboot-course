@@ -110,9 +110,13 @@ dependencies {
     // Flyway para migraciones de base de datos
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.apache.httpcomponents.client5:httpclient5")
+    implementation("org.springframework.boot:spring-boot-http-client:4.0.3")
+    implementation("org.springframework.boot:spring-boot-restclient:4.0.3")
     // Annotation Processing
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Testing
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
     testImplementation("org.springframework.boot:spring-boot-starter-validation-test")

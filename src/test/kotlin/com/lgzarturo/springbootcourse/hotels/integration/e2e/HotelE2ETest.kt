@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -32,6 +33,7 @@ import org.springframework.test.context.ActiveProfiles
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY) // Usa H2
 @ActiveProfiles("test")
+//@Import(RestTestClientConfig::class)
 class HotelE2ETest {
     @Autowired
     private lateinit var testRestTemplate: TestRestTemplate
