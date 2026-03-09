@@ -12,7 +12,7 @@ plugins {
     id("io.sentry.jvm.gradle") version "5.12.2"
 
     // Herramientas de calidad y cobertura
-    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.1.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
     jacoco
 }

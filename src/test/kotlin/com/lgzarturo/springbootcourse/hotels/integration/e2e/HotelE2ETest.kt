@@ -31,7 +31,7 @@ import org.springframework.test.context.ActiveProfiles
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY) // Usa H2
-@ActiveProfiles("tests")
+@ActiveProfiles("test")
 class HotelE2ETest {
     @Autowired
     private lateinit var testRestTemplate: TestRestTemplate
