@@ -7,10 +7,12 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 
 @DataJpaTest
-@TestPropertySource(locations = ["classpath:application-tests.yaml"])
+@ActiveProfiles("test")
+@TestPropertySource(locations = ["classpath:application-test.yaml"])
 class HotelJpaRepositoryIntegrationTest {
     @Autowired
     private lateinit var hotelJpaRepository: HotelJpaRepository

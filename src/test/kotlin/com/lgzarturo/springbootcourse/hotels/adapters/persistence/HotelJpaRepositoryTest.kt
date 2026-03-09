@@ -5,6 +5,7 @@ import com.lgzarturo.springbootcourse.hotels.domain.Hotel
 import com.lgzarturo.springbootcourse.rooms.adapters.persistence.RoomJpaRepository
 import com.lgzarturo.springbootcourse.rooms.adapters.persistence.entity.RoomEntity
 import com.lgzarturo.springbootcourse.rooms.domain.Room
+import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
@@ -27,6 +28,7 @@ class HotelJpaRepositoryTest {
 
     @BeforeEach
     fun setUp() {
+        MockKAnnotations.init(this)
         jpaHotelRepository = HotelRoomJpaRepository(hotelJpaRepository, roomJpaRepository)
     }
 
@@ -45,11 +47,10 @@ class HotelJpaRepositoryTest {
         // Then
         assertEquals(expectedDomain, result)
         verify {
-            hotelJpaRepository.save(any())
-            withArg<HotelEntity> { entity ->
+            hotelJpaRepository.save(withArg<HotelEntity> { entity ->
                 assert(entity.id == "1")
                 assert(entity.name == "Test Hotel")
-            }
+            })
         }
     }
 
@@ -102,11 +103,10 @@ class HotelJpaRepositoryTest {
         assertEquals(expectedDomain, result)
         verify { hotelJpaRepository.existsById("1") }
         verify {
-            hotelJpaRepository.save(any())
-            withArg<HotelEntity> { entity ->
+            hotelJpaRepository.save(withArg<HotelEntity> { entity ->
                 assert(entity.id == "1")
                 assert(entity.name == "Updated Name")
-            }
+            })
         }
     }
 
@@ -133,6 +133,7 @@ class HotelJpaRepositoryTest {
 
         // When
         every { hotelJpaRepository.existsById(hotelId) } returns true
+        every { hotelJpaRepository.deleteById(hotelId) } returns Unit
 
         val result = jpaHotelRepository.deleteById(hotelId)
 
