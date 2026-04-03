@@ -68,7 +68,8 @@ sentry:
   logs:
     enabled: false
   traces-sample-rate: 0.0
-  enable-tracing: false
+  enable-user-interaction-tracing: off
+  enable-user-interaction-breadcrumbs: off
 
 server:
   port: 0
