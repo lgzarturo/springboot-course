@@ -7,6 +7,7 @@ import com.lgzarturo.springbootcourse.hotels.adapters.persistence.entity.HotelEn
 @Table(name = "rooms")
 data class RoomEntity(
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     val id: String,
     val number: String,
     val type: String,

@@ -1,7 +1,21 @@
 package com.lgzarturo.springbootcourse.hotels.adapters.rest.dto.response
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.lgzarturo.springbootcourse.hotels.domain.Hotel
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class HotelResponse(
-    val id: Long?,
+    val id: String,
     val name: String,
     val address: String,
-)
+    val _links: Map<String, String> = emptyMap(),
+) {
+    companion object {
+        fun fromDomain(hotel: Hotel): HotelResponse =
+            HotelResponse(
+                id = hotel.id,
+                name = hotel.name,
+                address = hotel.address,
+            )
+    }
+}

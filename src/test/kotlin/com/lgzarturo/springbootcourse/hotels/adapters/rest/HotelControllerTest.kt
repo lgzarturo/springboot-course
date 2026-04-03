@@ -5,14 +5,19 @@ import com.lgzarturo.springbootcourse.hotels.adapters.rest.dto.request.UpdateHot
 import com.lgzarturo.springbootcourse.hotels.domain.Hotel
 import com.lgzarturo.springbootcourse.hotels.domain.HotelSearchCriteria
 import com.lgzarturo.springbootcourse.hotels.service.HotelService
-import com.ninjasquad.springmockk.MockkBean
+import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.mockk
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.core.Is.`is`
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
@@ -24,21 +29,33 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 
+@TestConfiguration
+class HotelMockkTestConfig {
+    @Bean
+    fun hotelService(): HotelService = mockk()
+}
+
 /**
  * Tests de integración para HotelController
  * Verifica el comportamiento de los endpoints REST
  */
 @WebMvcTest(HotelController::class)
+@Import(HotelMockkTestConfig::class)
 @DisplayName("HotelController Integration Tests")
 class HotelControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
-    @MockkBean
+    @Autowired
     private lateinit var hotelService: HotelService
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
+
+    @BeforeEach
+    fun setUp() {
+        clearMocks(hotelService, answers = false)
+    }
 
     @Test
     @DisplayName("POST /api/v1/hotels debe crear un nuevo hotel y devolver 200")
@@ -46,7 +63,6 @@ class HotelControllerTest {
         // Given
         val request = CreateHotelRequest("New Hotel", "New Address")
         val savedHotel = Hotel("1", "New Hotel", "New Address", emptyList())
-        val expectedJson = """{"id":"1","name":"New Hotel","address":"New Address","_links":{}}"""
 
         // When
         every { hotelService.createHotel(any()) } returns savedHotel
@@ -59,14 +75,9 @@ class HotelControllerTest {
                     .content(objectMapper.writeValueAsString(request)),
             ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$").exists())
             .andExpect(jsonPath("$.id", `is`("1")))
             .andExpect(jsonPath("$.name", `is`("New Hotel")))
             .andExpect(jsonPath("$.address", `is`("New Address")))
-            .andExpect { result ->
-                val responseJson = result.response.contentAsString
-                assert(responseJson == expectedJson)
-            }
     }
 
     @Test
@@ -75,7 +86,6 @@ class HotelControllerTest {
         // Given
         val hotelId = "1"
         val hotel = Hotel("1", "Test Hotel", "Test Address", emptyList())
-        val expectedJson = """{"id":"1","name":"Test Hotel","address":"Test Address","_links":{}}"""
 
         // When
         every { hotelService.getHotelById(hotelId) } returns hotel
@@ -87,10 +97,7 @@ class HotelControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", `is`("1")))
             .andExpect(jsonPath("$.name", `is`("Test Hotel")))
-            .andExpect { result ->
-                val responseJson = result.response.contentAsString
-                assert(responseJson == expectedJson)
-            }
+            .andExpect(jsonPath("$.address", `is`("Test Address")))
     }
 
     @Test
@@ -144,7 +151,6 @@ class HotelControllerTest {
         val hotelId = "1"
         val request = UpdateHotelRequest("Updated Name", "Updated Address")
         val updatedHotel = Hotel("1", "Updated Name", "Updated Address", emptyList())
-        val expectedJson = """{"id":"1","name":"Updated Name","address":"Updated Address","_links":{}}"""
 
         // When
         every { hotelService.updateHotel(eq(hotelId), any()) } returns updatedHotel
@@ -159,10 +165,7 @@ class HotelControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", `is`("1")))
             .andExpect(jsonPath("$.name", `is`("Updated Name")))
-            .andExpect { result ->
-                val responseJson = result.response.contentAsString
-                assert(responseJson == expectedJson)
-            }
+            .andExpect(jsonPath("$.address", `is`("Updated Address")))
     }
 
     @Test

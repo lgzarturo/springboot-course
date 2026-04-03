@@ -4,32 +4,42 @@ import com.lgzarturo.springbootcourse.example.adapters.rest.dto.request.ExampleP
 import com.lgzarturo.springbootcourse.example.application.ports.input.ExampleUseCasePort
 import com.lgzarturo.springbootcourse.example.domain.Example
 import com.lgzarturo.springbootcourse.shared.domain.PageResult
-import com.ninjasquad.springmockk.MockkBean
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.justRun
+import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
+@TestConfiguration
+class MockkTestConfig {
+    @Bean
+    fun exampleUseCasePort(): ExampleUseCasePort = mockk()
+}
+
 @WebMvcTest(ExampleController::class)
+@Import(MockkTestConfig::class)
 class ExampleControllerTest(
     @Autowired val mockMvc: MockMvc,
+    @Qualifier("exampleUseCasePort")
+    @Autowired val service: ExampleUseCasePort,
 ) {
-    @MockkBean
-    private lateinit var service: ExampleUseCasePort
-
     @BeforeEach
     fun setUp() {
-        clearMocks(service)
+        clearMocks(service, answers = false)
     }
 
     @Nested

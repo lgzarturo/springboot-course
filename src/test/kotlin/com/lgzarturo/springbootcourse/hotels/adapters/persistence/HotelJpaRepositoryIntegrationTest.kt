@@ -4,6 +4,7 @@ import com.lgzarturo.springbootcourse.hotels.adapters.persistence.entity.HotelEn
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
@@ -18,9 +19,10 @@ class HotelJpaRepositoryIntegrationTest {
     private lateinit var hotelJpaRepository: HotelJpaRepository
 
     @Test
+    @DisplayName("Debería guardar un hotel en la base de datos")
     fun `save should persist hotel to database`() {
         // Given
-        val entity = HotelEntity("1", "Test Hotel", "Test Address", emptyList())
+        val entity = HotelEntity(name = "Test Hotel", address = "Test Address")
 
         // When
         val savedEntity = hotelJpaRepository.save(entity)
@@ -31,19 +33,20 @@ class HotelJpaRepositoryIntegrationTest {
         assertEquals("Test Address", savedEntity.address)
 
         // Verifica que se haya guardado correctamente
-        val foundEntity = hotelJpaRepository.findById("1")
+        val foundEntity = hotelJpaRepository.findById(savedEntity.id!!)
         assertTrue(foundEntity.isPresent)
         assertEquals("Test Hotel", foundEntity.get().name)
     }
 
     @Test
+    @DisplayName("Debería encontrar un hotel por ID")
     fun `findById should return entity from database`() {
         // Given: Guarda un hotel primero
-        val entityToSave = HotelEntity("2", "Find Test Hotel", "Find Test Address", emptyList())
-        hotelJpaRepository.save(entityToSave)
+        val entityToSave = HotelEntity(name = "Find Test Hotel", address = "Find Test Address")
+        val savedEntity = hotelJpaRepository.save(entityToSave)
 
         // When
-        val foundEntity = hotelJpaRepository.findById("2")
+        val foundEntity = hotelJpaRepository.findById(savedEntity.id!!)
 
         // Then
         assertTrue(foundEntity.isPresent)
