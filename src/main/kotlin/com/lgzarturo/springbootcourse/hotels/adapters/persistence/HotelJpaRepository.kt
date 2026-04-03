@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
 
 @Repository
-interface HotelJpaRepository : JpaRepository<HotelEntity, String>, JpaSpecificationExecutor<HotelEntity>
+interface HotelJpaRepository :
+    JpaRepository<HotelEntity, String>,
+    JpaSpecificationExecutor<HotelEntity>

@@ -25,8 +25,7 @@ class HotelRoomJpaRepository(
         return savedEntity.toDomain()
     }
 
-    override fun findById(id: String): Hotel? =
-        hotelJpaRepository.findById(id).map { it.toDomain() }.orElse(null)
+    override fun findById(id: String): Hotel? = hotelJpaRepository.findById(id).map { it.toDomain() }.orElse(null)
 
     override fun findAll(
         criteria: HotelSearchCriteria,
@@ -77,12 +76,9 @@ class HotelRoomJpaRepository(
             rooms = rooms.map { it.toEntity() },
         )
 
-    private fun HotelEntity.toDomain(): Hotel =
-        Hotel(id ?: "", name, address, rooms.map { it.toDomain(id ?: "") })
+    private fun HotelEntity.toDomain(): Hotel = Hotel(id ?: "", name, address, rooms.map { it.toDomain(id ?: "") })
 
-    private fun Room.toEntity(): RoomEntity =
-        RoomEntity(id, number, type, price, null)
+    private fun Room.toEntity(): RoomEntity = RoomEntity(id, number, type, price, null)
 
-    private fun RoomEntity.toDomain(hotelId: String): Room =
-        Room(id, number, type, price, hotelId)
+    private fun RoomEntity.toDomain(hotelId: String): Room = Room(id, number, type, price, hotelId)
 }

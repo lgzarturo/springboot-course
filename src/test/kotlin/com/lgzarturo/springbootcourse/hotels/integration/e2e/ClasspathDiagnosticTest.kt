@@ -8,7 +8,7 @@ class ClasspathDiagnosticTest {
     fun checkTestRestTemplate() {
         val testRestTemplate = TestRestTemplate()
         println("TestRestTemplate class: ${testRestTemplate.javaClass.canonicalName}")
-        
+
         try {
             val clazz = Class.forName("org.springframework.boot.web.client.RootUriTemplateHandler")
             println("Found RootUriTemplateHandler at org.springframework.boot.web.client.RootUriTemplateHandler")

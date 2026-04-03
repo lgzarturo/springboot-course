@@ -47,10 +47,12 @@ class HotelJpaRepositoryTest {
         // Then
         assertEquals(expectedDomain, result)
         verify {
-            hotelJpaRepository.save(withArg<HotelEntity> { entity ->
-                assert(entity.id == "1")
-                assert(entity.name == "Test Hotel")
-            })
+            hotelJpaRepository.save(
+                withArg<HotelEntity> { entity ->
+                    assert(entity.id == "1")
+                    assert(entity.name == "Test Hotel")
+                },
+            )
         }
     }
 
@@ -103,10 +105,12 @@ class HotelJpaRepositoryTest {
         assertEquals(expectedDomain, result)
         verify { hotelJpaRepository.existsById("1") }
         verify {
-            hotelJpaRepository.save(withArg<HotelEntity> { entity ->
-                assert(entity.id == "1")
-                assert(entity.name == "Updated Name")
-            })
+            hotelJpaRepository.save(
+                withArg<HotelEntity> { entity ->
+                    assert(entity.id == "1")
+                    assert(entity.name == "Updated Name")
+                },
+            )
         }
     }
 

@@ -30,8 +30,9 @@ class DatabaseIntegrationTest : BaseIntegrationTest() {
             val metaData = connection.metaData
             val databaseProductName = metaData.databaseProductName
             // Accept either PostgreSQL (from Testcontainers) or H2 (fallback)
-            val isSupportedDb = databaseProductName.contains("PostgreSQL", ignoreCase = true) ||
-                               databaseProductName.contains("H2", ignoreCase = true)
+            val isSupportedDb =
+                databaseProductName.contains("PostgreSQL", ignoreCase = true) ||
+                    databaseProductName.contains("H2", ignoreCase = true)
             assertTrue(isSupportedDb, "Database should be PostgreSQL or H2")
         }
     }

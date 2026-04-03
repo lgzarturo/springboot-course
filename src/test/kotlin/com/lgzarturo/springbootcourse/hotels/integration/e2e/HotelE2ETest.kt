@@ -40,7 +40,11 @@ class HotelE2ETest {
 
     private fun getHotels(): PageResponse<HotelResponse> {
         val response = testRestTemplate.getForEntity(baseUrl, String::class.java)
-        val type = TypeFactory.defaultInstance().constructParametricType(PageResponse::class.java, HotelResponse::class.java)
+        val type =
+            TypeFactory.defaultInstance().constructParametricType(
+                PageResponse::class.java,
+                HotelResponse::class.java,
+            )
         return mapper.readValue(response.body!!, type)
     }
 
@@ -59,7 +63,10 @@ class HotelE2ETest {
             val createRequest = CreateHotelRequest("Hotel Plaza Pokémon", "123 Main ZH, Downtown")
             val createdHotel = createHotel(createRequest)
 
-            Assertions.assertEquals(HttpStatus.OK, testRestTemplate.postForEntity(baseUrl, createRequest, String::class.java).statusCode)
+            Assertions.assertEquals(
+                HttpStatus.OK,
+                testRestTemplate.postForEntity(baseUrl, createRequest, String::class.java).statusCode,
+            )
             Assertions.assertNotNull(createdHotel.id, "El ID del hotel creado no debería ser nulo")
             Assertions.assertEquals("Hotel Plaza Pokémon", createdHotel.name)
             Assertions.assertEquals("123 Main ZH, Downtown", createdHotel.address)
@@ -89,7 +96,11 @@ class HotelE2ETest {
             val updatedHotel = mapper.readValue(updateResponse.body!!, HotelResponse::class.java)
             Assertions.assertEquals(createdHotel.id, updatedHotel.id, "El ID no debería cambiar tras la actualización")
             Assertions.assertEquals("Hotel Plaza Pokémon Renovado", updatedHotel.name, "El nombre debería actualizarse")
-            Assertions.assertEquals("123 Main ZH, Downtown, Renovated Wing", updatedHotel.address, "La dirección debería actualizarse")
+            Assertions.assertEquals(
+                "123 Main ZH, Downtown, Renovated Wing",
+                updatedHotel.address,
+                "La dirección debería actualizarse",
+            )
             println("Hotel actualizado.")
 
             println("--- Escenario: Consultar Hotel Específico ---")
@@ -119,7 +130,11 @@ class HotelE2ETest {
             println("Hotel eliminado.")
 
             println("--- Escenario: Verificar Eliminación ---")
-            val getAfterDeleteResponse = testRestTemplate.getForEntity("$baseUrl/${createdHotel.id}", String::class.java)
+            val getAfterDeleteResponse =
+                testRestTemplate.getForEntity(
+                    "$baseUrl/${createdHotel.id}",
+                    String::class.java,
+                )
 
             Assertions.assertEquals(
                 HttpStatus.NOT_FOUND,
@@ -142,7 +157,13 @@ class HotelE2ETest {
             Assertions.assertEquals(HttpStatus.OK, searchResponse.statusCode)
             val typeFactory = TypeFactory.defaultInstance()
             val pageType = typeFactory.constructParametricType(PageResponse::class.java, HotelResponse::class.java)
-            val searchResults = (mapper.readValue(searchResponse.body!!, pageType) as PageResponse<HotelResponse>).content
+            val searchResults =
+                (
+                    mapper.readValue(
+                        searchResponse.body!!,
+                        pageType,
+                    ) as PageResponse<HotelResponse>
+                ).content
             Assertions.assertNotNull(searchResults)
             Assertions.assertTrue(
                 searchResults.any { it.name.contains("Plaza", ignoreCase = true) },

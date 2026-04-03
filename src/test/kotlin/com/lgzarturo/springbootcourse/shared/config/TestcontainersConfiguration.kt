@@ -12,13 +12,15 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
 
 class DockerAvailableCondition : Condition {
-    override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
-        return try {
+    override fun matches(
+        context: ConditionContext,
+        metadata: AnnotatedTypeMetadata,
+    ): Boolean =
+        try {
             DockerClientFactory.instance().isDockerAvailable()
         } catch (e: Throwable) {
             false
         }
-    }
 }
 
 @TestConfiguration(proxyBeanMethods = false)
