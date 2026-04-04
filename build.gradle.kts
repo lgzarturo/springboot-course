@@ -440,7 +440,6 @@ tasks.register("lintReport") {
     }
 }
 
-
 tasks.withType<Test> {
     useJUnitPlatform {
         if (!project.hasProperty("includeMigrationTests")) {

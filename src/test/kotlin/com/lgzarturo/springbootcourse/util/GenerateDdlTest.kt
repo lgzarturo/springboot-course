@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles
 @SpringBootTest
 @ActiveProfiles("migration")
 class GenerateDdlTest {
-
     @Test
     fun printMigrationProcess() {
         println("\n" + "=".repeat(70))
