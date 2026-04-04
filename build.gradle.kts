@@ -1,19 +1,19 @@
-import io.gitlab.arturbosch.detekt.Detekt
+import dev.detekt.gradle.Detekt
 import java.util.Properties
 
 plugins {
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.spring") version "2.2.21"
+    kotlin("jvm") version "2.2.20"
+    kotlin("plugin.spring") version "2.2.20"
     id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("plugin.jpa") version "2.2.21"
+    kotlin("plugin.jpa") version "2.2.20"
 
     // Sentry plugin
     id("io.sentry.jvm.gradle") version "5.12.2"
 
     // Herramientas de calidad y cobertura
     id("org.jlleitschuh.gradle.ktlint") version "14.1.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    id("dev.detekt") version ("2.0.0-alpha.1")
     jacoco
 }
 
@@ -172,7 +172,7 @@ ktlint {
 
 // --- Detekt ---
 detekt {
-    toolVersion = "1.23.8"
+    toolVersion = "2.0.0-alpha.1"
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
     allRules = false
@@ -183,10 +183,10 @@ tasks.withType<Detekt>().configureEach {
     jvmTarget = "21"
     reports {
         html.required.set(true)
-        xml.required.set(true)
-        txt.required.set(true)
+        // xml.required.set(true)
+        // txt.required.set(true)
         sarif.required.set(true)
-        md.required.set(true)
+        // md.required.set(true)
     }
 }
 
@@ -391,8 +391,8 @@ tasks.register<Detekt>("detektAutoCorrect") {
 
     reports {
         html.required.set(true)
-        xml.required.set(true)
-        txt.required.set(true)
+        // xml.required.set(true)
+        // txt.required.set(true)
     }
 }
 

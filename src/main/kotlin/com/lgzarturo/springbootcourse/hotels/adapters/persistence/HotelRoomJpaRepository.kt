@@ -25,7 +25,8 @@ class HotelRoomJpaRepository(
         return savedEntity.toDomain()
     }
 
-    override fun findById(id: String): Hotel? = hotelJpaRepository.findById(id).map { it.toDomain() }.orElse(null)
+    override fun findById(id: String): Hotel? =
+        hotelJpaRepository.findByIdWithRooms(id).map { it.toDomain() }.orElse(null)
 
     override fun findAll(
         criteria: HotelSearchCriteria,
@@ -34,7 +35,7 @@ class HotelRoomJpaRepository(
     ): Pair<List<Hotel>, Long> {
         val spec = buildSpecification(criteria)
         val pageable = PageRequest.of(page.coerceAtLeast(0), size.coerceAtLeast(1), Sort.by("name"))
-        val pageResult = hotelJpaRepository.findAll(spec, pageable)
+        val pageResult = hotelJpaRepository.findAllWithRooms(spec, pageable)
         return pageResult.content.map { it.toDomain() } to pageResult.totalElements
     }
 

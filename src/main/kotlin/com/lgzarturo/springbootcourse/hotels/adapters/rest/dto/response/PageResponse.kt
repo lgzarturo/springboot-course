@@ -1,13 +1,13 @@
 package com.lgzarturo.springbootcourse.hotels.adapters.rest.dto.response
 
 data class PageResponse<T>(
-    val content: List<T>,
-    val totalElements: Long,
-    val totalPages: Int,
-    val first: Boolean,
-    val last: Boolean,
-    val number: Int,
-    val size: Int,
+    val content: List<T> = emptyList(),
+    val totalElements: Long = 0,
+    val totalPages: Int = 0,
+    val first: Boolean = false,
+    val last: Boolean = false,
+    val number: Int = 0,
+    val size: Int = 0,
 ) {
     companion object {
         fun <T> from(

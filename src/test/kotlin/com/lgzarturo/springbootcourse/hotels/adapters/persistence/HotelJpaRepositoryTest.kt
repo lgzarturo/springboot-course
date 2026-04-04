@@ -64,13 +64,13 @@ class HotelJpaRepositoryTest {
         val expectedDomain = Hotel("1", "Test Hotel", "Test Address", emptyList())
 
         // When
-        every { hotelJpaRepository.findById(hotelId) } returns Optional.of(entity)
+        every { hotelJpaRepository.findByIdWithRooms(hotelId) } returns Optional.of(entity)
 
         val result = jpaHotelRepository.findById(hotelId)
 
         // Then
         assertEquals(expectedDomain, result)
-        verify { hotelJpaRepository.findById(hotelId) }
+        verify { hotelJpaRepository.findByIdWithRooms(hotelId) }
     }
 
     @Test
@@ -79,13 +79,13 @@ class HotelJpaRepositoryTest {
         val hotelId = "non-existent-id"
 
         // When
-        every { hotelJpaRepository.findById(hotelId) } returns Optional.empty()
+        every { hotelJpaRepository.findByIdWithRooms(hotelId) } returns Optional.empty()
 
         val result = jpaHotelRepository.findById(hotelId)
 
         // Then
         assertNull(result)
-        verify { hotelJpaRepository.findById(hotelId) }
+        verify { hotelJpaRepository.findByIdWithRooms(hotelId) }
     }
 
     @Test
