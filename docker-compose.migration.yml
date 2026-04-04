@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgres-migration:
     image: postgres:17-alpine
     container_name: springboot-postgres_migration
     environment:

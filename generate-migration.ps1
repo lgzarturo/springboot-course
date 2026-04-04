@@ -24,7 +24,7 @@ Write-Host "
 Generando migracion: $fileName" -ForegroundColor Cyan
 
 Write-Host "Levantando base de datos temporal..." -ForegroundColor Green
-docker-compose -f "$DockerDir/docker-compose.migration.yml" up -d
+docker-compose -p migration -f "$DockerDir/docker-compose.migration.yml" up -d
 
 Write-Host "Esperando a que la base de datos este lista..." -ForegroundColor Green
 $maxWait = 30
@@ -44,7 +44,7 @@ while ($waited -lt $maxWait) {
 
 if (-not $servicesReady) {
     Write-Host "Error: La base de datos no se inicio a tiempo." -ForegroundColor Red
-    docker-compose -f "$DockerDir/docker-compose.migration.yml" down
+    docker-compose -p migration -f "$DockerDir/docker-compose.migration.yml" down
     exit 1
 }
 
@@ -73,7 +73,7 @@ if (Test-Path $generatedFile) {
 }
 
 Write-Host "Deteniendo base de datos temporal..." -ForegroundColor Green
-docker-compose -f "$DockerDir/docker-compose.migration.yml" down
+docker-compose -p migration -f "$DockerDir/docker-compose.migration.yml" down
 
 if ($scriptSuccess) {
     Write-Host "
