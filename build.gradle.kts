@@ -1,12 +1,16 @@
 import dev.detekt.gradle.Detekt
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
-    kotlin("jvm") version "2.2.20"
-    kotlin("plugin.spring") version "2.2.20"
+    val kotlinVersion = "2.2.20"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
     id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("plugin.jpa") version "2.2.20"
+    kotlin("plugin.jpa") version kotlinVersion
+    kotlin("kapt") version kotlinVersion
 
     // Sentry plugin
     id("io.sentry.jvm.gradle") version "5.12.2"
@@ -134,6 +138,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 dependencyManagement {
@@ -141,6 +146,10 @@ dependencyManagement {
         mavenBom("io.sentry:sentry-bom:${property("sentryVersion")}")
         mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
     }
+}
+
+kapt {
+    keepJavacAnnotationProcessors = true
 }
 
 kotlin {
@@ -428,5 +437,14 @@ tasks.register("lintReport") {
         println("\n✓ Reportes generados en:")
         println("  • ktlint: build/reports/ktlint/")
         println("  • detekt: build/reports/detekt/")
+    }
+}
+
+
+tasks.withType<Test> {
+    useJUnitPlatform {
+        if (!project.hasProperty("includeMigrationTests")) {
+            excludeTags("migration")
+        }
     }
 }
