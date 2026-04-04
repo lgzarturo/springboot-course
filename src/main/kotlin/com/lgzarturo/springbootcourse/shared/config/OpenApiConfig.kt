@@ -20,7 +20,7 @@ class OpenApiConfig {
             .info(
                 Info()
                     .title("Spring Boot Course API")
-                    .version("0.0.2")
+                    .version("0.0.3")
                     .description("API REST para el curso de Spring Boot con Kotlin")
                     .contact(
                         Contact()

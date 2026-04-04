@@ -22,7 +22,7 @@ plugins {
 }
 
 group = "com.lgzarturo"
-version = "0.0.2"
+version = "0.0.3"
 description = "springboot-course"
 
 java {

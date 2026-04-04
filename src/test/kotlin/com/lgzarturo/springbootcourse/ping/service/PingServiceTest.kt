@@ -23,7 +23,7 @@ class PingServiceTest {
         Assertions.assertNotNull(result)
         Assertions.assertEquals("pong", result.message)
         Assertions.assertNotNull(result.timestamp)
-        Assertions.assertEquals("0.0.2", result.version)
+        Assertions.assertEquals("0.0.3", result.version)
     }
 
     @Test
@@ -39,7 +39,7 @@ class PingServiceTest {
         Assertions.assertNotNull(result)
         Assertions.assertEquals("pong: hello", result.message)
         Assertions.assertNotNull(result.timestamp)
-        Assertions.assertEquals("0.0.2", result.version)
+        Assertions.assertEquals("0.0.3", result.version)
     }
 
     @Test
