@@ -1,0 +1,30 @@
+spring:
+  config:
+    activate:
+      on-profile: migration
+  cloud:
+    config:
+      enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5433/spring_boot_course_migration
+    username: springboot_user
+    password: 'iua182kauy-kai93'
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.enum.check_constraint: false
+      hibernate.validator.apply_to_ddl: false
+      jakarta.persistence.schema-generation.scripts.action: update
+      jakarta.persistence.schema-generation.scripts.create-target: src/main/resources/db/migration/generated-schema.sql
+  data:
+    redis:
+      host: localhost
+      port: 6380
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+sentry:
+  enabled: false

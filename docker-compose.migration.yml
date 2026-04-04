@@ -1,0 +1,11 @@
+services:
+  postgres-migration:
+    image: postgres:17-alpine
+    container_name: springboot-postgres_migration
+    environment:
+      POSTGRES_DB: spring_boot_course_migration
+      POSTGRES_USER: springboot_user
+      POSTGRES_PASSWORD: 'iua182kauy-kai93'
+    ports:
+      - "5433:5432"
+    restart: unless-stopped

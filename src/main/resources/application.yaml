@@ -15,11 +15,8 @@ spring:
   jackson:
     # Serializar la respuesta en formato JSON
     serialization:
-      write-dates-as-timestamps: false              # User el formato ISO-8601 para las fechas
-      write-dates-with-zone-id: true                # Incluir la zona horaria en las fechas
       indent-output: true                           # En producción, desactivar la indentación para mejorar el rendimiento
       fail-on-empty-beans: false                    # No debe fallar en beans vacíos
-      write-null-map-values: false                  # No debe serializar los valores nulos de mapas
     # Deserializar la respuesta desde formato JSON
     deserialization:
       fail-on-unknown-properties: false             # Debe ser flexible con las propiedades que no se encuentran definidas
@@ -33,10 +30,6 @@ spring:
     # Configurar el mapeo
     mapper:
       accept-case-insensitive-enums: true           # Permitir enums sin distinción de mayúsculas/minúsculas
-    # Configurar el parser
-    parser:
-      allow-comments: true                          # Permitir comentarios en JSON
-      allow-unquoted-field-names: false             # Estricto en los nombres de los campos
 
   # Configuración de JPA/Hibernate
   jpa:
@@ -77,6 +70,12 @@ spring:
     baseline-on-migrate: true
     locations: classpath:db/migration
     validate-migration-naming: true
+  web:
+    error:
+      include-message: always
+      include-binding-errors: always
+      include-stacktrace: never
+      include-exception: false
 
 # Configuración de logging
 logging:
@@ -89,9 +88,12 @@ logging:
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-    file.max-history: 30
-    file.max-size: 10MB
-    file.name: logs/springboot-course.log
+  file:
+    name: logs/springboot-course.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
 
 # Configuración de Sentry (error tracking)
 sentry:
@@ -103,12 +105,7 @@ sentry:
   send-default-pii: true                         # Enviar información personal identificable
   logs:
     enabled: true                                # Habilitar el registro de errores
-    minimum-event-level: warn                    # Solo enviar WARN y ERROR
-    minimum-breadcrumb-level: info               # Breadcrumbs desde INFO
   traces-sample-rate: 1.0                        # Habilitar el tracing para performance monitoring
-  enable-tracing: true
-  # Breadcrumbs (migas de pan)
-  enable-breadcrumbs: true
   max-breadcrumbs: 100                           # Máximo de breadcrumbs por evento
   # Context
   in-app-includes:
@@ -129,6 +126,11 @@ sentry:
   # Contextos adicionales
   enable-external-configuration: true
   enable-uncaught-exception-handler: true
+  logging:
+    minimum-event-level: warn
+    minimum-breadcrumb-level: info
+  enable-user-interaction-tracing: on
+  enable-user-interaction-breadcrumbs: on
 
 # Configuración de Actuator
 management:
@@ -152,8 +154,6 @@ management:
         http.server.requests: true                 # Habilitar histograma para latencias HTTP
       percentiles:
         http.server.requests: 0.5,0.95,0.99        # Percentiles comunes de latencia
-      sla:
-        http.server.requests: 100ms,300ms,500ms,1s # SLA's sugeridos para tiempos de respuesta
   health:
     livenessstate:
       enabled: true
@@ -196,11 +196,6 @@ server:
   compression:
     enabled: true                                 # Habilitar la compresión de respuesta
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
-  error:
-    include-message: always                       # Siempre mostrar el mensaje de error
-    include-binding-errors: always                # Siempre mostrar los errores de enlace
-    include-stacktrace: never                     # Evitar mostrar la pila de excepciones
-    include-exception: false                      # No exponer detalles de excepciones
   shutdown: graceful
 
 # Configuración especifica de Kotlin

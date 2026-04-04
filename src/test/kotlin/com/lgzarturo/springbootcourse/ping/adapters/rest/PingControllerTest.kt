@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -47,7 +47,7 @@ class PingControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("pong"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.version").value("0.0.2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.version").value("0.0.3"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists())
     }
 
@@ -65,7 +65,7 @@ class PingControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("pong: hello"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.version").value("0.0.2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.version").value("0.0.3"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists())
     }
 

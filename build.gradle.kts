@@ -1,24 +1,28 @@
-import io.gitlab.arturbosch.detekt.Detekt
+import dev.detekt.gradle.Detekt
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
-    kotlin("jvm") version "2.0.21"
-    kotlin("plugin.spring") version "2.0.21"
-    id("org.springframework.boot") version "3.5.6"
+    val kotlinVersion = "2.2.20"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
+    id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("plugin.jpa") version "2.0.21"
+    kotlin("plugin.jpa") version kotlinVersion
+    kotlin("kapt") version kotlinVersion
 
     // Sentry plugin
-    id("io.sentry.jvm.gradle") version "5.12.1"
+    id("io.sentry.jvm.gradle") version "5.12.2"
 
     // Herramientas de calidad y cobertura
-    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    id("org.jlleitschuh.gradle.ktlint") version "14.1.0"
+    id("dev.detekt") version ("2.0.0-alpha.1")
     jacoco
 }
 
 group = "com.lgzarturo"
-version = "0.0.2"
+version = "0.0.3"
 description = "springboot-course"
 
 java {
@@ -88,15 +92,18 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation("org.springframework.boot:spring-boot-starter-restclient")
+
     // Kotlin
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     // OpenAPI/Swagger Documentation
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
     // Monitoring
-    implementation("io.sentry:sentry-spring-boot-starter-jakarta")
+    implementation("io.sentry:sentry-spring-boot-4-starter")
     implementation("io.sentry:sentry-logback")
     implementation("org.codehaus.janino:janino:3.1.8")
     implementation("io.micrometer:micrometer-registry-prometheus")
@@ -108,22 +115,30 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     // Flyway para migraciones de base de datos
     implementation("org.flywaydb:flyway-core")
-    runtimeOnly("org.flywaydb:flyway-database-postgresql")
+    implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.apache.httpcomponents.client5:httpclient5")
+    implementation("org.springframework.boot:spring-boot-http-client:4.0.3")
+    implementation("org.springframework.boot:spring-boot-restclient:4.0.3")
     // Annotation Processing
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.springframework.boot:spring-boot-starter-restclient-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+    testImplementation("org.testcontainers:testcontainers-postgresql")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("io.kotest:kotest-assertions-core:5.9.1")
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:testcontainers")
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 dependencyManagement {
@@ -133,9 +148,13 @@ dependencyManagement {
     }
 }
 
+kapt {
+    keepJavacAnnotationProcessors = true
+}
+
 kotlin {
     compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
+        freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
     }
 }
 
@@ -162,7 +181,7 @@ ktlint {
 
 // --- Detekt ---
 detekt {
-    toolVersion = "1.23.8"
+    toolVersion = "2.0.0-alpha.1"
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
     allRules = false
@@ -173,10 +192,10 @@ tasks.withType<Detekt>().configureEach {
     jvmTarget = "21"
     reports {
         html.required.set(true)
-        xml.required.set(true)
-        txt.required.set(true)
+        // xml.required.set(true)
+        // txt.required.set(true)
         sarif.required.set(true)
-        md.required.set(true)
+        // md.required.set(true)
     }
 }
 
@@ -381,8 +400,8 @@ tasks.register<Detekt>("detektAutoCorrect") {
 
     reports {
         html.required.set(true)
-        xml.required.set(true)
-        txt.required.set(true)
+        // xml.required.set(true)
+        // txt.required.set(true)
     }
 }
 
@@ -418,5 +437,13 @@ tasks.register("lintReport") {
         println("\n✓ Reportes generados en:")
         println("  • ktlint: build/reports/ktlint/")
         println("  • detekt: build/reports/detekt/")
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform {
+        if (!project.hasProperty("includeMigrationTests")) {
+            excludeTags("migration")
+        }
     }
 }
