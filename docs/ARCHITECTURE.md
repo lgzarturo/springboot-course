@@ -2,7 +2,9 @@
 
 ## 📁 Arquitectura del Proyecto
 
-Este proyecto sigue una **arquitectura hexagonal (Ports & Adapters)** simplificada con separación por capas, implementando las mejores prácticas de desarrollo con Spring Boot y Kotlin.
+Este proyecto sigue una **arquitectura hexagonal (Ports & Adapters)**
+simplificada con separación por capas, implementando las mejores prácticas de
+desarrollo con Spring Boot y Kotlin.
 
 ```
 src/main/kotlin/com/lgzarturo/springbootcourse/
@@ -52,22 +54,26 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 ## 🏗️ Principios de Arquitectura
 
 ### 1. **Arquitectura Hexagonal (Ports & Adapters)**
+
 - **Dominio**: Contiene la lógica de negocio pura, independiente de frameworks
 - **Puertos**: Interfaces que definen contratos (input/output)
 - **Adaptadores**: Implementaciones concretas (REST, JPA, etc.)
 
 ### 2. **Separación de Responsabilidades**
+
 - Cada capa tiene una responsabilidad única y bien definida
 - El dominio no depende de la infraestructura
 - Los adaptadores dependen del dominio, no al revés
 
 ### 3. **Inversión de Dependencias**
+
 - Las dependencias apuntan hacia el dominio
 - Se usan interfaces (puertos) para desacoplar capas
 
 ## 📦 Capas del Proyecto
 
 ### **Domain Layer** (Capa de Dominio)
+
 **Responsabilidad**: Contiene la lógica de negocio pura
 
 - **model/**: Modelos de dominio (POKOs - Plain Old Kotlin Objects)
@@ -77,28 +83,34 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 - **exception/**: Excepciones específicas del dominio
 
 **Características**:
+
 - ✅ Independiente de frameworks
 - ✅ Fácil de testear
 - ✅ Contiene las reglas de negocio
 
 ### **Infrastructure Layer** (Capa de Infraestructura)
+
 **Responsabilidad**: Adaptadores que conectan el dominio con el mundo exterior
 
 #### **rest/** - Adaptadores de entrada HTTP
+
 - **controller/**: Controladores REST (Spring MVC)
 - **dto/**: Data Transfer Objects para request/response
 - **mapper/**: Conversión entre DTO y modelos de dominio
 
 #### **persistence/** - Adaptadores de salida a base de datos
+
 - **entity/**: Entidades JPA
 - **repository/**: Repositorios Spring Data JPA
 - **mapper/**: Conversión entre entidades JPA y modelos de dominio
 
 #### **exception/** - Manejo de errores
+
 - Manejo global de excepciones
 - Respuestas de error estandarizadas
 
 ### **Config Layer** (Capa de Configuración)
+
 **Responsabilidad**: Configuraciones de Spring Boot
 
 - Configuración de CORS
@@ -107,6 +119,7 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 - Configuración de base de datos (futuro)
 
 ### **Shared Layer** (Capa Compartida)
+
 **Responsabilidad**: Código reutilizable en toda la aplicación
 
 - **constant/**: Constantes globales
@@ -116,11 +129,12 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 ## 🎯 Ventajas de esta Arquitectura
 
 ### 1. **Testabilidad**
+
 ```kotlin
 // Test unitario del dominio (sin Spring)
 class PingServiceTest {
     private val pingService = PingService()
-    
+
     @Test
     fun `should return pong`() {
         val result = pingService.getPing()
@@ -130,7 +144,9 @@ class PingServiceTest {
 ```
 
 ### 2. **Independencia del Framework**
+
 El dominio no conoce Spring, puede ser usado en cualquier contexto:
+
 ```kotlin
 // Modelo de dominio puro
 data class Ping(
@@ -140,17 +156,21 @@ data class Ping(
 ```
 
 ### 3. **Escalabilidad**
+
 Fácil agregar nuevos adaptadores sin modificar el dominio:
+
 - REST Controller → GraphQL Controller
 - JPA Repository → MongoDB Repository
 - Sin cambios en el dominio
 
 ### 4. **Mantenibilidad**
+
 - Código organizado y fácil de encontrar
 - Responsabilidades claras
 - Bajo acoplamiento
 
 ### 5. **Flexibilidad**
+
 - Cambiar tecnologías sin afectar la lógica de negocio
 - Múltiples adaptadores para el mismo puerto
 
@@ -161,6 +181,7 @@ Fácil agregar nuevos adaptadores sin modificar el dominio:
 ## 📚 Mejores Prácticas Implementadas
 
 ### 1. **Naming Conventions**
+
 - **Controllers**: `*Controller.kt`
 - **Services**: `*Service.kt`
 - **Use Cases**: `*UseCase.kt`
@@ -169,11 +190,13 @@ Fácil agregar nuevos adaptadores sin modificar el dominio:
 - **Entities**: Sin sufijo (ej: `User.kt`)
 
 ### 2. **Package Organization**
+
 - Por capas (domain, infrastructure, config, shared)
 - Por funcionalidad dentro de cada capa
 - Nombres descriptivos y consistentes
 
 ### 3. **Dependency Injection**
+
 ```kotlin
 @RestController
 class PingController(
@@ -183,11 +206,13 @@ class PingController(
 ```
 
 ### 4. **DTOs vs Domain Models**
+
 - **DTOs**: Para comunicación externa (API)
 - **Domain Models**: Para lógica de negocio interna
 - **Mappers**: Para conversión entre ambos
 
 ### 5. **Exception Handling**
+
 ```kotlin
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -197,11 +222,13 @@ class GlobalExceptionHandler {
 ```
 
 ### 6. **Documentation**
+
 - OpenAPI/Swagger para documentación de API
 - KDoc para documentación de código
 - README para documentación de arquitectura
 
 ### 7. **Testing Strategy**
+
 - **Unit Tests**: Para servicios de dominio (sin Spring)
 - **Integration Tests**: Para controladores (con MockMvc)
 - **E2E Tests**: Para flujos completos (futuro)
@@ -209,15 +236,18 @@ class GlobalExceptionHandler {
 ## 🚀 Endpoints Disponibles
 
 ### Ping API
+
 - `GET /api/v1/ping` - Ping simple
 - `GET /api/v1/ping/{message}` - Ping con mensaje personalizado
 - `GET /api/v1/ping/health` - Health check
 
 ### Documentación
+
 - `GET /swagger-ui.html` - Interfaz de Swagger UI
 - `GET /api-docs` - Especificación OpenAPI JSON
 
 ### Actuator
+
 - `GET /actuator/health` - Estado de salud
 - `GET /actuator/info` - Información de la aplicación
 - `GET /actuator/metrics` - Métricas
@@ -253,6 +283,4 @@ class GlobalExceptionHandler {
 
 ---
 
-**Autor**: Arturo López  
-**Versión**: 1.0.0  
-**Licencia**: MIT
+**Autor**: Arturo López **Versión**: 1.0.0 **Licencia**: MIT

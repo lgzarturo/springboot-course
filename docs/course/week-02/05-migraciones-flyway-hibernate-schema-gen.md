@@ -1,12 +1,18 @@
 # Cómo integrar Flyway & Hibernate para generar migraciones
 
-Uno de los mayores retos en el desarrollo de aplicaciones Java con Spring Boot es mantener la base de datos sincronizada con el modelo de entidades JPA. Hibernate puede generar el esquema automáticamente, pero hacerlo directamente sobre la base de datos en entornos productivos es arriesgado.
+Uno de los mayores retos en el desarrollo de aplicaciones Java con Spring Boot
+es mantener la base de datos sincronizada con el modelo de entidades JPA.
+Hibernate puede generar el esquema automáticamente, pero hacerlo directamente
+sobre la base de datos en entornos productivos es arriesgado.
 
-La solución profesional es combinar **Hibernate como generador de DDL** y **Flyway como gestor de migraciones**, aprovechando **Gradle** para automatizar el flujo.
+La solución profesional es combinar **Hibernate como generador de DDL** y
+**Flyway como gestor de migraciones**, aprovechando **Gradle** para automatizar
+el flujo.
 
 En este documento veremos cómo hacerlo correctamente.
 
-> Ojo: Aquí hay dos caminos uno es Flyway y el otro es Liquibase. Son mutuamente excluyentes, no se pueden usar en el mismo proyecto.
+> Ojo: Aquí hay dos caminos uno es Flyway y el otro es Liquibase. Son mutuamente
+> excluyentes, no se pueden usar en el mismo proyecto.
 
 ---
 
@@ -14,21 +20,24 @@ En este documento veremos cómo hacerlo correctamente.
 
 Configurar un flujo híbrido y multiplataforma donde:
 
-* Hibernate genera los archivos DDL (CREATE TABLE, etc.) a partir de las entidades.
-* Flyway administra las migraciones versionadas.
-* Gradle ejecuta tareas personalizadas para:
+- Hibernate genera los archivos DDL (CREATE TABLE, etc.) a partir de las
+  entidades.
+- Flyway administra las migraciones versionadas.
+- Gradle ejecuta tareas personalizadas para:
+  - Generar el DDL (`generateDDL`)
+  - Crear nuevas migraciones (`createMigration`)
+  - Sugerir comparaciones de esquema (`diffMigration`)
 
-    * Generar el DDL (`generateDDL`)
-    * Crear nuevas migraciones (`createMigration`)
-    * Sugerir comparaciones de esquema (`diffMigration`)
-
-> Este flujo permite mantener la base de datos sincronizada de forma controlada y reproducible, sin depender de cambios automáticos.
+> Este flujo permite mantener la base de datos sincronizada de forma controlada
+> y reproducible, sin depender de cambios automáticos.
 
 ---
 
 ## 2. Configuración de Hibernate para generar el DDL
 
-Crea un archivo `application-generate-ddl.yaml`, este perfil se usará exclusivamente para generar los scripts DDL sin aplicar cambios en la base de datos:
+Crea un archivo `application-generate-ddl.yaml`, este perfil se usará
+exclusivamente para generar los scripts DDL sin aplicar cambios en la base de
+datos:
 
 ```yaml
 spring:
@@ -60,13 +69,16 @@ spring:
     enabled: false
 ```
 
-Este perfil genera los archivos `schema-create.sql` y `schema-drop.sql` dentro del directorio `build/`, pero **no aplica los cambios en la base de datos**, manteniendo la seguridad del entorno.
+Este perfil genera los archivos `schema-create.sql` y `schema-drop.sql` dentro
+del directorio `build/`, pero **no aplica los cambios en la base de datos**,
+manteniendo la seguridad del entorno.
 
 ---
 
 ## 3. Configuración para desarrollo
 
-Tú `application-dev.yaml` debe mantener Flyway habilitado y usar la misma conexión:
+Tú `application-dev.yaml` debe mantener Flyway habilitado y usar la misma
+conexión:
 
 ```yaml
 spring:
@@ -89,7 +101,8 @@ spring:
     validate-on-migrate: true
 ```
 
-> Con esto, las migraciones Flyway se aplican automáticamente al iniciar la aplicación. 
+> Con esto, las migraciones Flyway se aplican automáticamente al iniciar la
+> aplicación.
 
 ---
 
@@ -133,13 +146,14 @@ dependencies {
 
 ### Tarea `generateDDL`
 
-Genera los archivos DDL ejecutando el contexto Spring Boot con el perfil `generate-ddl`:
+Genera los archivos DDL ejecutando el contexto Spring Boot con el perfil
+`generate-ddl`:
 
 ```kotlin
 tasks.register<JavaExec>("generateDDL") {
     group = "database"
     description = "Generate DDL scripts from JPA entities"
-    
+
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("com.lgzarturo.springbootcourse.SpringbootCourseApplicationKt")
 
@@ -202,7 +216,9 @@ tasks.register("createMigration") {
 }
 ```
 
-> Nota importante: Si usas `version` en vez de `migration_version`, asegúrate de ajustar el código en consecuencia. Solo que suele tomar la configuración de gradle que indica `version` por defecto.
+> Nota importante: Si usas `version` en vez de `migration_version`, asegúrate de
+> ajustar el código en consecuencia. Solo que suele tomar la configuración de
+> gradle que indica `version` por defecto.
 
 ---
 
@@ -214,7 +230,7 @@ Sugiere un flujo manual para generar migraciones incrementales:
 tasks.register("diffMigration") {
     group = "database"
     description = "Generate incremental migration by comparing entities with current schema"
-    
+
     doLast {
         println("⚠ Manual diff required:")
         println("  1. Run: ./gradlew generateDDL")
@@ -255,7 +271,8 @@ Esto crea `build/schema-create.sql`.
 
 ### Paso 4: Revisar el archivo
 
-Edita `src/main/resources/db/migration/V1__initial_schema.sql` para añadir índices o constraints.
+Edita `src/main/resources/db/migration/V1__initial_schema.sql` para añadir
+índices o constraints.
 
 ### Paso 5: Ejecutar la app con Flyway
 
@@ -275,8 +292,8 @@ Cuando modificas una entidad existente:
 ./gradlew generateDDL
 ```
 
-Compara `build/schema-create.sql` con tu base actual.
-Luego crea un nuevo archivo:
+Compara `build/schema-create.sql` con tu base actual. Luego crea un nuevo
+archivo:
 
 ```
 src/main/resources/db/migration/V2__add_status_column.sql
@@ -284,9 +301,9 @@ src/main/resources/db/migration/V2__add_status_column.sql
 
 Si quieres automatizar el diff, puedes usar herramientas externas como:
 
-* **DBeaver Schema Compare**
-* **pgAdmin Schema Diff**
-* **IntelliJ Database Tools**
+- **DBeaver Schema Compare**
+- **pgAdmin Schema Diff**
+- **IntelliJ Database Tools**
 
 ---
 
@@ -322,5 +339,9 @@ Funciona igual en cualquier sistema operativo:
 
 ## 9. Próximo paso
 
-- Una propuesta de mejora es que se puede automatizar el diff entre el DDL generado y la base de datos real usando JDBC y librerías como `liquibase-diff` o `pg-diff`, si quieres eliminar el paso manual.
-- Documentar el proceso de un rollback cuando algo sale mal. De momento no hay ninguna forma de hacerlo, es decir, si algo sale mal, hay que volver a ejecutar todas las migraciones.
+- Una propuesta de mejora es que se puede automatizar el diff entre el DDL
+  generado y la base de datos real usando JDBC y librerías como `liquibase-diff`
+  o `pg-diff`, si quieres eliminar el paso manual.
+- Documentar el proceso de un rollback cuando algo sale mal. De momento no hay
+  ninguna forma de hacerlo, es decir, si algo sale mal, hay que volver a
+  ejecutar todas las migraciones.

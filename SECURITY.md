@@ -2,7 +2,10 @@
 
 ## Declaración de Seguridad
 
-La seguridad es una prioridad fundamental en el proyecto Spring Boot Course. Este documento describe nuestras políticas de seguridad, cómo reportar vulnerabilidades y las mejores prácticas de seguridad implementadas en el proyecto.
+La seguridad es una prioridad fundamental en el proyecto Spring Boot Course.
+Este documento describe nuestras políticas de seguridad, cómo reportar
+vulnerabilidades y las mejores prácticas de seguridad implementadas en el
+proyecto.
 
 ## 📋 Tabla de Contenidos
 
@@ -22,12 +25,14 @@ La seguridad es una prioridad fundamental en el proyecto Spring Boot Course. Est
 Actualmente damos soporte de seguridad a las siguientes versiones del proyecto:
 
 | Versión | Soportada          | Estado               |
-|---------|--------------------|----------------------|
+| ------- | ------------------ | -------------------- |
 | 0.0.x   | :white_check_mark: | En desarrollo activo |
 | < 0.0.1 | :x:                | OK Configuración     |
 | < 0.0.2 | :x:                | OK TDD               |
 
-**Nota**: Este es un proyecto educativo en desarrollo activo. Todas las versiones futuras recibirán actualizaciones de seguridad hasta que se marquen como obsoletas.
+**Nota**: Este es un proyecto educativo en desarrollo activo. Todas las
+versiones futuras recibirán actualizaciones de seguridad hasta que se marquen
+como obsoletas.
 
 ---
 
@@ -35,7 +40,8 @@ Actualmente damos soporte de seguridad a las siguientes versiones del proyecto:
 
 ### 🚨 Cómo Reportar una Vulnerabilidad
 
-Si descubres una vulnerabilidad de seguridad en este proyecto, por favor repórtala de manera responsable:
+Si descubres una vulnerabilidad de seguridad en este proyecto, por favor
+repórtala de manera responsable:
 
 1. **NO abras un issue público** para vulnerabilidades de seguridad
 2. Envía un correo electrónico a: **lgzarturo@gmail.com**
@@ -48,14 +54,18 @@ Si descubres una vulnerabilidad de seguridad en este proyecto, por favor repórt
 
 ### Proceso de Respuesta
 
-1. **Confirmación**: Confirmaremos la recepción del reporte en un plazo de 48 horas
-2. **Evaluación**: Evaluaremos la vulnerabilidad y su impacto en un plazo de 7 días
-3. **Corrección**: Trabajaremos en una solución y la publicaremos según la severidad:
+1. **Confirmación**: Confirmaremos la recepción del reporte en un plazo de 48
+   horas
+2. **Evaluación**: Evaluaremos la vulnerabilidad y su impacto en un plazo de 7
+   días
+3. **Corrección**: Trabajaremos en una solución y la publicaremos según la
+   severidad:
    - **Crítica**: 1-3 días
    - **Alta**: 7-14 días
    - **Media**: 14-30 días
    - **Baja**: 30-90 días
-4. **Divulgación**: Una vez corregida, publicaremos un security advisory en GitHub
+4. **Divulgación**: Una vez corregida, publicaremos un security advisory en
+   GitHub
 5. **Reconocimiento**: Agregaremos tu nombre al security advisory (si lo deseas)
 
 ---
@@ -64,12 +74,14 @@ Si descubres una vulnerabilidad de seguridad en este proyecto, por favor repórt
 
 ### Spring Boot 3 Security
 
-Este proyecto usa **Spring Boot 3.5.6** que incluye mejoras de seguridad importantes:
+Este proyecto usa **Spring Boot 3.5.6** que incluye mejoras de seguridad
+importantes:
 
 #### ✅ Características de Seguridad Habilitadas
 
 - **Jakarta EE 10**: Migración completa a `jakarta.*` namespace
-- **Validación de Entrada**: Uso de `spring-boot-starter-validation` con Bean Validation
+- **Validación de Entrada**: Uso de `spring-boot-starter-validation` con Bean
+  Validation
 - **Actuator Seguro**: Endpoints de Actuator con configuración restringida
 - **CORS Configurado**: Política CORS definida en `WebConfig`
 - **Exception Handling Global**: Manejo centralizado de errores
@@ -95,23 +107,26 @@ implementation("org.springframework.boot:spring-boot-starter-actuator")
 ```
 
 **Riesgos**:
+
 - Exposición de información sensible del sistema
 - Endpoints administrativos accesibles públicamente
 
 **Mitigación**:
+
 ```yaml
 # src/main/resources/application.yaml
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics  # Solo endpoints necesarios
+        include: health,info,metrics # Solo endpoints necesarios
   endpoint:
     health:
-      show-details: when-authorized  # Detalles solo con autorización
+      show-details: when-authorized # Detalles solo con autorización
 ```
 
 **Recomendaciones**:
+
 - ✅ Limitar endpoints expuestos en producción
 - ✅ Proteger endpoints sensibles con autenticación
 - ✅ Usar `management.server.port` diferente en producción
@@ -125,14 +140,16 @@ runtimeOnly("org.postgresql:postgresql")
 ```
 
 **H2 Console - Solo para Desarrollo**:
+
 ```yaml
 spring:
   h2:
     console:
-      enabled: false  # SIEMPRE false en producción
+      enabled: false # SIEMPRE false en producción
 ```
 
 **PostgreSQL - Producción**:
+
 - ✅ Usar variables de entorno para credenciales
 - ✅ Nunca hardcodear contraseñas en el código
 - ✅ Usar conexiones SSL/TLS
@@ -140,6 +157,7 @@ spring:
 - ✅ Aplicar principio de mínimos privilegios en la base de datos
 
 **Ejemplo de Configuración Segura**:
+
 ```yaml
 spring:
   datasource:
@@ -150,10 +168,10 @@ spring:
       maximum-pool-size: 10
       connection-timeout: 30000
   jpa:
-    show-sql: false  # false en producción
+    show-sql: false # false en producción
     properties:
       hibernate:
-        format_sql: false  # false en producción
+        format_sql: false # false en producción
 ```
 
 #### 3. Spring Data JPA
@@ -163,12 +181,14 @@ implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 ```
 
 **Prevención de SQL Injection**:
+
 - ✅ Usar consultas parametrizadas (JPQL, Criteria API)
 - ✅ Evitar construcción manual de SQL con concatenación de strings
 - ✅ Validar y sanitizar todas las entradas de usuario
 - ❌ NO usar `@Query` con concatenación de strings
 
 **Ejemplo Seguro**:
+
 ```kotlin
 // ✅ CORRECTO - Parámetro con nombre
 @Query("SELECT r FROM Reserva r WHERE r.email = :email")
@@ -186,16 +206,17 @@ implementation("org.springframework.boot:spring-boot-starter-validation")
 ```
 
 **Uso de Bean Validation**:
+
 ```kotlin
 data class CreateReservaRequest(
     @field:NotBlank(message = "El email es requerido")
     @field:Email(message = "Email inválido")
     val email: String,
-    
+
     @field:NotNull(message = "La fecha es requerida")
     @field:Future(message = "La fecha debe ser futura")
     val fecha: LocalDate,
-    
+
     @field:Positive(message = "El número de huéspedes debe ser positivo")
     @field:Max(value = 10, message = "Máximo 10 huéspedes")
     val numeroHuespedes: Int
@@ -203,6 +224,7 @@ data class CreateReservaRequest(
 ```
 
 **Recomendaciones**:
+
 - ✅ Validar TODOS los inputs del usuario
 - ✅ Usar anotaciones de validación en DTOs
 - ✅ Implementar validaciones custom cuando sea necesario
@@ -216,15 +238,17 @@ implementation("io.sentry:sentry-spring-boot-starter-jakarta")
 ```
 
 **Configuración Segura**:
+
 ```yaml
 sentry:
   dsn: ${SENTRY_DSN}
   environment: ${SPRING_PROFILES_ACTIVE}
-  send-default-pii: false  # NO enviar información personal
-  traces-sample-rate: 0.1  # 10% sampling en producción
+  send-default-pii: false # NO enviar información personal
+  traces-sample-rate: 0.1 # 10% sampling en producción
 ```
 
 **Prevención de Fuga de Información**:
+
 - ✅ NO enviar PII (Personally Identifiable Information)
 - ✅ Filtrar datos sensibles en logs
 - ✅ Configurar `beforeSend` para sanitizar datos
@@ -237,12 +261,14 @@ implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 ```
 
 **Prevención de Vulnerabilidades**:
+
 - ✅ Deshabilitar características peligrosas de deserialización
 - ✅ Usar DTOs en lugar de entidades JPA directamente
 - ✅ Validar JSON con esquemas
 - ❌ NO exponer campos sensibles en respuestas
 
 **Configuración Segura**:
+
 ```kotlin
 @Configuration
 class JacksonConfig {
@@ -266,6 +292,7 @@ developmentOnly("org.springframework.boot:spring-boot-devtools")
 ```
 
 **Importante**:
+
 - ✅ DevTools se deshabilita automáticamente en producción
 - ✅ Verificar que no esté en el classpath de producción
 - ✅ NO incluir `developmentOnly` dependencies en builds de producción
@@ -285,7 +312,7 @@ spring:
     url: ${DB_URL:jdbc:h2:mem:testdb}
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:}
-  
+
 sentry:
   dsn: ${SENTRY_DSN:}
 
@@ -298,6 +325,7 @@ app:
 ### Archivos de Configuración
 
 **Estructura Recomendada**:
+
 ```
 application.yaml          # Configuración base
 application-dev.yaml      # Desarrollo (local)
@@ -306,6 +334,7 @@ application-prod.yaml     # Producción (sin credenciales)
 ```
 
 **En `.gitignore`**:
+
 ```
 # Secrets y configuración local
 application-local.yaml
@@ -583,8 +612,8 @@ Todos los cambios deben pasar por:
 
 Para reportar vulnerabilidades de seguridad:
 
-**Email**: lgzarturo@gmail.com  
-**GitHub**: [@lgzarturo](https://github.com/lgzarturo)
+**Email**: lgzarturo@gmail.com **GitHub**:
+[@lgzarturo](https://github.com/lgzarturo)
 
 ---
 
@@ -596,6 +625,7 @@ Este proyecto está licenciado bajo [CC-BY-4.0](LICENSE).
 
 **Última actualización**: 2025-10-20
 
-**Recuerda**: La seguridad es un proceso continuo, no un destino. Mantente actualizado con las últimas vulnerabilidades y mejores prácticas.
+**Recuerda**: La seguridad es un proceso continuo, no un destino. Mantente
+actualizado con las últimas vulnerabilidades y mejores prácticas.
 
 🔒 **Security First, Always!**

@@ -4,58 +4,65 @@
 
 ## Historia de usuario
 
-Como se ve una historia de usuario para este tipo de funcionalidad, incluyendo los criterios de aceptación, las capas afectadas, y un enfoque TDD para su implementación en un proyecto Spring Boot con Kotlin.
+Como se ve una historia de usuario para este tipo de funcionalidad, incluyendo
+los criterios de aceptación, las capas afectadas, y un enfoque TDD para su
+implementación en un proyecto Spring Boot con Kotlin.
 
-**Como** desarrollador del proyecto
-**Quiero** implementar seguridad básica con **Spring Security** y autenticación mediante **JWT**, gestionando roles y privilegios a través de autoridades
-**Para** proteger los endpoints del backend, restringir el acceso según el rol del usuario y garantizar una autenticación segura y sin estado (stateless).
+**Como** desarrollador del proyecto **Quiero** implementar seguridad básica con
+**Spring Security** y autenticación mediante **JWT**, gestionando roles y
+privilegios a través de autoridades **Para** proteger los endpoints del backend,
+restringir el acceso según el rol del usuario y garantizar una autenticación
+segura y sin estado (stateless).
 
-> **Nota:** Este es el enfoque que sigo en la mayoría de los proyectos, a menos que se indique lo contrario, o que haya necesidades especiales como el uso de OAuth2 con Federated Authentication, aunque esto no es el objetivo principal en este momento.
+> **Nota:** Este es el enfoque que sigo en la mayoría de los proyectos, a menos
+> que se indique lo contrario, o que haya necesidades especiales como el uso de
+> OAuth2 con Federated Authentication, aunque esto no es el objetivo principal
+> en este momento.
 
 ---
 
 ### Criterios de aceptación
 
-1. La autenticación debe realizarse mediante **JWT (JSON Web Token)** firmado con una clave secreta definida en el archivo de configuración (`application.yml`).
-2. Los usuarios deben tener asociados uno o más **roles**, y cada rol debe contener un conjunto de **authorities** (privilegios granulares).
-3. La aplicación debe exponer al menos los siguientes endpoints públicos y protegidos:
-
-    - `/api/auth/login` → público, para autenticarse y obtener el token JWT.
-    - `/api/auth/register` → público, para registrar un nuevo usuario.
-    - `/api/users/**` → protegido, solo accesible con rol `ADMIN`.
-    - `/api/profile` → protegido, accesible con rol `USER` o `ADMIN`.
+1. La autenticación debe realizarse mediante **JWT (JSON Web Token)** firmado
+   con una clave secreta definida en el archivo de configuración
+   (`application.yml`).
+2. Los usuarios deben tener asociados uno o más **roles**, y cada rol debe
+   contener un conjunto de **authorities** (privilegios granulares).
+3. La aplicación debe exponer al menos los siguientes endpoints públicos y
+   protegidos:
+   - `/api/auth/login` → público, para autenticarse y obtener el token JWT.
+   - `/api/auth/register` → público, para registrar un nuevo usuario.
+   - `/api/users/**` → protegido, solo accesible con rol `ADMIN`.
+   - `/api/profile` → protegido, accesible con rol `USER` o `ADMIN`.
 
 4. Las respuestas ante intentos no autorizados deben devolver:
-
-    - **401 Unauthorized** si el token es inválido o no existe.
-    - **403 Forbidden** si el usuario autenticado no tiene permisos suficientes.
+   - **401 Unauthorized** si el token es inválido o no existe.
+   - **403 Forbidden** si el usuario autenticado no tiene permisos suficientes.
 
 5. Las pruebas unitarias y de integración deben validar:
-
-    - Generación y validación correcta del token JWT.
-    - Acceso permitido/denegado a endpoints según el rol del usuario.
-    - Respuestas correctas ante credenciales inválidas o tokens expirados.
+   - Generación y validación correcta del token JWT.
+   - Acceso permitido/denegado a endpoints según el rol del usuario.
+   - Respuestas correctas ante credenciales inválidas o tokens expirados.
 
 ---
 
 ### Capas afectadas
 
 - **Domain:**
-
-    - Creación de las entidades `User`, `Role` y `Authority` con sus relaciones (`@ManyToMany` o `@OneToMany`).
+  - Creación de las entidades `User`, `Role` y `Authority` con sus relaciones
+    (`@ManyToMany` o `@OneToMany`).
 
 - **Repository:**
-
-    - Interfaces para manejar usuarios y roles (`UserRepository`, `RoleRepository`).
+  - Interfaces para manejar usuarios y roles (`UserRepository`,
+    `RoleRepository`).
 
 - **Service:**
-
-    - Lógica para autenticación, validación de credenciales y emisión de JWT.
+  - Lógica para autenticación, validación de credenciales y emisión de JWT.
 
 - **Security / Infrastructure:**
-
-    - Configuración de `SecurityFilterChain`, `JwtAuthenticationFilter`, `JwtUtils`, y `CustomUserDetailsService`.
-    - Controladores públicos para `login` y `register`.
+  - Configuración de `SecurityFilterChain`, `JwtAuthenticationFilter`,
+    `JwtUtils`, y `CustomUserDetailsService`.
+  - Controladores públicos para `login` y `register`.
 
 ---
 
@@ -64,26 +71,26 @@ Como se ve una historia de usuario para este tipo de funcionalidad, incluyendo l
 Con un enfoque TDD, el ciclo **Red → Green → Refactor** se aplicará así:
 
 1. **Red:**
-
-    - Escribir pruebas de integración con `MockMvc` para los endpoints `/login` y `/users/**`.
-    - Simular peticiones sin token y con token inválido para verificar respuestas `401` y `403`.
-    - Validar que usuarios con distintos roles obtengan acceso o rechazo según sus permisos.
+   - Escribir pruebas de integración con `MockMvc` para los endpoints `/login` y
+     `/users/**`.
+   - Simular peticiones sin token y con token inválido para verificar respuestas
+     `401` y `403`.
+   - Validar que usuarios con distintos roles obtengan acceso o rechazo según
+     sus permisos.
 
 2. **Green:**
-
-    - Implementar las entidades y repositorios de usuario, rol y autoridad.
-    - Crear el servicio de autenticación y generación de JWT.
-    - Configurar el `SecurityFilterChain` y los filtros JWT.
+   - Implementar las entidades y repositorios de usuario, rol y autoridad.
+   - Crear el servicio de autenticación y generación de JWT.
+   - Configurar el `SecurityFilterChain` y los filtros JWT.
 
 3. **Refactor:**
-
-    - Mejorar la organización del código (paquetes `security`, `auth`, `domain`).
-    - Centralizar la carga de usuarios con `UserDetailsService`.
-    - Ajustar pruebas para mantener consistencia y legibilidad.
+   - Mejorar la organización del código (paquetes `security`, `auth`, `domain`).
+   - Centralizar la carga de usuarios con `UserDetailsService`.
+   - Ajustar pruebas para mantener consistencia y legibilidad.
 
 ---
 
-### Requerimientos 
+### Requerimientos
 
 - **Dependencias necesarias:**
 
@@ -153,14 +160,15 @@ Con un enfoque TDD, el ciclo **Red → Green → Refactor** se aplicará así:
   ```
 
 - **Buenas prácticas recomendadas:**
-
-    - Implementar `UserDetails` y `UserDetailsService` personalizados para mapear entidades del dominio a usuarios de Spring Security.
-    - Mantener el campo de roles con el prefijo `ROLE_` (`ROLE_ADMIN`, `ROLE_USER`).
-    - Evitar guardar contraseñas sin cifrar (usar `BCryptPasswordEncoder`).
-    - Los tokens deben tener expiración y se recomienda incluir `username` y `authorities` en los claims.
+  - Implementar `UserDetails` y `UserDetailsService` personalizados para mapear
+    entidades del dominio a usuarios de Spring Security.
+  - Mantener el campo de roles con el prefijo `ROLE_` (`ROLE_ADMIN`,
+    `ROLE_USER`).
+  - Evitar guardar contraseñas sin cifrar (usar `BCryptPasswordEncoder`).
+  - Los tokens deben tener expiración y se recomienda incluir `username` y
+    `authorities` en los claims.
 
 - **Pruebas:**
-
-    - Usa `@WebMvcTest` con `MockMvc` para validar protección de endpoints.
-    - Simula tokens válidos/expirados usando `JwtUtils`.
-    - Verifica que cada rol acceda solo a los endpoints que le correspondan.
+  - Usa `@WebMvcTest` con `MockMvc` para validar protección de endpoints.
+  - Simula tokens válidos/expirados usando `JwtUtils`.
+  - Verifica que cada rol acceda solo a los endpoints que le correspondan.

@@ -1,6 +1,10 @@
 # Screaming Architecture
 
-Como hemos desarrollado la aplicación actualmente es basado en una arquitectura hexagonal, podemos observar que la estructura del proyecto y los nombres de los paquetes reflejan claramente las responsabilidades y roles de cada componente. Esta es una manifestación del principio de "Screaming Architecture", que sugiere que la arquitectura de un sistema debe ser evidente a simple vista.
+Como hemos desarrollado la aplicación actualmente es basado en una arquitectura
+hexagonal, podemos observar que la estructura del proyecto y los nombres de los
+paquetes reflejan claramente las responsabilidades y roles de cada componente.
+Esta es una manifestación del principio de "Screaming Architecture", que sugiere
+que la arquitectura de un sistema debe ser evidente a simple vista.
 
 ---
 
@@ -23,12 +27,14 @@ Como hemos desarrollado la aplicación actualmente es basado en una arquitectura
 
 ### 🎯 Objetivo
 
-Refactorizar el proyecto Spring Boot Course desde una **arquitectura hexagonal organizada por capas técnicas** hacia una **arquitectura hexagonal con screaming architecture organizada por features de negocio**.
+Refactorizar el proyecto Spring Boot Course desde una **arquitectura hexagonal
+organizada por capas técnicas** hacia una **arquitectura hexagonal con screaming
+architecture organizada por features de negocio**.
 
 ### 🎁 Beneficios Esperados
 
 | Beneficio             | Descripción                                         |
-|-----------------------|-----------------------------------------------------|
+| --------------------- | --------------------------------------------------- |
 | **Claridad**          | El propósito de negocio "grita" desde la estructura |
 | **Encapsulación**     | Features autocontenidas (domain + adapters juntos)  |
 | **Colaboración**      | Equipos pueden trabajar en features independientes  |
@@ -105,7 +111,8 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 
 #### 2. **Features dispersas en múltiples paquetes**
 
-Para trabajar en la feature "Bookings", debo editar todos los siguientes archivos:
+Para trabajar en la feature "Bookings", debo editar todos los siguientes
+archivos:
 
 ```
 domain/model/Booking.kt
@@ -118,11 +125,13 @@ infrastructure/persistence/entity/BookingEntity.kt
 infrastructure/persistence/repository/JpaBookingRepository.kt
 ```
 
-**Problema**: 8 archivos en 7 carpetas diferentes, lo que se vuelve muy complicado de mantener.
+**Problema**: 8 archivos en 7 carpetas diferentes, lo que se vuelve muy
+complicado de mantener.
 
 #### 3. **Difícil trabajar en paralelo**
 
-- Varios desarrolladores editan los mismos paquetes (`domain/model/`, `infrastructure/rest/`)
+- Varios desarrolladores editan los mismos paquetes (`domain/model/`,
+  `infrastructure/rest/`)
 - Conflictos frecuentes en Git
 - Difícil hacer code reviews por feature
 
@@ -138,7 +147,8 @@ infrastructure/persistence/repository/JpaBookingRepository.kt
 - Difícil extraer una feature a un microservicio
 - No hay separación clara para modularización
 - Migración a microservicios requiere reescritura completa
-- Esto es un problema, que si no se identifica a tiempo, puede ser costoso en el futuro
+- Esto es un problema, que si no se identifica a tiempo, puede ser costoso en el
+  futuro
 
 ---
 
@@ -146,8 +156,8 @@ infrastructure/persistence/repository/JpaBookingRepository.kt
 
 ### Definición (Uncle Bob)
 
-> *"The architecture should scream the intent of the system, not the frameworks it uses."*  
-> — Robert C. Martin (Clean Architecture, 2012)
+> _"The architecture should scream the intent of the system, not the frameworks
+> it uses."_ — Robert C. Martin (Clean Architecture, 2012)
 
 ### 🎯 Principios Fundamentales
 
@@ -156,6 +166,7 @@ infrastructure/persistence/repository/JpaBookingRepository.kt
 La estructura debe reflejar **CAPACIDADES DE NEGOCIO**, no capas técnicas.
 
 **❌ Mal** (capas técnicas):
+
 ```
 controllers/
 services/
@@ -163,6 +174,7 @@ repositories/
 ```
 
 **✅ Bien** (features de negocio):
+
 ```
 bookings/          # "Gestión de Reservas"
 rooms/             # "Gestión de Habitaciones"
@@ -173,16 +185,19 @@ payments/          # "Procesamiento de Pagos"
 #### 2. **Independencia de Frameworks**
 
 El dominio NO debe depender de:
+
 - Spring Framework
 - JPA/Hibernate
 - REST/HTTP
 - Base de datos específica
 
-**Ya lo cumplimos** con arquitectura hexagonal actual, por ese lado, no hay problema y podemos seguir así, lo importante sería **organizar por features**.
+**Ya lo cumplimos** con arquitectura hexagonal actual, por ese lado, no hay
+problema y podemos seguir así, lo importante sería **organizar por features**.
 
 #### 3. **Autoexplicativa (Self-Explanatory)**
 
-Un desarrollador nuevo debe entender qué hace la app **en 30 segundos** mirando la estructura:
+Un desarrollador nuevo debe entender qué hace la app **en 30 segundos** mirando
+la estructura:
 
 ```
 src/main/kotlin/com/lgzarturo/hotelbooking/
@@ -202,16 +217,21 @@ Todo lo relacionado a una feature vive **junto**:
 - Tests
 - Documentación
 
-> De momento con la arquitectura hexagonal, cada archivo está distribuido en su respectiva capa técnica, pero en la propuesta de screaming architecture, cada feature se encuentra en su propio directorio y ahi se encuentran todos los archivos relacionados con ella.
+> De momento con la arquitectura hexagonal, cada archivo está distribuido en su
+> respectiva capa técnica, pero en la propuesta de screaming architecture, cada
+> feature se encuentra en su propio directorio y ahi se encuentran todos los
+> archivos relacionados con ella.
 
 #### 5. **Bajo Acoplamiento entre Features**
 
 Features se comunican por:
+
 - **Interfaces públicas** (puertos)
 - **Eventos de dominio** (pub/sub)
 - **APIs internas** (DTOs)
 
-**NO** por dependencias directas entre clases, esto es un acierto fundamental y ya lo estamos aplicando con la arquitectura hexagonal.
+**NO** por dependencias directas entre clases, esto es un acierto fundamental y
+ya lo estamos aplicando con la arquitectura hexagonal.
 
 ---
 
@@ -232,8 +252,8 @@ springbootcourse/
 └── shared/                    # ¿Compartido entre qué?
 ```
 
-**Pregunta al mirar esta estructura**: *"¿Qué hace esta aplicación?"*  
-**Respuesta**: *"No lo sé, debo leer el código"* ❌
+**Pregunta al mirar esta estructura**: _"¿Qué hace esta aplicación?"_
+**Respuesta**: _"No lo sé, debo leer el código"_ ❌
 
 ### 🟢 Después: Organización por Features
 
@@ -280,15 +300,15 @@ springbootcourse/
     └── util/                  # Utilidades genéricas
 ```
 
-**Pregunta al mirar esta estructura**: *"¿Qué hace esta aplicación?"*  
-**Respuesta**: *"Gestiona reservas, habitaciones y huéspedes de un hotel"* ✅
+**Pregunta al mirar esta estructura**: _"¿Qué hace esta aplicación?"_
+**Respuesta**: _"Gestiona reservas, habitaciones y huéspedes de un hotel"_ ✅
 
 ### 📊 Comparativa de Ventajas
 
 Con esta propuesta podemos identificar los siguientes beneficios claros:
 
-| Aspecto                       | Antes (Capas)    | Después (Features)   |
-|-------------------------------|------------------|----------------------|
+| Aspecto                       | Antes (Capas)     | Después (Features)    |
+| ----------------------------- | ----------------- | --------------------- |
 | **Claridad de propósito**     | ❌ No evidente    | ✅ Grita el negocio   |
 | **Trabajar en una feature**   | ❌ 7+ carpetas    | ✅ 1 carpeta          |
 | **Paralelización de equipos** | ❌ Conflictos     | ✅ Independientes     |
@@ -478,7 +498,9 @@ Cada feature es **autocontenida**:
 
 #### 2. **Hexagonal dentro de cada feature**
 
-Aquí viene lo importante: **Hexagonal dentro de cada feature**. Para mantener las buenas prácticas que ya usamos en el proyecto, cada feature debe seguir la siguiente estructura:
+Aquí viene lo importante: **Hexagonal dentro de cada feature**. Para mantener
+las buenas prácticas que ya usamos en el proyecto, cada feature debe seguir la
+siguiente estructura:
 
 ```
 feature/
@@ -533,6 +555,7 @@ class BookingService(
 - Infraestructura de eventos
 
 **NO** debe contener:
+
 - ❌ Modelos de dominio
 - ❌ Lógica de negocio
 - ❌ Servicios específicos
@@ -548,32 +571,35 @@ class BookingService(
 **Objetivo**: Entender el código actual y preparar el terreno.
 
 **Tareas**:
+
 1. ✅ Identificar todas las features actuales
-    - ✅ Ping
-    - ⏳ Bookings (futuro del milestone 2)
-    - ⏳ Rooms (futuro del milestone 2)
-    - ⏳ Guests (futuro del milestone 2)
+   - ✅ Ping
+   - ⏳ Bookings (futuro del milestone 2)
+   - ⏳ Rooms (futuro del milestone 2)
+   - ⏳ Guests (futuro del milestone 2)
 
 2. ✅ Documentar dependencias entre features
-    - Crear diagrama de dependencias
-    - Identificar acoplamiento actual
+   - Crear diagrama de dependencias
+   - Identificar acoplamiento actual
 
 3. ✅ Crear ADRs (Architecture Decision Records)
-    - ADR-001: Adopción de Screaming Architecture
-    - ADR-002: Organización por Features
-    - ADR-003: Comunicación entre Features
+   - ADR-001: Adopción de Screaming Architecture
+   - ADR-002: Organización por Features
+   - ADR-003: Comunicación entre Features
 
 4. ✅ Definir estructura objetivo detallada
-    - Convenciones de nombres
-    - Estructura de carpetas estándar por feature
+   - Convenciones de nombres
+   - Estructura de carpetas estándar por feature
 
 5. ✅ Backup del código actual
+
    ```bash
    git checkout -b backup-before-refactoring
    git push origin backup-before-refactoring
    ```
-   
-    Este paso es importante, debido a que si algo sale mal, podemos volver a este punto.
+
+   Este paso es importante, debido a que si algo sale mal, podemos volver a este
+   punto.
 
 ---
 
@@ -584,6 +610,7 @@ class BookingService(
 **Tareas**:
 
 1. **Crear estructura de carpetas**
+
    ```bash
    mkdir -p src/main/kotlin/com/lgzarturo/springbootcourse/ping/{domain,application,adapters}
    mkdir -p src/main/kotlin/com/lgzarturo/springbootcourse/bookings/{domain,application,adapters}
@@ -591,18 +618,19 @@ class BookingService(
    ```
 
 2. **Crear `package-info.kt` para cada feature**
+
    ```kotlin
    // src/main/kotlin/com/lgzarturo/springbootcourse/ping/package-info.kt
    /**
     * Feature: Ping/Health Check
-    * 
+    *
     * Esta feature proporciona endpoints para verificar el estado de la aplicación.
-    * 
+    *
     * Casos de uso:
     * - Ping simple
     * - Ping con mensaje personalizado
     * - Health check
-    * 
+    *
     */
    package com.lgzarturo.springbootcourse.ping
    ```
@@ -626,12 +654,14 @@ class BookingService(
 **Objetivo**: Migrar la primera feature como piloto.
 
 ##### **Paso 1: Ejecutar tests actuales (baseline)**
+
 ```bash
 ./gradlew test
 # Todos los tests deben PASAR ✅
 ```
 
 ##### **Paso 2: Crear estructura de la feature Ping**
+
 ```
 ping/
 ├── domain/
@@ -656,6 +686,7 @@ ping/
 ##### **Paso 3: Mover archivos (con TDD)**
 
 **3.1. Mover domain**
+
 ```bash
 # Antes:
 domain/model/Ping.kt
@@ -685,6 +716,7 @@ data class Ping(
 ```
 
 **Test asociado**:
+
 ```kotlin
 // test/kotlin/com/lgzarturo/springbootcourse/ping/domain/PingTest.kt
 package com.lgzarturo.springbootcourse.ping.domain
@@ -694,20 +726,20 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class PingTest {
-    
+
     @Test
     fun `should create ping with valid message`() {
         // Given
         val message = "pong"
-        
+
         // When
         val ping = Ping(message = message)
-        
+
         // Then
         assertEquals(message, ping.message)
         assertEquals("1.0.0", ping.version)
     }
-    
+
     @Test
     fun `should fail when message is blank`() {
         // When & Then
@@ -719,12 +751,14 @@ class PingTest {
 ```
 
 **Ejecutar test**:
+
 ```bash
 ./gradlew test --tests "PingTest"
 # Debe PASAR ✅
 ```
 
 **3.2. Mover application (casos de uso)**
+
 ```kotlin
 // ping/application/ports/input/PingUseCasePort.kt
 package com.lgzarturo.springbootcourse.ping.application.ports.input
@@ -742,6 +776,7 @@ interface PingUseCasePort {
 ```
 
 **Test asociado**:
+
 ```kotlin
 // test/kotlin/com/lgzarturo/springbootcourse/ping/application/GetPingUseCaseTest.kt
 package com.lgzarturo.springbootcourse.ping.application
@@ -750,36 +785,36 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class GetPingUseCaseTest {
-    
+
     private val useCase = GetPingUseCase()
-    
+
     @Test
     fun `should return pong`() {
         // When
         val result = useCase.getPing()
-        
+
         // Then
         assertEquals("pong", result.message)
         assertEquals("1.0.0", result.version)
     }
-    
+
     @Test
     fun `should return custom message`() {
         // Given
         val customMessage = "hello"
-        
+
         // When
         val result = useCase.getPingWithMessage(customMessage)
-        
+
         // Then
         assertEquals(customMessage, result.message)
     }
-    
+
     @Test
     fun `should return health check`() {
         // When
         val result = useCase.healthCheck()
-        
+
         // Then
         assertEquals("UP", result["status"])
         assertEquals("springboot-course", result["service"])
@@ -788,12 +823,14 @@ class GetPingUseCaseTest {
 ```
 
 **Ejecutar test**:
+
 ```bash
 ./gradlew test
 # Debe PASAR ✅
 ```
 
 **3.3. Mover adapters (REST)**
+
 ```kotlin
 // ping/adapters/rest/dto/PingResponse.kt
 package com.lgzarturo.springbootcourse.ping.adapters.rest.dto
@@ -823,7 +860,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 class PingMapper {
-    
+
     fun toResponse(ping: Ping): PingResponse {
         return PingResponse(
             message = ping.message,
@@ -857,21 +894,21 @@ class PingController(
     private val pingUseCase: PingUseCasePort,
     private val pingMapper: PingMapper
 ) {
-    
+
     @GetMapping
     @Operation(summary = "Ping simple", description = "Retorna 'pong'")
     fun ping(): ResponseEntity<PingResponse> {
         val ping = pingUseCase.getPing()
         return ResponseEntity.ok(pingMapper.toResponse(ping))
     }
-    
+
     @GetMapping("/{message}")
     @Operation(summary = "Ping con mensaje", description = "Retorna el mensaje personalizado")
     fun pingWithMessage(@PathVariable message: String): ResponseEntity<PingResponse> {
         val ping = pingUseCase.getPingWithMessage(message)
         return ResponseEntity.ok(pingMapper.toResponse(ping))
     }
-    
+
     @GetMapping("/health")
     @Operation(summary = "Health check", description = "Verifica el estado del servicio")
     fun healthCheck(): ResponseEntity<Map<String, Any>> {
@@ -882,6 +919,7 @@ class PingController(
 ```
 
 **Test de integración**:
+
 ```kotlin
 // test/kotlin/com/lgzarturo/springbootcourse/ping/adapters/rest/PingControllerTest.kt
 package com.lgzarturo.springbootcourse.ping.adapters.rest
@@ -897,10 +935,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 @SpringBootTest
 @AutoConfigureMockMvc
 class PingControllerTest {
-    
+
     @Autowired
     private lateinit var mockMvc: MockMvc
-    
+
     @Test
     fun `GET ping should return pong`() {
         mockMvc.perform(get("/api/v1/ping"))
@@ -908,14 +946,14 @@ class PingControllerTest {
             .andExpect(jsonPath("$.message").value("pong"))
             .andExpect(jsonPath("$.version").value("1.0.0"))
     }
-    
+
     @Test
     fun `GET ping with message should return custom message`() {
         mockMvc.perform(get("/api/v1/ping/hello"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.message").value("hello"))
     }
-    
+
     @Test
     fun `GET health should return status UP`() {
         mockMvc.perform(get("/api/v1/ping/health"))
@@ -927,12 +965,14 @@ class PingControllerTest {
 ```
 
 **Ejecutar test**:
+
 ```bash
 ./gradlew test --tests "PingControllerTest"
 # Debe PASAR ✅
 ```
 
 ##### **Paso 4: Eliminar archivos antiguos**
+
 ```bash
 # Después de verificar que TODOS los tests pasan
 rm -rf src/main/kotlin/com/lgzarturo/springbootcourse/domain/model/Ping.kt
@@ -942,6 +982,7 @@ rm -rf src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/contro
 ```
 
 ##### **Paso 5: Ejecutar TODOS los tests**
+
 ```bash
 ./gradlew clean test
 # Todos los tests deben PASAR ✅
@@ -951,9 +992,11 @@ rm -rf src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/contro
 
 #### **Fase 4: Feature "Bookings"** (Duración: 1-2 días)
 
-**Objetivo**: La segunda feature ya se desarrollará con la estructura bien definida.
+**Objetivo**: La segunda feature ya se desarrollará con la estructura bien
+definida.
 
 **Pasos** (igual que Fase 3):
+
 1. Ejecutar tests actuales
 2. Crear estructura de la feature
 3. Mover domain (con TDD)
@@ -964,6 +1007,7 @@ rm -rf src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/contro
 8. Commit
 
 **Estructura propuesta**:
+
 ```
 bookings/
 ├── domain/
@@ -1003,7 +1047,8 @@ bookings/
 
 #### **Fase 5: Migración de Config a Shared** (Duración: 2 horas)
 
-**Objetivo**: Mover configuraciones a `shared/config/`. De esta forma, podremos compartirlas entre features.
+**Objetivo**: Mover configuraciones a `shared/config/`. De esta forma, podremos
+compartirlas entre features.
 
 ```bash
 # Mover configuraciones
@@ -1012,6 +1057,7 @@ mv config/OpenApiConfig.kt shared/config/
 ```
 
 **Actualizar imports**:
+
 ```kotlin
 // Antes:
 import com.lgzarturo.springbootcourse.config.WebConfig
@@ -1021,6 +1067,7 @@ import com.lgzarturo.springbootcourse.shared.config.WebConfig
 ```
 
 **Estructura final de shared**:
+
 ```
 shared/
 ├── config/
@@ -1046,6 +1093,7 @@ shared/
 #### **Fase 6: Actualizar Documentación** (Duración: 4 horas)
 
 **Tareas**:
+
 1. Actualizar `README.md`
 2. Actualizar `ARCHITECTURE.md`
 3. Crear `SCREAMING_ARCHITECTURE.md`
@@ -1057,6 +1105,7 @@ shared/
 #### **Fase 7: Validación Final** (Duración: 2 horas)
 
 **Checklist de validación**:
+
 - [ ] Todos los tests pasan
 - [ ] Aplicación arranca correctamente
 - [ ] Todos los endpoints funcionan
@@ -1071,7 +1120,7 @@ shared/
 ### 📅 Timeline Completo
 
 | Fase                    | Duración | Acumulado    |
-|-------------------------|----------|--------------|
+| ----------------------- | -------- | ------------ |
 | Fase 1: Análisis        | 1 día    | 1 día        |
 | Fase 2: Estructura base | 2 horas  | 1.25 días    |
 | Fase 3: Migrar Ping     | 4 horas  | 1.75 días    |
@@ -1088,15 +1137,17 @@ shared/
 
 ### ADR-001: Adopción de Screaming Architecture
 
-**Status**: ✅ Accepted  
-**Date**: 2025-11-15  
-**Deciders**: Arturo López
+**Status**: ✅ Accepted **Date**: 2025-11-15 **Deciders**: Arturo López
 
 #### Context
 
-El proyecto actual usa arquitectura hexagonal organizada por **capas técnicas** (domain, infrastructure, config, shared). Si bien esto mantiene el dominio separado de la infraestructura, **no refleja el propósito de negocio** en la estructura de carpetas.
+El proyecto actual usa arquitectura hexagonal organizada por **capas técnicas**
+(domain, infrastructure, config, shared). Si bien esto mantiene el dominio
+separado de la infraestructura, **no refleja el propósito de negocio** en la
+estructura de carpetas.
 
 **Problemas identificados**:
+
 1. Al mirar la estructura, no es evidente qué hace la aplicación
 2. Una feature está dispersa en múltiples paquetes
 3. Difícil trabajar en paralelo (conflictos en Git)
@@ -1105,9 +1156,11 @@ El proyecto actual usa arquitectura hexagonal organizada por **capas técnicas**
 
 #### Decision
 
-Adoptamos **Screaming Architecture** organizando el código por **features de negocio** en lugar de capas técnicas.
+Adoptamos **Screaming Architecture** organizando el código por **features de
+negocio** en lugar de capas técnicas.
 
 **Estructura propuesta**:
+
 ```
 springbootcourse/
 ├── ping/          # Feature: Ping/Health Check
@@ -1118,6 +1171,7 @@ springbootcourse/
 ```
 
 Cada feature mantiene **arquitectura hexagonal internamente**:
+
 ```
 feature/
 ├── domain/        # Dominio puro
@@ -1128,6 +1182,7 @@ feature/
 #### Consequences
 
 **Positivas** ✅:
+
 - Propósito de negocio "grita" desde la estructura
 - Features autocontenidas y fáciles de entender
 - Equipos pueden trabajar en paralelo sin conflictos
@@ -1135,17 +1190,20 @@ feature/
 - Mejor onboarding para nuevos desarrolladores
 
 **Negativas** ⚠️:
+
 - Requiere refactorización de código existente
 - Cambio de mentalidad del equipo
 - Archivos compartidos deben ser cuidadosamente evaluados
 
 **Neutrales** ℹ️:
+
 - No afecta la lógica de negocio (solo estructura)
 - Tests se mantienen, solo cambian imports
 
 #### Compliance
 
 Para cumplir con esta decisión:
+
 1. Cada nueva feature DEBE seguir la estructura propuesta
 2. Features NO DEBEN depender directamente de otras features
 3. Comunicación entre features DEBE ser por interfaces (puertos)
@@ -1155,15 +1213,15 @@ Para cumplir con esta decisión:
 
 ### ADR-002: Organización por Features (Business Capabilities)
 
-**Status**: ✅ Accepted  
-**Date**: 2025-11-16  
-**Deciders**: Arturo López
+**Status**: ✅ Accepted **Date**: 2025-11-16 **Deciders**: Arturo López
 
 #### Context
 
-Necesitamos definir **cómo organizar el código** una vez adoptada Screaming Architecture.
+Necesitamos definir **cómo organizar el código** una vez adoptada Screaming
+Architecture.
 
 **Opciones consideradas**:
+
 1. Por capas técnicas (actual) ❌
 2. Por features de negocio ✅
 3. Por módulos funcionales
@@ -1174,15 +1232,19 @@ Necesitamos definir **cómo organizar el código** una vez adoptada Screaming Ar
 Organizamos el código por **features de negocio** (business capabilities).
 
 **Definición de feature**:
-> Una feature es una **capacidad de negocio completa** que puede ser entendida y desarrollada de forma independiente.
+
+> Una feature es una **capacidad de negocio completa** que puede ser entendida y
+> desarrollada de forma independiente.
 
 **Ejemplos de features**:
+
 - `bookings/` - Gestión de reservas (crear, modificar, cancelar)
 - `rooms/` - Gestión de habitaciones (disponibilidad, tipos, precios)
 - `guests/` - Gestión de huéspedes (registro, perfil)
 - `payments/` - Procesamiento de pagos
 
 **NO son features**:
+
 - ❌ `services/` (es una capa técnica)
 - ❌ `controllers/` (es una capa técnica)
 - ❌ `utils/` (no es negocio)
@@ -1190,17 +1252,20 @@ Organizamos el código por **features de negocio** (business capabilities).
 #### Consequences
 
 **Positivas** ✅:
+
 - Código organizado por lo que **hace**, no por cómo lo hace
 - Fácil entender el alcance de la aplicación
 - Features pueden evolucionar independientemente
 
 **Negativas** ⚠️:
+
 - Duplicación de código entre features (a veces necesaria)
 - Dificultad para identificar qué es "compartido"
 
 #### Compliance
 
 **Criterios para crear una nueva feature**:
+
 1. ✅ Representa una capacidad de negocio completa
 2. ✅ Puede ser explicada a un product owner
 3. ✅ Tiene su propio bounded context
@@ -1208,6 +1273,7 @@ Organizamos el código por **features de negocio** (business capabilities).
 5. ✅ Tiene valor de negocio por sí sola
 
 **Ejemplo de validación**:
+
 ```
 Feature propuesta: "bookings"
 ¿Es una capacidad de negocio? ✅ Sí ("gestión de reservas")
@@ -1222,20 +1288,21 @@ Conclusión: ✅ ES UNA FEATURE VÁLIDA
 
 ### ADR-003: Comunicación entre Features
 
-**Status**: ✅ Accepted  
-**Date**: 2025-11-17
-**Deciders**: Arturo López
+**Status**: ✅ Accepted **Date**: 2025-11-17 **Deciders**: Arturo López
 
 #### Context
 
-Features deben ser independientes pero a veces necesitan **comunicarse entre sí**.
+Features deben ser independientes pero a veces necesitan **comunicarse entre
+sí**.
 
 **Ejemplo**:
+
 ```
 Booking (reserva) necesita verificar si Room (habitación) está disponible
 ```
 
 **Opciones consideradas**:
+
 1. Dependencia directa (inyectar RoomService en BookingService) ❌
 2. Por interfaces/puertos (Dependency Inversion) ✅
 3. Por eventos de dominio (pub/sub)
@@ -1243,9 +1310,11 @@ Booking (reserva) necesita verificar si Room (habitación) está disponible
 
 #### Decision
 
-Features se comunican por **interfaces/puertos** (Dependency Inversion Principle).
+Features se comunican por **interfaces/puertos** (Dependency Inversion
+Principle).
 
 **Patrón**:
+
 ```kotlin
 // En bookings/application/ports/output/RoomAvailabilityPort.kt
 package com.lgzarturo.springbootcourse.bookings.application.ports.output
@@ -1273,7 +1342,7 @@ package com.lgzarturo.springbootcourse.rooms.adapters.availability
 class RoomAvailabilityAdapter(
     private val roomRepository: RoomRepositoryPort
 ) : RoomAvailabilityPort {  // Implementa la interfaz de bookings
-    
+
     override fun isAvailable(roomId: String, dates: DateRange): Boolean {
         val room = roomRepository.findById(roomId)
         return room.isAvailableFor(dates)
@@ -1282,6 +1351,7 @@ class RoomAvailabilityAdapter(
 ```
 
 **Para eventos** (futuro):
+
 ```kotlin
 // Para comunicación asíncrona
 @Component
@@ -1296,7 +1366,7 @@ class BookingEventPublisher(
 // Listener en otra feature
 @Component
 class RoomAvailabilityEventListener {
-    
+
     @EventListener
     fun on(event: BookingCreatedEvent) {
         // Actualizar disponibilidad de habitación
@@ -1307,24 +1377,28 @@ class RoomAvailabilityEventListener {
 #### Consequences
 
 **Positivas** ✅:
+
 - Features desacopladas (bajo acoplamiento)
 - Fácil testear (mockear interfaces)
 - Fácil cambiar implementación
 - Preparado para microservicios (cambiar interfaz por HTTP)
 
 **Negativas** ⚠️:
+
 - Más interfaces (más código)
 - Curva de aprendizaje para desarrolladores junior
 
 #### Compliance
 
 **Reglas**:
+
 1. ✅ Features DEBEN comunicarse por interfaces (puertos)
 2. ❌ Features NO DEBEN tener dependencias directas entre sí
 3. ✅ Interfaces de comunicación DEBEN estar en el paquete que las necesita
 4. ✅ Implementaciones DEBEN estar en el paquete que las provee
 
 **Validación**:
+
 ```kotlin
 // ❌ INCORRECTO
 class BookingService(
@@ -1341,9 +1415,7 @@ class BookingService(
 
 ### ADR-004: Qué va en `shared/`
 
-**Status**: ✅ Accepted  
-**Date**: 2025-11-17  
-**Deciders**: Arturo López
+**Status**: ✅ Accepted **Date**: 2025-11-17 **Deciders**: Arturo López
 
 #### Context
 
@@ -1354,11 +1426,13 @@ Necesitamos definir **qué código pertenece a `shared/`** vs. dentro de feature
 #### Decision
 
 `shared/` contiene **SOLO código cross-cutting** (transversal) que:
+
 1. Es usado por **múltiples features**
 2. NO tiene lógica de negocio específica
 3. Es infraestructura o utilidades genéricas
 
 **Estructura permitida**:
+
 ```
 shared/
 ├── config/              # Configuración de frameworks
@@ -1387,6 +1461,7 @@ shared/
 ```
 
 **NO permitido en `shared/`**:
+
 - ❌ Modelos de dominio específicos
 - ❌ Lógica de negocio
 - ❌ Servicios de negocio
@@ -1396,11 +1471,13 @@ shared/
 #### Consequences
 
 **Positivas** ✅:
+
 - `shared/` pequeño y manejable
 - Lógica de negocio siempre en features
 - Fácil identificar dependencias transversales
 
 **Negativas** ⚠️:
+
 - Puede haber duplicación entre features (a veces es correcto)
 
 #### Compliance
@@ -1416,6 +1493,7 @@ shared/
 ```
 
 **Ejemplo de validación**:
+
 ```kotlin
 // Código propuesto: DateRange.kt
 data class DateRange(val start: LocalDate, val end: LocalDate)
@@ -1434,15 +1512,20 @@ data class DateRange(val start: LocalDate, val end: LocalDate)
 ### 🧪 Principios TDD para la Migración
 
 #### 1. **Red-Green-Refactor NO aplica literalmente**
+
 En una refactorización de estructura:
+
 - ✅ **Green**: Tests actuales pasan (baseline)
 - 🔄 **Refactor**: Cambiar estructura
 - ✅ **Green**: Tests siguen pasando (validación)
 
 #### 2. **Tests como Red de Seguridad**
-Los tests existentes son nuestra garantía de que la refactorización no rompe funcionalidad.
+
+Los tests existentes son nuestra garantía de que la refactorización no rompe
+funcionalidad.
 
 **Proceso**:
+
 ```bash
 # 1. Baseline: Todos los tests DEBEN pasar
 ./gradlew test
@@ -1463,14 +1546,17 @@ git commit -m "refactor: move Ping to feature package"
 ```
 
 #### 3. **Commits Pequeños y Frecuentes**
+
 Cada cambio estructural = 1 commit
 
 **Mal** ❌:
+
 ```bash
 git commit -m "refactor: restructure entire project"
 ```
 
 **Bien** ✅:
+
 ```bash
 git commit -m "refactor(ping): move Ping domain model to ping/domain/"
 git commit -m "refactor(ping): move PingUseCase to ping/application/"
@@ -1480,11 +1566,13 @@ git commit -m "refactor(ping): move PingController to ping/adapters/rest/"
 ### 📋 Checklist TDD por Feature
 
 #### **Antes de empezar**
+
 - [ ] Todos los tests actuales pasan
 - [ ] Código commiteado (working directory limpio)
 - [ ] Branch creada para la migración
 
 #### **Durante la migración**
+
 - [ ] Mover 1 archivo a la vez
 - [ ] Actualizar imports
 - [ ] Ejecutar tests
@@ -1492,6 +1580,7 @@ git commit -m "refactor(ping): move PingController to ping/adapters/rest/"
 - [ ] Si fallan → revertir y revisar
 
 #### **Después de la migración**
+
 - [ ] Todos los tests pasan
 - [ ] Aplicación arranca
 - [ ] Endpoints funcionan (prueba manual)
@@ -1522,13 +1611,13 @@ git commit -m "refactor(ping): move PingController to ping/adapters/rest/"
 [alias]
     # Ver archivos modificados
     st = status -sb
-    
+
     # Commit con mensaje
     cm = commit -m
-    
+
     # Ver últimos commits
     lg = log --oneline --graph --decorate --all -10
-    
+
     # Revertir último commit (mantener cambios)
     undo = reset --soft HEAD^
 ```
@@ -1669,18 +1758,22 @@ bookings/
 ## 📚 Referencias
 
 ### Screaming Architecture
+
 - [The Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [Screaming Architecture - Uncle Bob](https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html)
 
 ### Hexagonal Architecture
+
 - [Hexagonal Architecture - Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
 - [DDD, Hexagonal, Onion, Clean, CQRS, … How I put it all together](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together/)
 
 ### Package by Feature
+
 - [Package by Feature - Package by Component](https://phauer.com/2020/package-by-feature/)
 - [Organizing Code - Simon Brown](https://www.codingthearchitecture.com/2015/03/08/package_by_component_and_architecturally_aligned_testing.html)
 
 ### Spring Boot Best Practices
+
 - [Spring Boot Reference Documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/)
 - [Spring Boot Project Structure Best Practices](https://medium.com/the-resonant-web/spring-boot-2-0-project-structure-and-best-practices-part-2-7137bdcba7d3)
 

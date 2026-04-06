@@ -5,7 +5,7 @@
 ![Diagrama de Arquitectura](resources/images/08-architecture-springboot-course.webp)
 
 ## 🔄 Flujo de una Petición HTTP
-   
+
 ![Flujo de la solicitud HTTP](resources/images/09-ping-controller-springboot-course.webp)
 
 ## 🎯 Separación de Responsabilidades
@@ -104,6 +104,7 @@ Agregar nuevo módulo (Ejemplo: Users):
 ---
 
 **Leyenda de Símbolos:**
+
 - 📱 Aplicación principal
 - ⚙️ Configuración
 - 🎯 Dominio (Core)

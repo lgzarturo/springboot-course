@@ -1,0 +1,9 @@
+# Spring Boot Kotlin Configuration
+spring_boot: "3.2.1"
+kotlin: "1.9.22"
+
+features:
+  - WebFlux
+  - Data JPA
+  - Security
+  - Actuator

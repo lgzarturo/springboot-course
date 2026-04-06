@@ -1,121 +1,136 @@
 # Dominar HTTP y la Comunicación Efectiva entre Microservicios
 
-Cuando hablamos de arquitecturas distribuidas, una API REST no es solo un conjunto de endpoints. También es un **idioma
-compartido** que permite que sistemas heterogéneos colaboren con precisión. Pero, ¿cómo asegurar que este lenguaje sea
-claro, consistente y profesional? La respuesta está en entender que **HTTP no es un transporte técnico, sino un
-protocolo semántico**.
+Cuando hablamos de arquitecturas distribuidas, una API REST no es solo un
+conjunto de endpoints. También es un **idioma compartido** que permite que
+sistemas heterogéneos colaboren con precisión. Pero, ¿cómo asegurar que este
+lenguaje sea claro, consistente y profesional? La respuesta está en entender que
+**HTTP no es un transporte técnico, sino un protocolo semántico**.
 
-En este documento abordaré cuál es su importancia, cómo usarlo de forma estratégica, por qué JSON se convierte en el
-puente universal entre microservicios y por qué la documentación y los metadatos son tan críticos como el código mismo.
+En este documento abordaré cuál es su importancia, cómo usarlo de forma
+estratégica, por qué JSON se convierte en el puente universal entre
+microservicios y por qué la documentación y los metadatos son tan críticos como
+el código mismo.
 
 ---
 
 ## Métodos HTTP: La Gramática de una API Profesional
 
-Hay que entender que el protocolo HTTP define **verbos estándar** que no son meras convenciones, sino reglas de
-comunicación con significado intrínseco. Usarlos de forma inadecuada es como confundir "pedir" con "ordenar" en una
+Hay que entender que el protocolo HTTP define **verbos estándar** que no son
+meras convenciones, sino reglas de comunicación con significado intrínseco.
+Usarlos de forma inadecuada es como confundir "pedir" con "ordenar" en una
 conversación: genera ambigüedad y errores.
 
 ### ¿Por qué la elección del método importa?
 
-- **GET** no solo "obtiene datos", sino que por definición debe **ser idempotente y seguro** (*no modifica el estado del
-  servidor*).  
-  *Ejemplo:*  
-  Un `GET /reservations?status=pending` debe devolver siempre el mismo resultado si nadie modifica las reservas, sin
-  efectos colaterales.
+- **GET** no solo "obtiene datos", sino que por definición debe **ser
+  idempotente y seguro** (_no modifica el estado del servidor_). _Ejemplo:_ Un
+  `GET /reservations?status=pending` debe devolver siempre el mismo resultado si
+  nadie modifica las reservas, sin efectos colaterales.
 
-- **POST** no es "el método por defecto". Es para **crear recursos nuevos** con un *significado único*:  
-  *Ejemplo:*  
-  `POST /reservations` crea una nueva reserva, mientras que `POST /reservations/cancel` sería un antipatrón (*debería
-  usarse `DELETE` o `PATCH`*).
+- **POST** no es "el método por defecto". Es para **crear recursos nuevos** con
+  un _significado único_: _Ejemplo:_ `POST /reservations` crea una nueva
+  reserva, mientras que `POST /reservations/cancel` sería un antipatrón
+  (_debería usarse `DELETE` o `PATCH`_).
 
 - **PUT vs PATCH**:
-    - **PUT** reemplaza **todo** el recurso (*ej.: actualizar todos los campos de un usuario*).
-    - **PATCH** modifica **solo partes** (*ej.: cambiar el teléfono, sin tocar el correo*).  
-      Usar `PUT` para actualizaciones parciales viola la semántica del protocolo y genera conflictos en sistemas
-      concurrentes.
+  - **PUT** reemplaza **todo** el recurso (_ej.: actualizar todos los campos de
+    un usuario_).
+  - **PATCH** modifica **solo partes** (_ej.: cambiar el teléfono, sin tocar el
+    correo_). Usar `PUT` para actualizaciones parciales viola la semántica del
+    protocolo y genera conflictos en sistemas concurrentes.
 
 ### Uno de los errores más comunes: Sobrecargar POST
 
 Cuando una API usa `POST` para todas las operaciones, pierde la capacidad de:
 
-- Aprovechar cachés HTTP (*GET es cacheable; POST no*).
-- Definir transacciones idempotentes (*reintentar un PUT no duplica recursos*).
-- Ser autoexplicativa (*¿qué hace un `POST /users/action?`?*).
+- Aprovechar cachés HTTP (_GET es cacheable; POST no_).
+- Definir transacciones idempotentes (_reintentar un PUT no duplica recursos_).
+- Ser autoexplicativa (_¿qué hace un `POST /users/action?`?_).
 
-> **Clave profesional:** Si tu endpoint requiere un verbo como "update" o "create" en el nombre, estás ignorando la
-> semántica de HTTP. Asigna el verbo correcto y deja que el endpoint refleje el recurso, esa es la verdadera claridad.
+> **Clave profesional:** Si tu endpoint requiere un verbo como "update" o
+> "create" en el nombre, estás ignorando la semántica de HTTP. Asigna el verbo
+> correcto y deja que el endpoint refleje el recurso, esa es la verdadera
+> claridad.
 
 ---
 
 ## JSON: El Latín Moderno de las APIs
 
-Si HTTP es la gramática, **JSON es el alfabeto universal** que permite que microservicios de distintas tecnologías se
-entiendan. ¿Por qué no XML, Protocol Buffers o GraphQL? Aquí las ventajas que he comprobado en la práctica.
+Si HTTP es la gramática, **JSON es el alfabeto universal** que permite que
+microservicios de distintas tecnologías se entiendan. ¿Por qué no XML, Protocol
+Buffers o GraphQL? Aquí las ventajas que he comprobado en la práctica.
 
-> No estoy diciendo que JSON es perfecto, pero en el contexto de APIs REST, su simplicidad y adopción lo hacen la opción
-> más profesional. Para casos específicos, otras opciones pueden ser mejores, pero requieren un análisis cuidadoso y no es
-> el objetivo de este documento.
+> No estoy diciendo que JSON es perfecto, pero en el contexto de APIs REST, su
+> simplicidad y adopción lo hacen la opción más profesional. Para casos
+> específicos, otras opciones pueden ser mejores, pero requieren un análisis
+> cuidadoso y no es el objetivo de este documento.
 
 ### ¿Por qué JSON triunfa en APIs REST?
 
 | **Característica**       | **JSON**                                                                   | **Alternativas**                              |
-|--------------------------|----------------------------------------------------------------------------|-----------------------------------------------|
+| ------------------------ | -------------------------------------------------------------------------- | --------------------------------------------- |
 | **Legibilidad**          | Humano y máquina lo entienden a primera vista.                             | XML es verbose; Protocol Buffers es binario.  |
 | **Adopción**             | Soportado por todos los lenguajes sin librerías adicionales.               | gRPC requiere generación de código.           |
-| **Flexibilidad**         | Estructura dinámica (*ej.: campos opcionales en `PATCH`*).                 | XML exige esquemas rígidos.                   |
-| **Integración con HTTP** | Se mapea naturalmente a los verbos HTTP (*ej.: enviar un objeto en POST*). | SOAP añade capas innecesarias de complejidad. |
+| **Flexibilidad**         | Estructura dinámica (_ej.: campos opcionales en `PATCH`_).                 | XML exige esquemas rígidos.                   |
+| **Integración con HTTP** | Se mapea naturalmente a los verbos HTTP (_ej.: enviar un objeto en POST_). | SOAP añade capas innecesarias de complejidad. |
 
 ### ¿Cuándo NO usar JSON?
 
-- En sistemas con **alto rendimiento** (*ej.: transacciones financieras en tiempo real, sistemas de trading,
-  aplicaciones de juegos en línea*), Protocol Buffers o gRPC son mejores por su compresión binaria y su eficiencia.
-- En escenarios donde el cliente necesita **solicitar solo campos específicos**, GraphQL es más eficiente, debido a su
-  capacidad de consulta flexible.
+- En sistemas con **alto rendimiento** (_ej.: transacciones financieras en
+  tiempo real, sistemas de trading, aplicaciones de juegos en línea_), Protocol
+  Buffers o gRPC son mejores por su compresión binaria y su eficiencia.
+- En escenarios donde el cliente necesita **solicitar solo campos específicos**,
+  GraphQL es más eficiente, debido a su capacidad de consulta flexible.
 
-Pero en la mayoría de APIs REST, **JSON es el equilibrio perfecto** entre simplicidad, interoperabilidad y expresividad.
+Pero en la mayoría de APIs REST, **JSON es el equilibrio perfecto** entre
+simplicidad, interoperabilidad y expresividad.
 
 ---
 
 ## Documentación: La Carta de Navegación de tu API
 
-Una API bien diseñada es intuitiva, pero **la documentación no es opcional**. Es el puente entre tu sistema y quienes lo
-consumen. Asumir que "el código habla por sí mismo" es un error profesional. Así que como programadores profesionales
+Una API bien diseñada es intuitiva, pero **la documentación no es opcional**. Es
+el puente entre tu sistema y quienes lo consumen. Asumir que "el código habla
+por sí mismo" es un error profesional. Así que como programadores profesionales
 debemos evitar malentendidos y reducir la fricción.
 
 ### Elementos clave de una documentación profesional
 
-1. **Descripciones claras de endpoints**  
-   No basta con `/users/{id}`. Debe explicar:
-    - ¿Qué representa `{id}`? (UUID, número entero, etc.).
-    - Ejemplos de respuesta para cada código de estado (200, 404, 422).
-    - Parámetros de query con sus valores válidos (*ej.: `?status=active,archived`*).
+1. **Descripciones claras de endpoints** No basta con `/users/{id}`. Debe
+   explicar:
+   - ¿Qué representa `{id}`? (UUID, número entero, etc.).
+   - Ejemplos de respuesta para cada código de estado (200, 404, 422).
+   - Parámetros de query con sus valores válidos (_ej.:
+     `?status=active,archived`_).
 
-2. **Ejemplos de solicitud y respuesta**  
-   Mostrar cómo se estructura una petición `PATCH` con campos obligatorios y opcionales, no solo el esquema abstracto.
+2. **Ejemplos de solicitud y respuesta** Mostrar cómo se estructura una petición
+   `PATCH` con campos obligatorios y opcionales, no solo el esquema abstracto.
 
-3. **Códigos de estado semánticos**  
-   Explicar por qué un `409 Conflict` ocurre (*ej.: "La habitación está ocupada"*) y cómo resolverlo.
+3. **Códigos de estado semánticos** Explicar por qué un `409 Conflict` ocurre
+   (_ej.: "La habitación está ocupada"_) y cómo resolverlo.
 
-4. **Autenticación y autorización**  
-   Detallar cómo se obtiene el token, su vigencia y qué endpoints requieren permisos específicos.
+4. **Autenticación y autorización** Detallar cómo se obtiene el token, su
+   vigencia y qué endpoints requieren permisos específicos.
 
 ### Herramientas esenciales
 
-- **OpenAPI (Swagger)**: Permite generar documentación interactiva a partir de anotaciones en el código.
+- **OpenAPI (Swagger)**: Permite generar documentación interactiva a partir de
+  anotaciones en el código.
 - **Redoc**: Genera documentación estática a partir de especificaciones OpenAPI.
 - **Documentos http**: Explicar casos de uso complejos.
 - **Postman Collections**: Compartir ejemplos ejecutables de peticiones.
-- **Changelog**: Registrar cambios en versiones (*ej.: "v2 elimina el campo `legacyId`"*).
+- **Changelog**: Registrar cambios en versiones (_ej.: "v2 elimina el campo
+  `legacyId`"_).
 
-> **Error fatal:** Documentar solo el "camino feliz" (200 OK). Los consumidores necesitan saber cómo manejar errores.
+> **Error fatal:** Documentar solo el "camino feliz" (200 OK). Los consumidores
+> necesitan saber cómo manejar errores.
 
 ---
 
 ## Metadatos: El Contexto que Evita Suposiciones
 
-Las respuestas JSON no deben ser solo "datos crudos". Los **metadatos** proporcionan el contexto necesario para que el
-cliente actúe con inteligencia.
+Las respuestas JSON no deben ser solo "datos crudos". Los **metadatos**
+proporcionan el contexto necesario para que el cliente actúe con inteligencia.
 
 ### Ejemplos críticos de metadatos
 
@@ -135,25 +150,26 @@ cliente actúe con inteligencia.
 
   Sin esto, el cliente no sabe si hay más resultados o cómo navegar.
 
-- **Fechas de expiración**:  
-  Un `Cache-Control: max-age=3600` en el header HTTP o un campo `expiresAt` en el JSON ayuda a gestionar la caché.
+- **Fechas de expiración**: Un `Cache-Control: max-age=3600` en el header HTTP o
+  un campo `expiresAt` en el JSON ayuda a gestionar la caché.
 
-- **Estado del recurso**:  
-  En una reserva, incluir `"status": "confirmed"` y `"lastUpdated": "2024-06-01T12:00:00Z"` evita que el cliente asuma
-  que los datos son actuales.
+- **Estado del recurso**: En una reserva, incluir `"status": "confirmed"` y
+  `"lastUpdated": "2024-06-01T12:00:00Z"` evita que el cliente asuma que los
+  datos son actuales.
 
 ### ¿Por qué importan?
 
-- Reducen la cantidad de peticiones innecesarias (*ej.: no se requiere un `GET /reservations/count` si el metadata ya lo
-  incluye*).
-- Permiten que los clientes reaccionen ante cambios (*ej.: si `expiresAt` es pasado, invalidar la caché*).
+- Reducen la cantidad de peticiones innecesarias (_ej.: no se requiere un
+  `GET /reservations/count` si el metadata ya lo incluye_).
+- Permiten que los clientes reaccionen ante cambios (_ej.: si `expiresAt` es
+  pasado, invalidar la caché_).
 
 ---
 
 ## Errores Semánticos: Diagnósticos, No Síntomas
 
-Un `500 Internal Server Error` es como decir "algo falló". Un **error profesional** explica **qué falló**, **por qué** y
-**cómo solucionarlo**.
+Un `500 Internal Server Error` es como decir "algo falló". Un **error
+profesional** explica **qué falló**, **por qué** y **cómo solucionarlo**.
 
 ### Estructura ideal de una respuesta de error
 
@@ -163,10 +179,7 @@ Un `500 Internal Server Error` es como decir "algo falló". Un **error profesion
   "message": "La habitación 101 ya está reservada para las fechas solicitadas.",
   "details": {
     "conflictingReservationId": "RES-2024-001",
-    "availableAlternatives": [
-      "/api/v1/rooms/102",
-      "/api/v1/rooms/103"
-    ]
+    "availableAlternatives": ["/api/v1/rooms/102", "/api/v1/rooms/103"]
   },
   "timestamp": "2024-06-01T12:05:30Z"
 }
@@ -175,48 +188,52 @@ Un `500 Internal Server Error` es como decir "algo falló". Un **error profesion
 ### Reglas para errores profesionales
 
 1. **Usar códigos de estado HTTP correctos**:
-    - `400 Bad Request`: Solicitud mal formada (*ej.: JSON inválido).
-    - `422 Unprocessable Entity`: Solicitud válida pero con lógica de negocio fallida (*ej.: 6 huéspedes en una
-      habitación para 4*).
-    - `409 Conflict`: Recurso en estado incompatible (*ej.: intentar cancelar una reserva ya finalizada*).
+   - `400 Bad Request`: Solicitud mal formada (\*ej.: JSON inválido).
+   - `422 Unprocessable Entity`: Solicitud válida pero con lógica de negocio
+     fallida (_ej.: 6 huéspedes en una habitación para 4_).
+   - `409 Conflict`: Recurso en estado incompatible (_ej.: intentar cancelar una
+     reserva ya finalizada_).
 
-2. **Evitar mensajes genéricos**:  
-   "Error 500" → "Error en el servidor".  
-   "RESERVATION_CONFLICT" → "La habitación está ocupada. Alternativas: 102, 103".
+2. **Evitar mensajes genéricos**: "Error 500" → "Error en el servidor".
+   "RESERVATION_CONFLICT" → "La habitación está ocupada. Alternativas: 102,
+   103".
 
-3. **Incluir acciones sugeridas**:  
-   Si una reserva falla por fechas, sugerir fechas disponibles en lugar de solo reportar el error.
+3. **Incluir acciones sugeridas**: Si una reserva falla por fechas, sugerir
+   fechas disponibles en lugar de solo reportar el error.
 
 ---
 
 ## La Profesionalidad está en los Detalles
 
-Una API REST no es profesional por su funcionalidad, sino por **cómo comunica**. Al dominar:
+Una API REST no es profesional por su funcionalidad, sino por **cómo comunica**.
+Al dominar:
 
-- La **semántica de HTTP** (*verbos, códigos de estado*),
-- La **estructura de JSON** (*metadatos, errores claros*),
-- La **documentación proactiva** (*ejemplos, casos de error*),
+- La **semántica de HTTP** (_verbos, códigos de estado_),
+- La **estructura de JSON** (_metadatos, errores claros_),
+- La **documentación proactiva** (_ejemplos, casos de error_),
 
-Transformas tu API en un **sistema autónomo** que minimiza la fricción para quienes la usan. No es solo "hacer que
-funcione": es construir un lenguaje que **elimina la necesidad de adivinar**.
+Transformas tu API en un **sistema autónomo** que minimiza la fricción para
+quienes la usan. No es solo "hacer que funcione": es construir un lenguaje que
+**elimina la necesidad de adivinar**.
 
-**La claridad en la comunicación no es un lujo:** es la diferencia entre un sistema que escala y uno que se derrumba
-bajo su propia complejidad.
+**La claridad en la comunicación no es un lujo:** es la diferencia entre un
+sistema que escala y uno que se derrumba bajo su propia complejidad.
 
-> **Recuerda:**  
-> *Una API bien diseñada no requiere explicación. Su lenguaje es tan claro que habla por sí misma.*
+> **Recuerda:** _Una API bien diseñada no requiere explicación. Su lenguaje es
+> tan claro que habla por sí misma._
 >
-> **¿Por qué tu API debe hablar como un profesional?**  
-> Porque el protocolo HTTP no es solo un transporte técnico: es el *lenguaje universal* que define cómo interactúan los
-> sistemas. Una API que aprovecha al máximo HTTP se vuelve intuitiva, robusta y autoexplicativa. En este documento,
-> aprenderás a usarlo como un **arma estratégica** en lugar de un mero mecanismo de comunicación.
+> **¿Por qué tu API debe hablar como un profesional?** Porque el protocolo HTTP
+> no es solo un transporte técnico: es el _lenguaje universal_ que define cómo
+> interactúan los sistemas. Una API que aprovecha al máximo HTTP se vuelve
+> intuitiva, robusta y autoexplicativa. En este documento, aprenderás a usarlo
+> como un **arma estratégica** en lugar de un mero mecanismo de comunicación.
 
 ---
 
 ## ¿Qué hace una API "profesional"?
 
 | **Característica**           | **API Amateur**             | **API Profesional**                             |
-|------------------------------|-----------------------------|-------------------------------------------------|
+| ---------------------------- | --------------------------- | ----------------------------------------------- |
 | **Métodos HTTP**             | Usa siempre POST para todo  | Elige el método correcto según la acción        |
 | **Códigos de estado**        | Siempre 200 o 500           | Usa códigos semánticos (201, 409, 422, etc.)    |
 | **Estructura de respuestas** | Respuestas sin estándar     | JSON consistente con metadatos y errores claros |
@@ -229,7 +246,7 @@ bajo su propia complejidad.
 ### Hotel: Gestión de Reservas
 
 | Método    | Uso                               | Ejemplo Real                                                                 |
-|-----------|-----------------------------------|------------------------------------------------------------------------------|
+| --------- | --------------------------------- | ---------------------------------------------------------------------------- |
 | **GET**   | Listar recursos                   | `GET /rooms?status=available` → Habitaciones libres                          |
 | **POST**  | Crear un recurso nuevo            | `POST /reservations` → Nueva reserva (con validación de límite de huéspedes) |
 | **PUT**   | Reemplazar recurso completo       | `PUT /rooms/101` → Actualizar estado y todos los atributos                   |
@@ -260,7 +277,7 @@ fun createReservation(
 ### Tabla de Códigos Clave
 
 | Código  | Significado          | Escenario en Hotel                                        | ¿Por qué es profesional?                    |
-|---------|----------------------|-----------------------------------------------------------|---------------------------------------------|
+| ------- | -------------------- | --------------------------------------------------------- | ------------------------------------------- |
 | **201** | Created              | Reserva creada exitosamente                               | Confirma creación + devuelve ubicación      |
 | **409** | Conflict             | Habitación ya reservada                                   | Indica conflicto lógico (no error genérico) |
 | **422** | Unprocessable Entity | Solicitud inválida (ej: 5 huéspedes en habitación para 4) | Valida reglas de negocio                    |
@@ -290,11 +307,7 @@ fun handleConflict(ex: ConflictException): ResponseEntity<ErrorResponse> {
   "number": "101",
   "type": "Suite Deluxe",
   "status": "available",
-  "amenities": [
-    "Wi-Fi 5G",
-    "Minibar",
-    "Vista al mar"
-  ],
+  "amenities": ["Wi-Fi 5G", "Minibar", "Vista al mar"],
   "maxGuests": 4
 }
 ```
@@ -306,13 +319,8 @@ fun handleConflict(ex: ConflictException): ResponseEntity<ErrorResponse> {
   "id": "pikachu",
   "name": "Pikachu",
   "type": "Electric",
-  "abilities": [
-    "Static",
-    "Lightning Rod"
-  ],
-  "evolutions": [
-    "Raichu"
-  ],
+  "abilities": ["Static", "Lightning Rod"],
+  "evolutions": ["Raichu"],
   "isThemedRoomAvailable": true
 }
 ```
@@ -335,7 +343,7 @@ fun handleConflict(ex: ConflictException): ResponseEntity<ErrorResponse> {
       "price": 25.0
     }
   ],
-  "total": 185.50
+  "total": 185.5
 }
 ```
 
@@ -360,11 +368,7 @@ Accept: application/json
       "number": "202",
       "type": "Pikachu Suite",
       "status": "available",
-      "amenities": [
-        "TV 4K",
-        "Zona de juego",
-        "Cama temática"
-      ]
+      "amenities": ["TV 4K", "Zona de juego", "Cama temática"]
     }
   ],
   "metadata": {
@@ -507,7 +511,8 @@ fun handleValidation(ex: ValidationException): ErrorResponse {
 
 ## Usa HTTP como Arma Estratégica
 
-- **Métodos HTTP correctos** = Menos documentación necesaria (*la API se autoexplica*).
+- **Métodos HTTP correctos** = Menos documentación necesaria (_la API se
+  autoexplica_).
 - **Documentación clara** = Menos soporte técnico requerido.
 - **Metadatos útiles** = Clientes más inteligentes y eficientes.
 - **Errores detallados** = Menos confusión y mejor experiencia de usuario.
@@ -515,8 +520,9 @@ fun handleValidation(ex: ValidationException): ErrorResponse {
 - **JSON estructurado** = Integraciones más rápidas con otros sistemas.
 - **Spring Boot + Kotlin** = Código seguro y legible con menos boilerplate.
 
-> **"Una API que habla HTTP correctamente no necesita documentación: su lenguaje es universal."**  
-> Domina el protocolo, no lo sobrecargues. Cada `409 Conflict` o `201 Created` es una conversación clara entre sistemas.
+> **"Una API que habla HTTP correctamente no necesita documentación: su lenguaje
+> es universal."** Domina el protocolo, no lo sobrecargues. Cada `409 Conflict`
+> o `201 Created` es una conversación clara entre sistemas.
 
 ---
 
@@ -526,5 +532,5 @@ fun handleValidation(ex: ValidationException): ErrorResponse {
 - [Spring Boot 3.2 Documentation](https://spring.io/projects/spring-boot)
 - [Kotlin Coroutines + Spring WebFlux](https://kotlinlang.org/docs/coroutines-guide.html)
 
-> **¿Listo para que tu API hable como un profesional?**  
-> ¡Aplica estos principios y transforma tu API en un estándar de la industria!
+> **¿Listo para que tu API hable como un profesional?** ¡Aplica estos principios
+> y transforma tu API en un estándar de la industria!

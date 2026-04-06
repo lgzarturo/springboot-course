@@ -2,21 +2,31 @@
 
 ## Contexto
 
-El proyecto actualmente usa arquitectura hexagonal con organización por capas. Esto genera:
-- 5-6 niveles de anidación por feature (`adapters/rest/dto/`, `application/ports/output/`, etc.)
+El proyecto actualmente usa arquitectura hexagonal con organización por capas.
+Esto genera:
+
+- 5-6 niveles de anidación por feature (`adapters/rest/dto/`,
+  `application/ports/output/`, etc.)
 - Interfaces "port" que solo tienen una implementación (ceremonia sin valor)
 - Clases "adapter" que Spring ya resuelve con `@RestController` y `@Repository`
-- Stubs vacíos (`cart/`, `gamification/`, `payments/`) al mismo nivel que `shared/`
-- Un programador nuevo necesita entender la arquitectura antes de entender el código
+- Stubs vacíos (`cart/`, `gamification/`, `payments/`) al mismo nivel que
+  `shared/`
+- Un programador nuevo necesita entender la arquitectura antes de entender el
+  código
 
 ## Principios de la Nueva Estructura
 
 1. **Un paquete = una feature**. Todo lo relacionado con una feature vive junto.
-2. **Máximo 2 niveles de profundidad** dentro de una feature. `hotels/dto/` es el máximo.
-3. **Sin ports artificiales**. El service es la capa de negocio. Si necesitas abstracción del repositorio, usa una interfaz simple.
-4. **Sin adapters**. Spring ya separa REST de persistence con sus propias anotaciones.
-5. **Sin config por feature**. Usa `@Service`, `@Repository`, `@Component` directamente.
-6. **Eliminar stubs vacíos**. No crees paquetes para features que no existen aún.
+2. **Máximo 2 niveles de profundidad** dentro de una feature. `hotels/dto/` es
+   el máximo.
+3. **Sin ports artificiales**. El service es la capa de negocio. Si necesitas
+   abstracción del repositorio, usa una interfaz simple.
+4. **Sin adapters**. Spring ya separa REST de persistence con sus propias
+   anotaciones.
+5. **Sin config por feature**. Usa `@Service`, `@Repository`, `@Component`
+   directamente.
+6. **Eliminar stubs vacíos**. No crees paquetes para features que no existen
+   aún.
 
 ---
 
@@ -110,7 +120,7 @@ com.lgzarturo.springbootcourse/
 ### Paquetes de Infraestructura (`config/`, `common/`)
 
 | Paquete              | Qué contiene                                                  | Qué NO contiene                                   |
-|----------------------|---------------------------------------------------------------|---------------------------------------------------|
+| -------------------- | ------------------------------------------------------------- | ------------------------------------------------- |
 | `config/`            | Configuración global de Spring (CORS, OpenAPI, Jackson, etc.) | Configuración específica de una feature           |
 | `common/exception/`  | Manejo global de errores, DTOs de error                       | Excepciones de dominio específicas de una feature |
 | `common/pagination/` | Utilidades de paginación reutilizables                        | Lógica de paginación específica de una feature    |
@@ -120,7 +130,7 @@ com.lgzarturo.springbootcourse/
 ### Paquetes de Features (`features/`)
 
 | Archivo          | Responsabilidad                                    | Annotations típicas                                  |
-|------------------|----------------------------------------------------|------------------------------------------------------|
+| ---------------- | -------------------------------------------------- | ---------------------------------------------------- |
 | `*Controller.kt` | Endpoints REST, valida input, delega al service    | `@RestController`, `@RequestMapping`                 |
 | `*Service.kt`    | Lógica de negocio, orquesta repositorios           | `@Service`                                           |
 | `*Repository.kt` | Acceso a datos, Spring Data JPA                    | `@Repository` (interface que extiende JpaRepository) |
@@ -133,7 +143,7 @@ com.lgzarturo.springbootcourse/
 ### Qué se ELIMINA
 
 | Concepto Hexagonal                            | Por qué se elimina                                    | Reemplazo                               |
-|-----------------------------------------------|-------------------------------------------------------|-----------------------------------------|
+| --------------------------------------------- | ----------------------------------------------------- | --------------------------------------- |
 | `adapters/rest/`                              | Spring ya sabe que un `@RestController` es un adapter | Archivo directo en la feature           |
 | `adapters/persistence/`                       | Spring ya sabe que un `@Repository` es un adapter     | Archivo directo en la feature           |
 | `application/ports/input/`                    | Interfaces con una sola implementación                | El service ES la interfaz               |
@@ -149,6 +159,7 @@ com.lgzarturo.springbootcourse/
 ### Fase 1: Crear estructura base y mover infraestructura
 
 **Acciones:**
+
 1. Crear directorio `features/`
 2. Mover `shared/config/OpenApiConfig.kt` → `config/OpenApiConfig.kt`
 3. Mover `shared/config/WebConfig.kt` → `config/WebConfig.kt`
@@ -157,13 +168,16 @@ com.lgzarturo.springbootcourse/
 6. Mover `shared/constant/` → `common/constants/`
 7. Mover `shared/extension/` → `common/extensions/`
 8. Eliminar directorio `shared/`
-9. Eliminar stubs vacíos: `cart/`, `gamification/`, `payments/`, `pokemon/`, `reservations/`, `reviews/`, `services/`
+9. Eliminar stubs vacíos: `cart/`, `gamification/`, `payments/`, `pokemon/`,
+   `reservations/`, `reviews/`, `services/`
 
-**Actualizar imports:** Todos los archivos que referencien `shared.*` → `common.*` o `config.*`
+**Actualizar imports:** Todos los archivos que referencien `shared.*` →
+`common.*` o `config.*`
 
 ### Fase 2: Migrar `hotels/` → `features/hotels/`
 
 **Estructura actual (13 archivos, 5 niveles):**
+
 ```
 hotels/
   adapters/rest/HotelController.kt
@@ -182,6 +196,7 @@ hotels/
 ```
 
 **Estructura objetivo (10 archivos, 2 niveles):**
+
 ```
 features/hotels/
   HotelController.kt
@@ -198,19 +213,23 @@ features/hotels/
 ```
 
 **Acciones:**
+
 1. Mover `HotelController.kt` → `features/hotels/HotelController.kt`
 2. Mover `dto/*` → `features/hotels/dto/*`
 3. Mover `HotelJpaRepository.kt` → `features/hotels/HotelJpaRepository.kt`
-4. Renombrar `HotelRoomJpaRepository.kt` → `HotelRepository.kt` y mover a `features/hotels/`
+4. Renombrar `HotelRoomJpaRepository.kt` → `HotelRepository.kt` y mover a
+   `features/hotels/`
 5. Mover `HotelEntity.kt` → `features/hotels/HotelEntity.kt`
 6. Mover `Hotel.kt` → `features/hotels/Hotel.kt`
 7. Mover `HotelSearchCriteria.kt` → `features/hotels/HotelSearchCriteria.kt`
 8. Mover `HotelService.kt` → `features/hotels/HotelService.kt`
 9. **Eliminar** `HotelRepositoryPort.kt` (redundante con `HotelRepository`)
 10. **Eliminar** `HotelServiceConfig.kt` (agregar `@Service` a `HotelService`)
-11. Eliminar directorios vacíos: `adapters/`, `application/`, `config/`, `domain/`, `service/`
+11. Eliminar directorios vacíos: `adapters/`, `application/`, `config/`,
+    `domain/`, `service/`
 
 **Actualizar imports en:**
+
 - `HotelController.kt` (dto, service, domain)
 - `HotelService.kt` (repository, domain)
 - `HotelRepository.kt` (entity, JPA repository, domain)
@@ -219,6 +238,7 @@ features/hotels/
 ### Fase 3: Migrar `example/` → `features/examples/`
 
 **Estructura actual (12 archivos, 5 niveles):**
+
 ```
 example/
   adapters/rest/ExampleController.kt
@@ -236,6 +256,7 @@ example/
 ```
 
 **Estructura objetivo (9 archivos, 2 niveles):**
+
 ```
 features/examples/
   ExampleController.kt
@@ -250,16 +271,19 @@ features/examples/
 ```
 
 **Acciones:**
+
 1. Mover y renombrar archivos al nivel `features/examples/`
 2. **Eliminar** `ExampleUseCasePort.kt` (redundante con `ExampleService`)
 3. **Eliminar** `ExampleRepositoryPort.kt` (redundante con `ExampleRepository`)
-4. **Eliminar** `ExampleServiceConfig.kt` (agregar `@Service` a `ExampleService`)
+4. **Eliminar** `ExampleServiceConfig.kt` (agregar `@Service` a
+   `ExampleService`)
 5. Actualizar `ExampleController` para depender de `ExampleService` directamente
 6. Actualizar imports en tests
 
 ### Fase 4: Migrar `ping/` → `features/ping/`
 
 **Estructura actual (7 archivos, 4 niveles):**
+
 ```
 ping/
   adapters/rest/PingController.kt
@@ -272,6 +296,7 @@ ping/
 ```
 
 **Estructura objetivo (4 archivos, 2 niveles):**
+
 ```
 features/ping/
   PingController.kt
@@ -281,11 +306,13 @@ features/ping/
 ```
 
 **Acciones:**
+
 1. Mover `PingController.kt` → `features/ping/PingController.kt`
 2. Mover `PingService.kt` → `features/ping/PingService.kt`
 3. Mover `Ping.kt` → `features/ping/Ping.kt`
 4. Mover `dto/PingResponse.kt` → `features/ping/dto/PingResponse.kt`
-5. **Eliminar** `PingMapper.kt` (mover lógica a companion object en `PingResponse`)
+5. **Eliminar** `PingMapper.kt` (mover lógica a companion object en
+   `PingResponse`)
 6. **Eliminar** `PingUseCasePort.kt` (redundante con `PingService`)
 7. **Eliminar** `PingConfig.kt` (agregar `@Service` a `PingService`)
 8. Actualizar imports en tests
@@ -293,6 +320,7 @@ features/ping/
 ### Fase 5: Migrar `users/` → `features/users/`
 
 **Estructura actual (13 archivos, 4 niveles):**
+
 ```
 users/
   adapters/rest/UserController.kt
@@ -312,6 +340,7 @@ users/
 ```
 
 **Estructura objetivo (12 archivos, 3 niveles):**
+
 ```
 features/users/
   UserController.kt
@@ -334,14 +363,18 @@ features/users/
 ```
 
 **Acciones:**
+
 1. Mover archivos al nivel `features/users/`
-2. **Eliminar** `GetUserUseCase.kt` y `UpdateUserUseCase.kt` (redundantes con `UserService`)
-3. **Eliminar** `UserMapper.kt` (mover lógica a companion object en `UserResponse`)
+2. **Eliminar** `GetUserUseCase.kt` y `UpdateUserUseCase.kt` (redundantes con
+   `UserService`)
+3. **Eliminar** `UserMapper.kt` (mover lógica a companion object en
+   `UserResponse`)
 4. Actualizar imports en tests
 
 ### Fase 6: Migrar `rooms/` → `features/rooms/`
 
 **Estructura actual (3 archivos, 3 niveles):**
+
 ```
 rooms/
   adapters/persistence/RoomJpaRepository.kt
@@ -350,6 +383,7 @@ rooms/
 ```
 
 **Estructura objetivo (3 archivos, 1 nivel):**
+
 ```
 features/rooms/
   RoomJpaRepository.kt
@@ -358,12 +392,14 @@ features/rooms/
 ```
 
 **Acciones:**
+
 1. Mover todos los archivos al nivel `features/rooms/`
 2. Eliminar directorios vacíos
 
 ### Fase 7: Migrar `sentry/` → `features/sentry/`
 
 **Estructura actual (2 archivos, 2 niveles):**
+
 ```
 sentry/
   adapters/rest/SentryController.kt
@@ -371,18 +407,21 @@ sentry/
 ```
 
 **Estructura objetivo (1 archivo, 1 nivel):**
+
 ```
 features/sentry/
   SentryController.kt
 ```
 
 **Acciones:**
+
 1. Mover `SentryController.kt` → `features/sentry/SentryController.kt`
 2. Eliminar directorios vacíos
 
 ### Fase 8: Reorganizar tests
 
 **Estructura objetivo:**
+
 ```
 src/test/kotlin/com/lgzarturo/springbootcourse/
 │
@@ -420,6 +459,7 @@ src/test/kotlin/com/lgzarturo/springbootcourse/
 ```
 
 **Acciones:**
+
 1. Mover tests de `hotels/adapters/rest/` → `features/hotels/`
 2. Mover tests de `hotels/service/` → `features/hotels/`
 3. Mover tests de `hotels/adapters/persistence/` → `features/hotels/`
@@ -431,7 +471,8 @@ src/test/kotlin/com/lgzarturo/springbootcourse/
 9. Mover tests de `users/` → `features/users/`
 10. Actualizar package declarations e imports en todos los tests
 11. Mover `MockkTestConfig.kt` → `common/MockkTestConfig.kt`
-12. Mover `TestcontainersConfiguration.kt` → `config/TestcontainersConfiguration.kt`
+12. Mover `TestcontainersConfiguration.kt` →
+    `config/TestcontainersConfiguration.kt`
 
 ### Fase 9: Verificación final
 
@@ -448,7 +489,7 @@ src/test/kotlin/com/lgzarturo/springbootcourse/
 ### Métricas de Complejidad
 
 | Métrica                         | Antes (Hexagonal)                | Después (MVC Features)                      | Mejora |
-|---------------------------------|----------------------------------|---------------------------------------------|--------|
+| ------------------------------- | -------------------------------- | ------------------------------------------- | ------ |
 | **Niveles máximos en hotels/**  | 5 (`adapters/rest/dto/request/`) | 2 (`dto/`)                                  | -60%   |
 | **Archivos en hotels/**         | 13                               | 11                                          | -15%   |
 | **Paquetes raíz**               | 14 (incluyendo 7 stubs)          | 5 (config, common, features, rooms, sentry) | -64%   |
@@ -460,6 +501,7 @@ src/test/kotlin/com/lgzarturo/springbootcourse/
 ### Ejemplo: Antes vs Después para `hotels`
 
 **Antes (Hexagonal):**
+
 ```
 hotels/
   adapters/
@@ -491,6 +533,7 @@ hotels/
 ```
 
 **Después (MVC Features):**
+
 ```
 features/hotels/
   HotelController.kt              ← @RestController, depende de HotelService
@@ -507,7 +550,9 @@ features/hotels/
     PageResponse.kt
 ```
 
-**Diferencia clave:** De 5 niveles de anidación a 2. De 13 archivos a 11. De 6 tipos de concepto (adapters, application, config, domain, service, dto) a 3 (controller, service, repository, dto).
+**Diferencia clave:** De 5 niveles de anidación a 2. De 13 archivos a 11. De 6
+tipos de concepto (adapters, application, config, domain, service, dto) a 3
+(controller, service, repository, dto).
 
 ---
 
@@ -523,6 +568,7 @@ features/hotels/
 ### Sobre Companion Objects como Mappers
 
 En lugar de clases `*Mapper.kt` separadas:
+
 ```kotlin
 // Antes
 class HotelMapper {
@@ -539,7 +585,8 @@ data class HotelResponse(...) {
 
 ### Sobre Ports Eliminados
 
-Cada "port" tenía exactamente UNA implementación. Eso no es un port, es una implementación directa:
+Cada "port" tenía exactamente UNA implementación. Eso no es un port, es una
+implementación directa:
 
 ```kotlin
 // Antes: port + implementación
@@ -553,10 +600,13 @@ class HotelRepository(...) { fun save(hotel: Hotel): Hotel { ... } }
 
 ### Sobre Stubs Eliminados
 
-Los stubs (`cart/`, `gamification/`, `payments/`, `pokemon/`, `reservations/`, `reviews/`, `services/`) se eliminan porque:
+Los stubs (`cart/`, `gamification/`, `payments/`, `pokemon/`, `reservations/`,
+`reviews/`, `services/`) se eliminan porque:
+
 - No tienen código funcional
 - Ocupan espacio visual en el explorador de archivos
 - Crean la ilusión de progreso sin entregar valor
 - **YAGNI**: Se crean cuando realmente se necesitan, no antes
 
-Si en el futuro se necesita una feature `cart/`, se crea `features/cart/` con su estructura MVC desde el inicio.
+Si en el futuro se necesita una feature `cart/`, se crea `features/cart/` con su
+estructura MVC desde el inicio.

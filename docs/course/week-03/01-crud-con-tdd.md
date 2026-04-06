@@ -2,7 +2,9 @@
 
 ## 1. Estructura esperada para el CRUD con TDD
 
-El flujo natural del CRUD bajo la arquitectura hexagonal debe ser iterativo y verificable en cada capa. Esta es la estructura objetivo y los archivos reales del repositorio que usaremos en el proceso:
+El flujo natural del CRUD bajo la arquitectura hexagonal debe ser iterativo y
+verificable en cada capa. Esta es la estructura objetivo y los archivos reales
+del repositorio que usaremos en el proceso:
 
 ```plaintext
 src/main/kotlin/com/lgzarturo/springbootcourse/
@@ -38,8 +40,9 @@ src/test/kotlin/com/lgzarturo/springbootcourse/
 ```
 
 > Rama de trabajo: feature/milestone-01-persistence
-> 
-> La guía siguiente explica el flujo TDD Red → Green → Refactor por commits sobre esa rama, incluyendo ejemplos de código y rutas completas de archivos.
+>
+> La guía siguiente explica el flujo TDD Red → Green → Refactor por commits
+> sobre esa rama, incluyendo ejemplos de código y rutas completas de archivos.
 
 ## 2. Creamos las pruebas unitarias básicas
 
@@ -51,7 +54,8 @@ Recordatorio del ciclo TDD:
 
 Paso 1 (🔴 Red): agregamos la primera prueba unitaria del dominio
 
-- Archivo: `src/test/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleServiceTest.kt`
+- Archivo:
+  `src/test/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleServiceTest.kt`
 
 ```kotlin
 class ExampleServiceTest {
@@ -72,7 +76,8 @@ class ExampleServiceTest {
 }
 ```
 
-- Commit sugerido: test(domain): add ExampleServiceTest for create use case (falla)
+- Commit sugerido: test(domain): add ExampleServiceTest for create use case
+  (falla)
 - Dependencias de prueba necesarias en build.gradle.kts:
 
 ```kotlin
@@ -89,7 +94,8 @@ Paso 2 (🟢 Green): hacemos que compile el dominio con lo mínimo
 
 Creamos/ajustamos las clases del dominio y el puerto de salida.
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/model/Example.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/domain/model/Example.kt`
 
 ```kotlin
 data class Example(
@@ -99,7 +105,8 @@ data class Example(
 )
 ```
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/output/ExampleRepositoryPort.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/output/ExampleRepositoryPort.kt`
 
 ```kotlin
 interface ExampleRepositoryPort {
@@ -107,7 +114,8 @@ interface ExampleRepositoryPort {
 }
 ```
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleService.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleService.kt`
 
 ```kotlin
 class ExampleService(
@@ -117,7 +125,8 @@ class ExampleService(
 }
 ```
 
-- Commit sugerido: feat(domain): add Example model, port and minimal ExampleService
+- Commit sugerido: feat(domain): add Example model, port and minimal
+  ExampleService
 
 Paso 3 (🔵 Refactor): limpieza menor en dominio si aplica
 
@@ -126,7 +135,8 @@ Paso 3 (🔵 Refactor): limpieza menor en dominio si aplica
 
 Paso 4 (🔴 Red): prueba de infraestructura (controlador REST)
 
-- Archivo: `src/test/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/controller/ExampleControllerTest.kt`
+- Archivo:
+  `src/test/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/controller/ExampleControllerTest.kt`
 
 ```kotlin
 @WebMvcTest(ExampleController::class)
@@ -151,11 +161,13 @@ class ExampleControllerTest(
 }
 ```
 
-- Commit sugerido: test(web): add ExampleControllerTest for `POST /api/v1/examples` (falla)
+- Commit sugerido: test(web): add ExampleControllerTest for
+  `POST /api/v1/examples` (falla)
 
 Paso 5 (🟢 Green): añadimos controlador y DTOs mínimos
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/input/ExampleUseCase.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/domain/port/input/ExampleUseCase.kt`
 
 ```kotlin
 interface ExampleUseCase {
@@ -163,7 +175,8 @@ interface ExampleUseCase {
 }
 ```
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/dto/request/ExampleRequest.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/dto/request/ExampleRequest.kt`
 
 ```kotlin
 data class ExampleRequest(
@@ -174,7 +187,8 @@ data class ExampleRequest(
 }
 ```
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/dto/response/ExampleResponse.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/dto/response/ExampleResponse.kt`
 
 ```kotlin
 data class ExampleResponse(
@@ -188,7 +202,8 @@ data class ExampleResponse(
 }
 ```
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/controller/ExampleController.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/rest/controller/ExampleController.kt`
 
 ```kotlin
 @RestController
@@ -207,13 +222,16 @@ class ExampleController(
 }
 ```
 
-- Commit sugerido: feat(web): add ExampleController + DTOs and wire with ExampleUseCase
+- Commit sugerido: feat(web): add ExampleController + DTOs and wire with
+  ExampleUseCase
 
 Paso 6 (🔴 Red → 🟢 Green): persistencia mínima (adaptador + JPA)
 
-Para que el servicio realmente persista, implementamos el puerto de salida con un adaptador de infraestructura.
+Para que el servicio realmente persista, implementamos el puerto de salida con
+un adaptador de infraestructura.
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/entity/ExampleEntity.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/entity/ExampleEntity.kt`
 
 ```kotlin
 @Entity
@@ -240,13 +258,15 @@ data class ExampleEntity(
 }
 ```
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/repository/ExampleJpaRepository.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/repository/ExampleJpaRepository.kt`
 
 ```kotlin
 interface ExampleJpaRepository : JpaRepository<ExampleEntity, Long>
 ```
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/adapter/ExampleRepositoryAdapter.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/infrastructure/persistence/adapter/ExampleRepositoryAdapter.kt`
 
 ```kotlin
 @Repository
@@ -262,18 +282,23 @@ class ExampleRepositoryAdapter(
 
 - Commits sugeridos:
   - feat(persistence): add ExampleEntity and ExampleJpaRepository
-  - feat(persistence): add ExampleRepositoryAdapter implementing ExampleRepositoryPort
+  - feat(persistence): add ExampleRepositoryAdapter implementing
+    ExampleRepositoryPort
 
 Paso 7 (🔵 Refactor): ordenar y documentar
 
-- Revisa nombres, paquetes, y comentarios. Limpia imports y duplica la documentación si es necesario.
+- Revisa nombres, paquetes, y comentarios. Limpia imports y duplica la
+  documentación si es necesario.
 - Commit sugerido: docs: update TDD guide with commit log and full paths
 
 Resultados esperados tras estos pasos
 
-- El test de dominio pasa (creación de Example en memoria mediante mock del repositorio).
-- El test del controlador pasa (`POST /api/v1/examples` retorna 201 con cuerpo JSON).
-- Hay una ruta clara para continuar de forma iterativa con Read/Update/Delete repitiendo el ciclo TDD.
+- El test de dominio pasa (creación de Example en memoria mediante mock del
+  repositorio).
+- El test del controlador pasa (`POST /api/v1/examples` retorna 201 con cuerpo
+  JSON).
+- Hay una ruta clara para continuar de forma iterativa con Read/Update/Delete
+  repitiendo el ciclo TDD.
 
 Ejecutar pruebas y verificar
 
@@ -294,9 +319,11 @@ Content-Type: application/json
 }
 ```
 
-Paso 8: Ahora ye tenemos una prueba que pasa, implementamos el controlador y el puerto de salida.
+Paso 8: Ahora ye tenemos una prueba que pasa, implementamos el controlador y el
+puerto de salida.
 
-Sin embargo, el endpoint no funciona, hay diversas razones, pero lo mas importante es resolver la inyección de dependencias de Spring.
+Sin embargo, el endpoint no funciona, hay diversas razones, pero lo mas
+importante es resolver la inyección de dependencias de Spring.
 
 Este es el error que vemos en la consola:
 
@@ -311,11 +338,14 @@ Action:
 Consider defining a bean of type 'com.lgzarturo.springbootcourse.domain.port.input.ExampleUseCase' in your configuration.
 ```
 
-Esto se debe a que no hemos implementado el puerto de entrada `ExampleUseCase` en ninguna clase, por lo que Spring no puede inyectarlo en el controlador.
+Esto se debe a que no hemos implementado el puerto de entrada `ExampleUseCase`
+en ninguna clase, por lo que Spring no puede inyectarlo en el controlador.
 
-Para resolverlo, agregamos una clase de servicio que implementa `ExampleUseCase` y lo inyectamos en el controlador.
+Para resolverlo, agregamos una clase de servicio que implementa `ExampleUseCase`
+y lo inyectamos en el controlador.
 
-- Archivo: `src/main/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleService.kt`
+- Archivo:
+  `src/main/kotlin/com/lgzarturo/springbootcourse/domain/service/ExampleService.kt`
 
 ```kotlin
 @Service
@@ -326,25 +356,49 @@ class ExampleService(
 }
 ```
 
-De esta forma, ahora Spring puede inyectar el servicio en el controlador, debemos hacer un `override` en el controlador para que sepa que es el puerto de entrada y que implementa `ExampleUseCase`, para que user el método `create` que ya existe en el servicio. Dandole una implementación al método `create` que devuelve el objeto creado.
+De esta forma, ahora Spring puede inyectar el servicio en el controlador,
+debemos hacer un `override` en el controlador para que sepa que es el puerto de
+entrada y que implementa `ExampleUseCase`, para que user el método `create` que
+ya existe en el servicio. Dandole una implementación al método `create` que
+devuelve el objeto creado.
 
-> Nota: Como puedes ver, la prueba pasa desde el paso 7, pero el endpoint no funciona hasta que implementamos el servicio que implementa el puerto de entrada. Ese es el flujo correcto del TDD, realizar pruebas, implementar y refactor. No quiere decir que te tengas que fiar de las pruebas, más bien usas las pruebas para aplicar un flujo de trabajo ordenado y estructurado.
-> 
-> Una vez que tienes las pruebas, cualquier cambio en el código que haga que las pruebas fallen te avisa de que algo no está bien, y puedes arreglarlo sin miedo a romper otras partes del código.
+> Nota: Como puedes ver, la prueba pasa desde el paso 7, pero el endpoint no
+> funciona hasta que implementamos el servicio que implementa el puerto de
+> entrada. Ese es el flujo correcto del TDD, realizar pruebas, implementar y
+> refactor. No quiere decir que te tengas que fiar de las pruebas, más bien usas
+> las pruebas para aplicar un flujo de trabajo ordenado y estructurado.
+>
+> Una vez que tienes las pruebas, cualquier cambio en el código que haga que las
+> pruebas fallen te avisa de que algo no está bien, y puedes arreglarlo sin
+> miedo a romper otras partes del código.
 
 ![Ejecución del endpoint](../../resources/images/15-tdd-post-endpoint-create.webp)
 
-Con estos pasos ya tenemos implementado el endpoint de creación con TDD, enlazado a la rama [feature/milestone-01-persistence](https://github.com/lgzarturo/springboot-course/tree/refs/heads/feature/milestone-01-persistence) y con trazabilidad por commits. A partir de aquí, repite el ciclo para listar, obtener por id, actualizar y eliminar (*cada uno con su prueba fallando primero, implementación mínima y refactor*).
+Con estos pasos ya tenemos implementado el endpoint de creación con TDD,
+enlazado a la rama
+[feature/milestone-01-persistence](https://github.com/lgzarturo/springboot-course/tree/refs/heads/feature/milestone-01-persistence)
+y con trazabilidad por commits. A partir de aquí, repite el ciclo para listar,
+obtener por id, actualizar y eliminar (_cada uno con su prueba fallando primero,
+implementación mínima y refactor_).
 
 Paso 9: Agregar casos de uso para las pruebas.
 
-> Ojo: Al agregar más casos de prueba, algunos van a fallar, eso es normal, otros van a pasar, eso es bueno, pero hay que tener cuidado con todos los casos de prueba.
-> 
-> Hay que ser conscientes que hay falsos positivos y falsos negativos. Por lo que la mejor estrategia es tomar los casos de uso como guía para validar el código, pero no fiarse ciegamente de ellos.
+> Ojo: Al agregar más casos de prueba, algunos van a fallar, eso es normal,
+> otros van a pasar, eso es bueno, pero hay que tener cuidado con todos los
+> casos de prueba.
+>
+> Hay que ser conscientes que hay falsos positivos y falsos negativos. Por lo
+> que la mejor estrategia es tomar los casos de uso como guía para validar el
+> código, pero no fiarse ciegamente de ellos.
 
-En este caso, seré sumamente detallado con los casos de uso que implementaremos, debido a que es una práctica deliberada, algo que me sirve para mejorar es prácticar una y otra vez las tecnicas de TDD.
+En este caso, seré sumamente detallado con los casos de uso que implementaremos,
+debido a que es una práctica deliberada, algo que me sirve para mejorar es
+prácticar una y otra vez las tecnicas de TDD.
 
-Normalmente, no es necesario implementar todos los casos de uso, en el flujo de trabajo profesional, por lo regular, se realizan algunas pruebas básicas (*casos de uso esenciales*) y se confía en que el código funciona correctamente, pero en este caso, quiero practicar TDD al máximo.
+Normalmente, no es necesario implementar todos los casos de uso, en el flujo de
+trabajo profesional, por lo regular, se realizan algunas pruebas básicas (_casos
+de uso esenciales_) y se confía en que el código funciona correctamente, pero en
+este caso, quiero practicar TDD al máximo.
 
 Casos Implementados:
 
@@ -379,16 +433,20 @@ Beneficios de Implementar Estos Casos
 - Prevención de bugs en producción
 - Facilita el mantenimiento futuro
 
-> Ahora ya sabes como implementar TDD en un proyecto Spring Boot, y como hacerlo con pruebas unitarias, este es el flujo de trabajo recomendado para TDD en proyectos Spring Boot. Es complicado definir que casos de uso son esenciales, pero es importante tenerlos en cuenta.
-> 
-> He encontrado que la mejor manera de acostumbrarse a TDD es practicarlo, y eso es lo que haremos en este curso.
+> Ahora ya sabes como implementar TDD en un proyecto Spring Boot, y como hacerlo
+> con pruebas unitarias, este es el flujo de trabajo recomendado para TDD en
+> proyectos Spring Boot. Es complicado definir que casos de uso son esenciales,
+> pero es importante tenerlos en cuenta.
+>
+> He encontrado que la mejor manera de acostumbrarse a TDD es practicarlo, y eso
+> es lo que haremos en este curso.
 
 ## 3. Porcentaje de cobertura
 
 ### 📊 **Cobertura mostrada**
 
 | Tipo de cobertura | Porcentaje  |
-|-------------------|-------------|
+| ----------------- | ----------- |
 | **Class**         | 90% (9/10)  |
 | **Method**        | 79% (19/24) |
 | **Line**          | 71% (66/92) |
@@ -398,11 +456,15 @@ Beneficios de Implementar Estos Casos
 
 ### 💡 **Qué significa cada uno**
 
-* **Class % (90%)**: De todas las clases del proyecto (10), 9 tienen al menos una línea ejecutada por los tests.
-* **Method % (79%)**: De los 24 métodos definidos, 19 se ejecutaron durante las pruebas.
-* **Line % (71%)**: De las 92 líneas de código, 66 fueron realmente ejecutadas.
-  > 👉 Este suele considerarse **el porcentaje de cobertura real**, porque refleja el código probado de manera efectiva.
-* **Branch % (57%)**: De las 14 bifurcaciones lógicas (por ejemplo, `if/else` o `when`), solo 8 fueron cubiertas por los tests.
+- **Class % (90%)**: De todas las clases del proyecto (10), 9 tienen al menos
+  una línea ejecutada por los tests.
+- **Method % (79%)**: De los 24 métodos definidos, 19 se ejecutaron durante las
+  pruebas.
+- **Line % (71%)**: De las 92 líneas de código, 66 fueron realmente ejecutadas.
+  > 👉 Este suele considerarse **el porcentaje de cobertura real**, porque
+  > refleja el código probado de manera efectiva.
+- **Branch % (57%)**: De las 14 bifurcaciones lógicas (por ejemplo, `if/else` o
+  `when`), solo 8 fueron cubiertas por los tests.
 
 ---
 
@@ -410,9 +472,10 @@ Beneficios de Implementar Estos Casos
 
 En resumen la **cobertura real de código es del 71%**, porque:
 
-* Representa la cantidad de **líneas ejecutadas vs. líneas totales**.
-* Es el indicador más fiable para medir cuánto del código fue realmente probado.
-* Los otros porcentajes (clases, métodos, ramas) complementan la información, pero el de **líneas** es el estándar para evaluar la cobertura global.
+- Representa la cantidad de **líneas ejecutadas vs. líneas totales**.
+- Es el indicador más fiable para medir cuánto del código fue realmente probado.
+- Los otros porcentajes (clases, métodos, ramas) complementan la información,
+  pero el de **líneas** es el estándar para evaluar la cobertura global.
 
 ---
 
@@ -420,107 +483,128 @@ En resumen la **cobertura real de código es del 71%**, porque:
 
 De 92 líneas que existen en tu proyecto:
 
-* 66 se ejecutaron durante los tests.
-* Por eso:
-  ``` 
+- 66 se ejecutaron durante los tests.
+- Por eso:
+  ```
   [ (66 ÷ 92) × 100 = 71.7% \approx 71% ]
   ```
 
-> En estos casos si quisieramos mejorar esa cobertura, sería enfocarse en los tests que ejerciten las ramas condicionales (el **Branch Coverage**), que es donde estás más bajo (57%), ya que eso suele indicar caminos no probados dentro de funciones que sí se ejecutaron parcialmente. Sin embargo, puede ser que no sean necesarios todos esos casos de prueba, ya que se estarían probando caminos poco relevantes o improbables.
-> 
-> Nota: El código del framework no es necesario probarlo, ni de librerias de terceros, solo el código que tú escribes. Ese es un buen discriminador al momento de medir la cobertura. Probar entidades y repositorios no es necesario, ya que son código que se relacion con el framework o con la persistencia de datos.
+> En estos casos si quisieramos mejorar esa cobertura, sería enfocarse en los
+> tests que ejerciten las ramas condicionales (el **Branch Coverage**), que es
+> donde estás más bajo (57%), ya que eso suele indicar caminos no probados
+> dentro de funciones que sí se ejecutaron parcialmente. Sin embargo, puede ser
+> que no sean necesarios todos esos casos de prueba, ya que se estarían probando
+> caminos poco relevantes o improbables.
+>
+> Nota: El código del framework no es necesario probarlo, ni de librerias de
+> terceros, solo el código que tú escribes. Ese es un buen discriminador al
+> momento de medir la cobertura. Probar entidades y repositorios no es
+> necesario, ya que son código que se relacion con el framework o con la
+> persistencia de datos.
 
 ![Cobertura de pruebas](../../resources/images/16-tdd-varios-casos-validar-cobertura.webp)
 
 ## 4. ¿Qué probar y qué no?
 
-
 ### ✅ **Qué sí deberías probar (código propio)**
 
-Enfócate en probar **tu lógica de negocio** y **las ramas relevantes del flujo**, es decir, el código que **tú escribiste y puede fallar por tus decisiones**:
+Enfócate en probar **tu lógica de negocio** y **las ramas relevantes del
+flujo**, es decir, el código que **tú escribiste y puede fallar por tus
+decisiones**:
 
 1. **Casos con lógica condicional o validaciones**
-
-    * `if`, `when`, `switch`, `try/catch`, etc.
-    * Validaciones como tamaños, formatos, estados, permisos o reglas de negocio.
-    > 👉 Ejemplo: en tu clase `ExampleRequest`, probar los casos donde `description` es `null`, vacía, o tiene solo espacios.
+   - `if`, `when`, `switch`, `try/catch`, etc.
+   - Validaciones como tamaños, formatos, estados, permisos o reglas de negocio.
+     > 👉 Ejemplo: en tu clase `ExampleRequest`, probar los casos donde
+     > `description` es `null`, vacía, o tiene solo espacios.
 
 2. **Métodos con transformación o procesamiento de datos**
-
-    * Cualquier función que convierte, filtra o mapea datos.
-    > 👉 Ejemplo: `toDomain()` donde haces `trim()` y `takeIf`.
+   - Cualquier función que convierte, filtra o mapea datos.
+     > 👉 Ejemplo: `toDomain()` donde haces `trim()` y `takeIf`.
 
 3. **Servicios con reglas de negocio**
-
-    * Lógica central que decide *qué hacer* con los datos, no solo los pasa al repositorio.
-    > 👉 Ejemplo: `ExampleService`, validaciones de estados, cálculo de totales, etc.
+   - Lógica central que decide _qué hacer_ con los datos, no solo los pasa al
+     repositorio.
+     > 👉 Ejemplo: `ExampleService`, validaciones de estados, cálculo de
+     > totales, etc.
 
 4. **Casos de error controlados**
-
-    * Validar que los errores esperados (por ejemplo `BadRequest`, `NotFound`) se lanzan correctamente.
-    > 👉 Ejemplo: tests que cubren “debería retornar 415 cuando el Content-Type es inválido”.
+   - Validar que los errores esperados (por ejemplo `BadRequest`, `NotFound`) se
+     lanzan correctamente.
+     > 👉 Ejemplo: tests que cubren “debería retornar 415 cuando el Content-Type
+     > es inválido”.
 
 5. **Controladores (mínimamente)**
-
-    * Solo los endpoints con lógica o validaciones adicionales (no todos los mapeos triviales).
-    > 👉 Ejemplo: un `POST` que hace validación antes de llamar al servicio.
+   - Solo los endpoints con lógica o validaciones adicionales (no todos los
+     mapeos triviales).
+     > 👉 Ejemplo: un `POST` que hace validación antes de llamar al servicio.
 
 ---
 
 ### ⚙️ **Qué no necesitas probar**
 
-Estos casos **no agregan valor real a la cobertura** y solo inflan el porcentaje:
+Estos casos **no agregan valor real a la cobertura** y solo inflan el
+porcentaje:
 
 1. **Código del framework o librerías**
-
-    * Spring, Hibernate, JPA, Jakarta Validation, etc.
-    > ❌ No pruebes si `@Autowired` funciona o si `@Repository` guarda en DB; eso ya está probado por sus creadores.
+   - Spring, Hibernate, JPA, Jakarta Validation, etc.
+     > ❌ No pruebes si `@Autowired` funciona o si `@Repository` guarda en DB;
+     > eso ya está probado por sus creadores.
 
 2. **Entidades y repositorios**
-
-    * Las clases que solo representan datos (`@Entity`, DTOs simples).
-    * Interfaces `JpaRepository` o `CrudRepository`.
-    > 👉 Solo deberías testearlos **si tienen lógica adicional** (por ejemplo, queries personalizados con `@Query`).
+   - Las clases que solo representan datos (`@Entity`, DTOs simples).
+   - Interfaces `JpaRepository` o `CrudRepository`.
+     > 👉 Solo deberías testearlos **si tienen lógica adicional** (por ejemplo,
+     > queries personalizados con `@Query`).
 
 3. **Configuraciones, beans, y wiring del framework**
-
-    * Archivos de configuración, `@Configuration`, `@Bean`.
-    > 👉 Solo si agregas lógica condicional dentro (por ejemplo, `if (profile == "test")`).
+   - Archivos de configuración, `@Configuration`, `@Bean`.
+     > 👉 Solo si agregas lógica condicional dentro (por ejemplo,
+     > `if (profile == "test")`).
 
 4. **Código generado o utilidades triviales**
-
-    * `equals()`, `hashCode()`, `toString()`, mappers sin lógica.
-    > 👉 A menos que los hayas personalizado y puedan causar un bug.
+   - `equals()`, `hashCode()`, `toString()`, mappers sin lógica.
+     > 👉 A menos que los hayas personalizado y puedan causar un bug.
 
 ---
 
 ### 📈 **Cómo interpretar la cobertura**
 
-* La **cobertura de líneas (71%)** indica cuánto código propio se ejecuta.
-* La **de ramas (57%)** te muestra cuántos caminos lógicos fueron realmente ejercitados.
-  > 👉 Si una función tiene varios `if` o validaciones, cada condición cuenta como una rama.
+- La **cobertura de líneas (71%)** indica cuánto código propio se ejecuta.
+- La **de ramas (57%)** te muestra cuántos caminos lógicos fueron realmente
+  ejercitados.
+  > 👉 Si una función tiene varios `if` o validaciones, cada condición cuenta
+  > como una rama.
 
-No se trata de alcanzar 100%, sino de tener una **cobertura significativa**, donde:
+No se trata de alcanzar 100%, sino de tener una **cobertura significativa**,
+donde:
 
-* Las ramas **importantes** estén cubiertas.
-* Las rutas **poco probables o triviales** (como validaciones duplicadas o nulas por seguridad) se dejen fuera.
+- Las ramas **importantes** estén cubiertas.
+- Las rutas **poco probables o triviales** (como validaciones duplicadas o nulas
+  por seguridad) se dejen fuera.
 
 ---
 
 ### 💡 **Regla simple para decidir**
 
-> "Si el código puede romper algo que el framework no controla, pruébalo.
-> Si el código solo pasa datos al framework, no lo pruebes."
+> "Si el código puede romper algo que el framework no controla, pruébalo. Si el
+> código solo pasa datos al framework, no lo pruebes."
 
 ---
 
 ## Iteramos con TDD ahora con `GET /api/v1/examples/{id}`
 
-Ahora el siguiente paso se debe de reiniciar el flujo de TDD, ya que se va a agregar una nueva ruta, y eso significa que hay que volver a implementar el controlador y el puerto de salida.
+Ahora el siguiente paso se debe de reiniciar el flujo de TDD, ya que se va a
+agregar una nueva ruta, y eso significa que hay que volver a implementar el
+controlador y el puerto de salida.
 
 ### Paso 1 (🔴 Red): agregamos los casos de uso
 
-Se han creado los casos de prueba para el endpoint `GET /api/v1/examples/{id}` y el método de servicio asociado, siguiendo el contrato que ya se definio en el proceso anterior (ahora tomaremos en cuenta lo siguiente `findById(id: Long): Example?` y lanzar `NoSuchElementException` cuando no existe):
+Se han creado los casos de prueba para el endpoint `GET /api/v1/examples/{id}` y
+el método de servicio asociado, siguiendo el contrato que ya se definio en el
+proceso anterior (ahora tomaremos en cuenta lo siguiente
+`findById(id: Long): Example?` y lanzar `NoSuchElementException` cuando no
+existe):
 
 #### Controlador: `ExampleControllerTest.kt`
 
@@ -528,51 +612,83 @@ Se añadió el bloque `ShowExampleTests` con los siguientes escenarios:
 
 - 200 OK cuando el recurso existe, validando cuerpo `id`, `name`, `description`.
 - 200 OK omitiendo `description` cuando es `null` (no debe aparecer en el JSON).
-- 404 Not Found cuando el servicio lanza `NoSuchElementException` (se valida `ErrorResponse.status` y `ErrorResponse.error`).
+- 404 Not Found cuando el servicio lanza `NoSuchElementException` (se valida
+  `ErrorResponse.status` y `ErrorResponse.error`).
 - 400 Bad Request cuando el `id` no es numérico (`abc`).
 - 400 Bad Request cuando el `id` es `<= 0` (p. ej. `0`).
-- 500 Internal Server Error cuando el servicio lanza una excepción inesperada (`RuntimeException`).
+- 500 Internal Server Error cuando el servicio lanza una excepción inesperada
+  (`RuntimeException`).
 
 #### Servicio: `ExampleServiceTest.kt`
 
 Se añadieron dos pruebas unitarias, con `ExampleRepositoryPort` mockeado:
 
-- Caso exitoso: `should get an example by its id` cuando el repo devuelve un `Example`; se valida igualdad y `verify(repository).findById(1)`.
-- Caso no encontrado: `should throw NoSuchElementException when example does not exist` cuando el repo devuelve `null`; se espera `NoSuchElementException` y `verify(repository).findById(1)`.
+- Caso exitoso: `should get an example by its id` cuando el repo devuelve un
+  `Example`; se valida igualdad y `verify(repository).findById(1)`.
+- Caso no encontrado:
+  `should throw NoSuchElementException when example does not exist` cuando el
+  repo devuelve `null`; se espera `NoSuchElementException` y
+  `verify(repository).findById(1)`.
 
 ### Notas importantes (TDD – 🔴 Red)
 
-- Estas pruebas asumen la existencia de nuevos métodos que aún NO están implementados, por lo cual es normal que el proyecto no compile/los tests fallen ahora (fase ROJA de TDD):
-    - `ExampleUseCase.findById(id: Long): Example?`
-    - `ExampleService.findById(id: Long): Example` (usando el puerto, lanzando `NoSuchElementException` si `null`)
-    - `ExampleRepositoryPort.findById(id: Long): Example?`
-    - `ExampleRepositoryAdapter.findById(id: Long): Example?` (adaptando `ExampleJpaRepository`)
-    - En `ExampleController`, agregar `@GetMapping("/{id}")`, validar `id >= 1` (p. ej. `@Min(1)` o lógica que lance `IllegalArgumentException` → 400) y devolver `ExampleResponse.fromDomain(service.findById(id))` con `200 OK`.
-    - En `GlobalExceptionHandler`, manejar `NoSuchElementException` como `404 Not Found` con `ErrorResponse` (actualmente hay utilitario para mapear por `status`; agrega un `@ExceptionHandler(NoSuchElementException::class)` que retorne `handleSpecificStatusCodeException(ex, request, HttpStatus.NOT_FOUND)`).
+- Estas pruebas asumen la existencia de nuevos métodos que aún NO están
+  implementados, por lo cual es normal que el proyecto no compile/los tests
+  fallen ahora (fase ROJA de TDD):
+  - `ExampleUseCase.findById(id: Long): Example?`
+  - `ExampleService.findById(id: Long): Example` (usando el puerto, lanzando
+    `NoSuchElementException` si `null`)
+  - `ExampleRepositoryPort.findById(id: Long): Example?`
+  - `ExampleRepositoryAdapter.findById(id: Long): Example?` (adaptando
+    `ExampleJpaRepository`)
+  - En `ExampleController`, agregar `@GetMapping("/{id}")`, validar `id >= 1`
+    (p. ej. `@Min(1)` o lógica que lance `IllegalArgumentException` → 400) y
+    devolver `ExampleResponse.fromDomain(service.findById(id))` con `200 OK`.
+  - En `GlobalExceptionHandler`, manejar `NoSuchElementException` como
+    `404 Not Found` con `ErrorResponse` (actualmente hay utilitario para mapear
+    por `status`; agrega un `@ExceptionHandler(NoSuchElementException::class)`
+    que retorne
+    `handleSpecificStatusCodeException(ex, request, HttpStatus.NOT_FOUND)`).
 
 ### Próximos pasos para poner todo en VERDE
 
-1) Extender el puerto de entrada `ExampleUseCase` con `findById(id: Long): Example?` y su implementación en `ExampleService`:
+1. Extender el puerto de entrada `ExampleUseCase` con
+   `findById(id: Long): Example?` y su implementación en `ExampleService`:
    ```kotlin
    override fun findById(id: Long): Example =
        repository.findById(id) ?: throw NoSuchElementException("Example not found")
    ```
-2) Extender el puerto de salida `ExampleRepositoryPort` con `findById(id: Long): Example?` y su implementación en `ExampleRepositoryAdapter` (usando tu `ExampleJpaRepository`).
-3) Agregar `GET /api/v1/examples/{id}` en `ExampleController`:
-    - `@GetMapping("/{id}")`
-    - Validar `id >= 1` (anotación `@Min(1)` o if + `IllegalArgumentException`)
-    - Retornar `ResponseEntity.ok(ExampleResponse.fromDomain(service.findById(id)))`.
-4) Ahora en `GlobalExceptionHandler`, tenemos que agregar handler para `NoSuchElementException` → `404 Not Found` (construye `ErrorResponse` consistente, como ya haces para otros status mediante `handleSpecificStatusCodeException`). Hay que seguir la consistencia actual de los handlers ya implementados.
-5) Por último se ejecuta la suite de tests; se refactoriza para corregir cualquier detalle menor de mapeo y se validan que todos los casos queden en verde.
+2. Extender el puerto de salida `ExampleRepositoryPort` con
+   `findById(id: Long): Example?` y su implementación en
+   `ExampleRepositoryAdapter` (usando tu `ExampleJpaRepository`).
+3. Agregar `GET /api/v1/examples/{id}` en `ExampleController`:
+   - `@GetMapping("/{id}")`
+   - Validar `id >= 1` (anotación `@Min(1)` o if + `IllegalArgumentException`)
+   - Retornar
+     `ResponseEntity.ok(ExampleResponse.fromDomain(service.findById(id)))`.
+4. Ahora en `GlobalExceptionHandler`, tenemos que agregar handler para
+   `NoSuchElementException` → `404 Not Found` (construye `ErrorResponse`
+   consistente, como ya haces para otros status mediante
+   `handleSpecificStatusCodeException`). Hay que seguir la consistencia actual
+   de los handlers ya implementados.
+5. Por último se ejecuta la suite de tests; se refactoriza para corregir
+   cualquier detalle menor de mapeo y se validan que todos los casos queden en
+   verde.
 
 ## 🟢 Green - Listo
 
-El método para obtener objetos por ID ya está implementado y probado con TDD, siguiendo el flujo Red → Green → Refactor. 
+El método para obtener objetos por ID ya está implementado y probado con TDD,
+siguiendo el flujo Red → Green → Refactor.
 
 ## 🔵 Refactor - Mejoras finales
 
-Ahora ya se puede aplicar un refactor en el código, revisando nombres, paquetes, comentarios, limpieza de imports y duplicando la documentación si es necesario, para después hacer un commit final de refactorización.
+Ahora ya se puede aplicar un refactor en el código, revisando nombres, paquetes,
+comentarios, limpieza de imports y duplicando la documentación si es necesario,
+para después hacer un commit final de refactorización.
 
 ## 🔴 Red - Continuamos el ciclo
 
-En este punto, es importante entender que ya tenemos pruebas robustas de mucha de la funcionalidad que ya implementamos, y que ahora solo falta implementar las nuevas rutas y controladores, reutilizar lo que ya tenemos y seguir el mismo flujo de TDD para las nuevas funcionalidades.
+En este punto, es importante entender que ya tenemos pruebas robustas de mucha
+de la funcionalidad que ya implementamos, y que ahora solo falta implementar las
+nuevas rutas y controladores, reutilizar lo que ya tenemos y seguir el mismo
+flujo de TDD para las nuevas funcionalidades.

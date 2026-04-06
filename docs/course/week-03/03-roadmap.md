@@ -1,24 +1,35 @@
 # Roadmap para aprender Java y Spring Boot desde cero hasta nivel avanzado con Kotlin y Gradle
 
-Si estás empezando en backend y quieres un camino serio que te lleve a un nivel profesional con Java y Spring Boot, este roadmap te va a servir. Java sigue siendo un pilar en el mundo backend porque es estable, maduro y tiene una comunidad enorme. No es un lenguaje sencillo y su curva es más empinada que otras opciones, pero si sigues un proceso ordenado se vuelve mucho más manejable.
+Si estás empezando en backend y quieres un camino serio que te lleve a un nivel
+profesional con Java y Spring Boot, este roadmap te va a servir. Java sigue
+siendo un pilar en el mundo backend porque es estable, maduro y tiene una
+comunidad enorme. No es un lenguaje sencillo y su curva es más empinada que
+otras opciones, pero si sigues un proceso ordenado se vuelve mucho más
+manejable.
 
-Para este camino vamos a trabajar Java y Spring Boot, pero con una curva moderna: Kotlin y Gradle. Hoy Kotlin es un lenguaje más limpio y expresivo, con compatibilidad total con el ecosistema Java. En cuanto a Gradle, es el estándar en proyectos nuevos que buscan builds más rápidos y configuraciones flexibles.
+Para este camino vamos a trabajar Java y Spring Boot, pero con una curva
+moderna: Kotlin y Gradle. Hoy Kotlin es un lenguaje más limpio y expresivo, con
+compatibilidad total con el ecosistema Java. En cuanto a Gradle, es el estándar
+en proyectos nuevos que buscan builds más rápidos y configuraciones flexibles.
 
-Antes de entrar al detalle, algo básico: si tu lógica no está bien afianzada, todo lo demás se te va a complicar. Lógica, algoritmos y pensamiento sistemático son el cimiento real del backend.
+Antes de entrar al detalle, algo básico: si tu lógica no está bien afianzada,
+todo lo demás se te va a complicar. Lógica, algoritmos y pensamiento sistemático
+son el cimiento real del backend.
 
 ---
 
 ## Paso 0: Lógica y algoritmos
 
-Antes de escribir una sola línea en Java o Kotlin, necesitas entender cómo resolver problemas con pasos claros. Ese es el objetivo de esta etapa.
+Antes de escribir una sola línea en Java o Kotlin, necesitas entender cómo
+resolver problemas con pasos claros. Ese es el objetivo de esta etapa.
 
 Puntos a cubrir:
 
-* Variables y flujo lógico
-* Condicionales y ciclos
-* Resolución de problemas
-* Algoritmos básicos (búsqueda, ordenamiento)
-* Pensamiento computacional
+- Variables y flujo lógico
+- Condicionales y ciclos
+- Resolución de problemas
+- Algoritmos básicos (búsqueda, ordenamiento)
+- Pensamiento computacional
 
 Con esto te será más fácil asimilar lo que hace especial a Java y su ecosistema.
 
@@ -30,26 +41,30 @@ Vas a pasar horas aquí, así que usa uno en el que estés cómodo.
 
 Recomendados:
 
-* IntelliJ IDEA (el estándar para Java y Kotlin)
-* Eclipse
-* NetBeans
-* VS Code (con plugins)
+- IntelliJ IDEA (el estándar para Java y Kotlin)
+- Eclipse
+- NetBeans
+- VS Code (con plugins)
 
-Elige uno y aprende sus atajos, cómo correr pruebas, configurar plugins y navegar código. Como backend dev, tu velocidad depende de esto más de lo que crees.
+Elige uno y aprende sus atajos, cómo correr pruebas, configurar plugins y
+navegar código. Como backend dev, tu velocidad depende de esto más de lo que
+crees.
 
 ---
 
 ## Paso 2: Fundamentos de Java SE
 
-Aquí trabajas los bloques esenciales del lenguaje. Incluso si luego te mueves fuerte hacia Kotlin, Java te da la base conceptual que necesitas para dominar el ecosistema Spring.
+Aquí trabajas los bloques esenciales del lenguaje. Incluso si luego te mueves
+fuerte hacia Kotlin, Java te da la base conceptual que necesitas para dominar el
+ecosistema Spring.
 
 Temas clave:
 
-* Tipos de datos, control de flujo y ciclos
-* Arrays, listas y colecciones
-* Manejo de errores y excepciones
-* Clases, métodos y scopes
-* Introducción al modelo de capas
+- Tipos de datos, control de flujo y ciclos
+- Arrays, listas y colecciones
+- Manejo de errores y excepciones
+- Clases, métodos y scopes
+- Introducción al modelo de capas
 
 La idea es que puedas leer y entender código Java sin trabarte.
 
@@ -57,49 +72,55 @@ La idea es que puedas leer y entender código Java sin trabarte.
 
 ## Paso 3: Bases de datos relacionales
 
-Todo backend serio toca bases de datos. Aprender SQL te va a acompañar durante toda tu carrera.
+Todo backend serio toca bases de datos. Aprender SQL te va a acompañar durante
+toda tu carrera.
 
 Temas clave:
 
-* DER y normalización básica
-* DDL y DML
-* Consultas SQL
-* Joins, subconsultas y agregaciones
-* Introducción a transacciones
+- DER y normalización básica
+- DDL y DML
+- Consultas SQL
+- Joins, subconsultas y agregaciones
+- Introducción a transacciones
 
-Mi recomendación: empieza con MySQL o PostgreSQL. Ambos son estándar en el mercado.
+Mi recomendación: empieza con MySQL o PostgreSQL. Ambos son estándar en el
+mercado.
 
 ---
 
 ## Paso 4: Programación Orientada a Objetos
 
-La base del ecosistema Java. Aquí afinas la manera en la que estructuras tus aplicaciones.
+La base del ecosistema Java. Aquí afinas la manera en la que estructuras tus
+aplicaciones.
 
 Temas clave:
 
-* Clases, objetos y métodos
-* Abstracción, encapsulamiento
-* Herencia y polimorfismo
-* Interfaces
-* Excepciones
-* Colecciones modernas
-* ORM y JPA desde cero (CRUD, entidades, relaciones, cascadas)
+- Clases, objetos y métodos
+- Abstracción, encapsulamiento
+- Herencia y polimorfismo
+- Interfaces
+- Excepciones
+- Colecciones modernas
+- ORM y JPA desde cero (CRUD, entidades, relaciones, cascadas)
 
-Este paso es vital. Si no dominas POO y JPA, Spring Boot te va a parecer un caos.
+Este paso es vital. Si no dominas POO y JPA, Spring Boot te va a parecer un
+caos.
 
 ---
 
 ## Paso 5: Java Web (Java EE)
 
-No tienes que ser experto en Java EE para trabajar con Spring, pero entender los fundamentos web en Java es importante. Esto te da contexto para lo que Spring resuelve por ti.
+No tienes que ser experto en Java EE para trabajar con Spring, pero entender los
+fundamentos web en Java es importante. Esto te da contexto para lo que Spring
+resuelve por ti.
 
 Temas clave:
 
-* HTTP y request-response
-* Cliente servidor
-* Servlets y JSP
-* Qué es una API
-* Servidores web
+- HTTP y request-response
+- Cliente servidor
+- Servlets y JSP
+- Qué es una API
+- Servidores web
 
 Con esto entiendes qué abstrae Spring Boot y por qué.
 
@@ -107,43 +128,48 @@ Con esto entiendes qué abstrae Spring Boot y por qué.
 
 ## Paso 6: Spring Boot (con Kotlin y Gradle)
 
-Aquí empieza lo bueno. Spring Boot es el corazón del backend moderno en Java. En este curso la base será Kotlin + Spring Boot + Gradle.
+Aquí empieza lo bueno. Spring Boot es el corazón del backend moderno en Java. En
+este curso la base será Kotlin + Spring Boot + Gradle.
 
 Temas clave:
 
-* Arquitectura de Spring
-* Controladores y API REST
-* Manejo de rutas y endpoints
-* Beans, IoC y DI
-* Spring Data JPA
-* Validación con Jakarta Validation
-* Manejo global de errores
-* DTOs y mapeadores
-* Arquitectura en capas
-* Configuración con Gradle
-* Profiles, environments y properties
+- Arquitectura de Spring
+- Controladores y API REST
+- Manejo de rutas y endpoints
+- Beans, IoC y DI
+- Spring Data JPA
+- Validación con Jakarta Validation
+- Manejo global de errores
+- DTOs y mapeadores
+- Arquitectura en capas
+- Configuración con Gradle
+- Profiles, environments y properties
 
-En esta etapa ya deberías construir un monolito funcional: usuarios, roles, autenticación básica, operaciones CRUD y manejo robusto de errores.
+En esta etapa ya deberías construir un monolito funcional: usuarios, roles,
+autenticación básica, operaciones CRUD y manejo robusto de errores.
 
 ---
 
 ## Paso 7: Microservicios
 
-Una vez que dominas el monolito, das el salto a sistemas distribuidos. Aquí aprendes a separar servicios y a manejar problemas que aparecen solo en esa arquitectura.
+Una vez que dominas el monolito, das el salto a sistemas distribuidos. Aquí
+aprendes a separar servicios y a manejar problemas que aparecen solo en esa
+arquitectura.
 
 Temas clave:
 
-* Monolito vs microservicios
-* Spring Cloud
-* Discovery con Eureka
-* Config Server
-* Feign Clients
-* Balanceo de carga
-* Circuit breaker (Resilience4j)
-* Comunicación asíncrona (RabbitMQ o Kafka)
-* Gateways y seguridad distribuida
+- Monolito vs microservicios
+- Spring Cloud
+- Discovery con Eureka
+- Config Server
+- Feign Clients
+- Balanceo de carga
+- Circuit breaker (Resilience4j)
+- Comunicación asíncrona (RabbitMQ o Kafka)
+- Gateways y seguridad distribuida
 
-Aquí empiezas a trabajar con patrones como API Gateway, saga, event sourcing y mensajería.
+Aquí empiezas a trabajar con patrones como API Gateway, saga, event sourcing y
+mensajería.
 
 ---
 
@@ -153,19 +179,19 @@ Esto te da herramientas para trabajar con código limpio y mantenible.
 
 Temas clave:
 
-* Lambdas y Streams
-* Conceptos funcionales en Kotlin
-* Coroutines en Kotlin (importantísimo)
-* Hilos, concurrencia y paralelismo
-* Generics
-* Patrones de diseño útiles en backend
+- Lambdas y Streams
+- Conceptos funcionales en Kotlin
+- Coroutines en Kotlin (importantísimo)
+- Hilos, concurrencia y paralelismo
+- Generics
+- Patrones de diseño útiles en backend
+  - Factory
+  - Singleton controlado
+  - Strategy
+  - Observer
+  - Builder
 
-    * Factory
-    * Singleton controlado
-    * Strategy
-    * Observer
-    * Builder
-* Clean Architecture y principios SOLID
+- Clean Architecture y principios SOLID
 
 Con esto tu código pasa de funcionar a ser profesional.
 
@@ -173,22 +199,24 @@ Con esto tu código pasa de funcionar a ser profesional.
 
 ## Paso 9: Seguridad y Testing
 
-Sin seguridad y pruebas tu servicio no está listo para producción. Este paso es obligatorio.
+Sin seguridad y pruebas tu servicio no está listo para producción. Este paso es
+obligatorio.
 
 Temas clave:
 
-* Spring Security moderno
-* JWT
-* OAuth2
-* Keycloak como IAM
-* Autorización basada en roles y permisos
-* Seguridad en APIs públicas y privadas
-* Test unitarios con JUnit 5
-* Tests de integración con Spring Boot Test
-* Mockito y test doubles
-* TestContainers (indispensable para backend actual)
+- Spring Security moderno
+- JWT
+- OAuth2
+- Keycloak como IAM
+- Autorización basada en roles y permisos
+- Seguridad en APIs públicas y privadas
+- Test unitarios con JUnit 5
+- Tests de integración con Spring Boot Test
+- Mockito y test doubles
+- TestContainers (indispensable para backend actual)
 
-Si no pruebas tu API con bases de datos reales usando TestContainers, no estás probando de verdad.
+Si no pruebas tu API con bases de datos reales usando TestContainers, no estás
+probando de verdad.
 
 ---
 
@@ -196,15 +224,15 @@ Si no pruebas tu API con bases de datos reales usando TestContainers, no estás 
 
 Aquí afinas tu flujo de trabajo y te preparas para equipos reales.
 
-* Git y GitHub
-* Docker y contenedores
-* Docker Compose para entornos locales
-* Swagger o SpringDoc
-* CI y CD (GitHub Actions, GitLab CI)
-* UML
-* Terminal Linux
-* SonarLint y herramientas de calidad
-* SCRUM y manejo de sprints
+- Git y GitHub
+- Docker y contenedores
+- Docker Compose para entornos locales
+- Swagger o SpringDoc
+- CI y CD (GitHub Actions, GitLab CI)
+- UML
+- Terminal Linux
+- SonarLint y herramientas de calidad
+- SCRUM y manejo de sprints
 
 ---
 
@@ -212,18 +240,20 @@ Aquí afinas tu flujo de trabajo y te preparas para equipos reales.
 
 Para moverte sin miedo en proyectos reales, deberías ser capaz de:
 
-* Construir un monolito completo, listo para producción
-* Desplegarlo en contenedores
-* Conectar múltiples servicios mediante mensajería o REST
-* Diseñar entidades y relaciones sólidas con JPA
-* Implementar seguridad sólida y escalable
-* Escribir pruebas que cubran tu lógica crítica
-* Manejar concurrencia y procesos asíncronos con coroutines
-* Documentar APIs con claridad
-* Usar Gradle para manejar builds, perfiles y dependencias con confianza
-* Entender cómo funciona Spring por dentro, no solo “qué botones apretar”
+- Construir un monolito completo, listo para producción
+- Desplegarlo en contenedores
+- Conectar múltiples servicios mediante mensajería o REST
+- Diseñar entidades y relaciones sólidas con JPA
+- Implementar seguridad sólida y escalable
+- Escribir pruebas que cubran tu lógica crítica
+- Manejar concurrencia y procesos asíncronos con coroutines
+- Documentar APIs con claridad
+- Usar Gradle para manejar builds, perfiles y dependencias con confianza
+- Entender cómo funciona Spring por dentro, no solo “qué botones apretar”
 
-> A continuación puedes encontrar dos roadmaps uno enfocado en [tecnologías Java](04-roadmap-java.md) y otro en [Spring Boot](05-roadmap-springboot.md).
+> A continuación puedes encontrar dos roadmaps uno enfocado en
+> [tecnologías Java](04-roadmap-java.md) y otro en
+> [Spring Boot](05-roadmap-springboot.md).
 
 ---
 
@@ -231,18 +261,30 @@ Para moverte sin miedo en proyectos reales, deberías ser capaz de:
 
 ### Entidades del Sistema de Gestión Hotelera
 
-Es necesario crear las entidades necesarias para el proyecto. A continuación se define el listado de entidades que se deben crear, así como sus atributos y relaciones.
+Es necesario crear las entidades necesarias para el proyecto. A continuación se
+define el listado de entidades que se deben crear, así como sus atributos y
+relaciones.
 
-Siguiendo el camino del proyecto, podemos confirmar que ya tenemos la estructura implementada con la arquitectura Hexagonal, y se estableció el flujo del desarrollo TDD, se documentaron los principios SOLID y se establecieron las pruebas unitarias. En este punto, ya podemos empezar a desarrollar las funcionalidades, tenemos una base sólida de código, así como el manejo de errores y pruebas que nos permiten avanzar con confianza.
+Siguiendo el camino del proyecto, podemos confirmar que ya tenemos la estructura
+implementada con la arquitectura Hexagonal, y se estableció el flujo del
+desarrollo TDD, se documentaron los principios SOLID y se establecieron las
+pruebas unitarias. En este punto, ya podemos empezar a desarrollar las
+funcionalidades, tenemos una base sólida de código, así como el manejo de
+errores y pruebas que nos permiten avanzar con confianza.
 
-Estamos en la semana 3, y ahora toca avanzar con las entidades, sus relaciones y sus atributos. Terminando la persistencia de los datos se creará un release con la [versión 0.0.2 del proyecto](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.2).
+Estamos en la semana 3, y ahora toca avanzar con las entidades, sus relaciones y
+sus atributos. Terminando la persistencia de los datos se creará un release con
+la
+[versión 0.0.2 del proyecto](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.2).
 
-Acorde a la narrativa del curso, se deben crear las entidades necesarias para el proyecto, que en este caso son:
+Acorde a la narrativa del curso, se deben crear las entidades necesarias para el
+proyecto, que en este caso son:
 
 #### Entidades Principales
 
 1. **User (Entrenador/Usuario)**
-   - **Propósito**: Representar a los entrenadores Pokémon que se hospedan en el hotel.
+   - **Propósito**: Representar a los entrenadores Pokémon que se hospedan en el
+     hotel.
    - **Atributos principales**:
      - id: Long
      - username: String
@@ -280,7 +322,8 @@ Acorde a la narrativa del curso, se deben crear las entidades necesarias para el
      - checkOutDate: LocalDate
      - numberOfGuests: Int
      - totalPrice: BigDecimal
-     - status: ReservationStatus (ENUM: PENDING, CONFIRMED, CANCELLED, COMPLETED, IN_PROGRESS)
+     - status: ReservationStatus (ENUM: PENDING, CONFIRMED, CANCELLED,
+       COMPLETED, IN_PROGRESS)
      - specialRequests: String?
      - createdAt: LocalDateTime
      - updatedAt: LocalDateTime
@@ -292,14 +335,15 @@ Acorde a la narrativa del curso, se deben crear las entidades necesarias para el
      - id: Long
      - reservationId: Long
      - amount: BigDecimal
-     - paymentMethod: PaymentMethod (ENUM: CREDIT_CARD, DEBIT_CARD, CASH, TRANSFER)
+     - paymentMethod: PaymentMethod (ENUM: CREDIT_CARD, DEBIT_CARD, CASH,
+       TRANSFER)
      - paymentStatus: PaymentStatus (ENUM: PENDING, COMPLETED, FAILED, REFUNDED)
      - transactionId: String?
      - paymentDate: LocalDateTime?
      - createdAt: LocalDateTime
      - updatedAt: LocalDateTime
 
-5. **Pokemon (Pokémon Acompañante)** *(Opcional/Avanzado)*
+5. **Pokemon (Pokémon Acompañante)** _(Opcional/Avanzado)_
    - **Propósito**: Registrar los Pokémon que acompañan a los entrenadores.
    - **Atributos principales**:
      - id: Long
@@ -311,7 +355,7 @@ Acorde a la narrativa del curso, se deben crear las entidades necesarias para el
      - specialNeeds: String?
      - createdAt: LocalDateTime
 
-6. **Review (Reseña)** *(Opcional/Avanzado)*
+6. **Review (Reseña)** _(Opcional/Avanzado)_
    - **Propósito**: Permitir que los huéspedes dejen reseñas.
    - **Atributos principales**:
      - id: Long
@@ -322,7 +366,7 @@ Acorde a la narrativa del curso, se deben crear las entidades necesarias para el
      - createdAt: LocalDateTime
      - updatedAt: LocalDateTime
 
-7. **Service (Servicio Adicional)** *(Opcional/Avanzado)*
+7. **Service (Servicio Adicional)** _(Opcional/Avanzado)_
    - **Propósito**: Servicios adicionales del hotel (spa, restaurante, etc.).
    - **Atributos principales**:
      - id: Long
@@ -332,7 +376,7 @@ Acorde a la narrativa del curso, se deben crear las entidades necesarias para el
      - serviceType: ServiceType (ENUM: SPA, RESTAURANT, LAUNDRY, TOUR, etc.)
      - available: Boolean
 
-8. **ReservationService (Relación M2M)** *(Opcional/Avanzado)*
+8. **ReservationService (Relación M2M)** _(Opcional/Avanzado)_
    - **Propósito**: Vincular servicios adicionales con reservas.
    - **Atributos principales**:
      - id: Long
@@ -356,15 +400,15 @@ Acorde a la narrativa del curso, se deben crear las entidades necesarias para el
    - Una reserva tiene un pago asociado.
    - Un pago pertenece a una reserva.
 
-4. **User → Pokemon** (`@OneToMany`) *(Opcional)*
+4. **User → Pokemon** (`@OneToMany`) _(Opcional)_
    - Un usuario puede registrar múltiples Pokémon.
    - Un Pokémon pertenece a un usuario.
 
-5. **Reservation → Review** (`@OneToOne`) *(Opcional)*
+5. **Reservation → Review** (`@OneToOne`) _(Opcional)_
    - Una reserva puede tener una reseña.
    - Una reseña pertenece a una reserva.
 
-6. **Reservation ↔ Service** (`@ManyToMany`) *(Opcional)*
+6. **Reservation ↔ Service** (`@ManyToMany`) _(Opcional)_
    - Una reserva puede incluir múltiples servicios.
    - Un servicio puede estar en múltiples reservas.
    - Tabla intermedia: `ReservationService`
@@ -421,15 +465,22 @@ enum class ServiceType {
 - Usar **Gitflow** para el flujo de trabajo.
 - Documentar el proceso en **docs/course/**.
 
-Con este roadmap detallado y el esquema de entidades para el sistema de gestión hotelera, estás bien encaminado para convertirte en un desarrollador backend competente con Java Spring Boot. Recuerda que la práctica constante y la construcción de proyectos reales son clave para consolidar tus habilidades. ¡Mucho éxito en tu viaje de aprendizaje!
+Con este roadmap detallado y el esquema de entidades para el sistema de gestión
+hotelera, estás bien encaminado para convertirte en un desarrollador backend
+competente con Java Spring Boot. Recuerda que la práctica constante y la
+construcción de proyectos reales son clave para consolidar tus habilidades.
+¡Mucho éxito en tu viaje de aprendizaje!
 
 ---
 
 ## Especialización Backend Java
 
-A continuación te presento el roadmap ampliado y accionable que complementa las secciones anteriores. Está orientado a que avances de forma progresiva hasta desempeñarse como desarrolladores backend en Java con Spring Boot.
+A continuación te presento el roadmap ampliado y accionable que complementa las
+secciones anteriores. Está orientado a que avances de forma progresiva hasta
+desempeñarse como desarrolladores backend en Java con Spring Boot.
 
-Para cada paso encontrarás objetivos, competencias clave y entregables sugeridos que podrás usar como guía práctica.
+Para cada paso encontrarás objetivos, competencias clave y entregables sugeridos
+que podrás usar como guía práctica.
 
 ### Paso 0: Lógica y algoritmos (Fundamentos)
 
@@ -449,16 +500,19 @@ Para cada paso encontrarás objetivos, competencias clave y entregables sugerido
   - Atajos de teclado, refactors, depuración (breakpoints, watches).
   - Integración con Git, ejecución de pruebas, plugins útiles (LSP, linters).
 - Entregables:
-  - Proyecto simple con depuración paso a paso, configuración de perfiles de ejecución.
+  - Proyecto simple con depuración paso a paso, configuración de perfiles de
+    ejecución.
 
 ### Paso 2: Java SE (Core Java)
 
 - Objetivo: Comprender el lenguaje y su ecosistema estándar.
 - Competencias:
-  - Tipos, colecciones, excepciones, genéricos, lambdas/streams, records (Java 16+), módulos (JPMS, opcional).
+  - Tipos, colecciones, excepciones, genéricos, lambdas/streams, records (Java
+    16+), módulos (JPMS, opcional).
   - I/O, NIO, fechas (`java.time`), concurrencia básica (`CompletableFuture`).
 - Entregables:
-  - Librería utilitaria con tests y ejemplos de colecciones, streams y excepciones.
+  - Librería utilitaria con tests y ejemplos de colecciones, streams y
+    excepciones.
 
 ### Paso 3: Bases de Datos Relacionales (SQL)
 
@@ -477,7 +531,8 @@ Para cada paso encontrarás objetivos, competencias clave y entregables sugerido
   - Encapsulamiento, herencia, composición, polimorfismo.
   - Mapeo ORM con JPA/Hibernate, ciclos de vida de entidades.
 - Entregables:
-  - Módulo de dominio con modelos puros + repositorios (puertos) + adaptadores JPA.
+  - Módulo de dominio con modelos puros + repositorios (puertos) + adaptadores
+    JPA.
 
 ### Paso 5: Java Web (HTTP, APIs y componentes EE)
 
@@ -503,10 +558,12 @@ Para cada paso encontrarás objetivos, competencias clave y entregables sugerido
 
 - Objetivo: Diseñar sistemas distribuidos escalables.
 - Competencias:
-  - Comunicación síncrona/asíncrona, descubrimiento de servicios, resiliencia (circuit breaker, retries, timeouts).
+  - Comunicación síncrona/asíncrona, descubrimiento de servicios, resiliencia
+    (circuit breaker, retries, timeouts).
   - Spring Cloud, configuración centralizada, gateway, tracing.
 - Entregables:
-  - Dos servicios colaborando (por ejemplo, reservas y pagos) con Feign y resiliencia básica.
+  - Dos servicios colaborando (por ejemplo, reservas y pagos) con Feign y
+    resiliencia básica.
 
 ### Paso 8: Complementos Java
 
@@ -515,7 +572,8 @@ Para cada paso encontrarás objetivos, competencias clave y entregables sugerido
   - Lambdas/Streams avanzados, concurrencia, patrones de diseño.
   - Clean Code, refactorización dirigida por pruebas.
 - Entregables:
-  - Refactor de un módulo aplicando patrones (Strategy, Factory, Template Method, etc.).
+  - Refactor de un módulo aplicando patrones (Strategy, Factory, Template
+    Method, etc.).
 
 ### Paso 9: Seguridad y Testing (ampliado)
 
@@ -524,18 +582,26 @@ Para cada paso encontrarás objetivos, competencias clave y entregables sugerido
   - Spring Security (autenticación/autorización), JWT, OAuth2/OIDC.
   - Pirámide de pruebas: unitarias, integración, end‑to‑end.
 - Entregables:
-  - Endpoints protegidos + batería de pruebas (unitarias e integración) con cobertura reportada.
+  - Endpoints protegidos + batería de pruebas (unitarias e integración) con
+    cobertura reportada.
 
 ### Paso 10: Herramientas y prácticas profesionales
 
 - Objetivo: Trabajar como en un equipo real.
 - Competencias:
   - Git/GitHub (branching, PR, code review), CI/CD, Docker, documentación viva.
-  - Scrum/Kanban, calidad de código (KTLint/Checkstyle, Detekt/Sonar), observabilidad.
+  - Scrum/Kanban, calidad de código (KTLint/Checkstyle, Detekt/Sonar),
+    observabilidad.
 - Entregables:
-  - Pipeline CI que ejecute tests, linters y genere reportes (JaCoCo, changelog y release semántico).
+  - Pipeline CI que ejecute tests, linters y genere reportes (JaCoCo, changelog
+    y release semántico).
 
-> Sugerencia de práctica guiada: Sigue la narrativa y ejemplos del proyecto Hotel Pokémon en este repositorio. En la semana 3 definiste entidades y persistencia (ver [02-entidades.md](02-entidades.md)) y aplicaste TDD para un CRUD de ejemplo (ver [01-crud-con-tdd.md](01-crud-con-tdd.md)). El siguiente hito es cerrar la versión v0.0.2 con persistencia y pruebas básicas funcionando.
+> Sugerencia de práctica guiada: Sigue la narrativa y ejemplos del proyecto
+> Hotel Pokémon en este repositorio. En la semana 3 definiste entidades y
+> persistencia (ver [02-entidades.md](02-entidades.md)) y aplicaste TDD para un
+> CRUD de ejemplo (ver [01-crud-con-tdd.md](01-crud-con-tdd.md)). El siguiente
+> hito es cerrar la versión v0.0.2 con persistencia y pruebas básicas
+> funcionando.
 
 ---
 
@@ -543,22 +609,39 @@ Para cada paso encontrarás objetivos, competencias clave y entregables sugerido
 
 ### Introducción
 
-En el desarrollo de software, las pruebas unitarias y de integración son esenciales para garantizar la calidad, la fiabilidad y el mantenimiento del código. En proyectos de Spring Boot, seguir buenas prácticas y estándares específicos es crucial para asegurar que las pruebas sean efectivas y eficientes.
+En el desarrollo de software, las pruebas unitarias y de integración son
+esenciales para garantizar la calidad, la fiabilidad y el mantenimiento del
+código. En proyectos de Spring Boot, seguir buenas prácticas y estándares
+específicos es crucial para asegurar que las pruebas sean efectivas y
+eficientes.
 
 ### Ventajas de Realizar Pruebas de Código
 
 1. Aseguramiento de la Calidad
-   - Confianza en el Código: Las pruebas de código aseguran que el software funciona como se espera, lo que genera confianza tanto en los desarrolladores como en los clientes.
-   - Detección Temprana de Errores: Permiten identificar y corregir errores en etapas tempranas del desarrollo, lo que reduce costos y tiempo de corrección.
-   - Recuerda: agregar pruebas, ya sean unitarias o de integración, es una responsabilidad y una obligación profesional. Como dijo Kent Beck, padre del TDD: “El código limpio que funciona crea confianza en su desarrollo”. Escribir pruebas no solo asegura la calidad de nuestro trabajo, también facilita el mantenimiento y futuras actualizaciones.
+   - Confianza en el Código: Las pruebas de código aseguran que el software
+     funciona como se espera, lo que genera confianza tanto en los
+     desarrolladores como en los clientes.
+   - Detección Temprana de Errores: Permiten identificar y corregir errores en
+     etapas tempranas del desarrollo, lo que reduce costos y tiempo de
+     corrección.
+   - Recuerda: agregar pruebas, ya sean unitarias o de integración, es una
+     responsabilidad y una obligación profesional. Como dijo Kent Beck, padre
+     del TDD: “El código limpio que funciona crea confianza en su desarrollo”.
+     Escribir pruebas no solo asegura la calidad de nuestro trabajo, también
+     facilita el mantenimiento y futuras actualizaciones.
 2. Facilitación del Mantenimiento y Actualización
-   - Mantenimiento Simplificado: Con pruebas automatizadas, es más fácil realizar cambios sin temor a romper funcionalidades existentes.
-   - Actualización Segura: Facilitan la actualización de dependencias y versiones (Java/Spring) al asegurar que los cambios no introducen errores.
+   - Mantenimiento Simplificado: Con pruebas automatizadas, es más fácil
+     realizar cambios sin temor a romper funcionalidades existentes.
+   - Actualización Segura: Facilitan la actualización de dependencias y
+     versiones (Java/Spring) al asegurar que los cambios no introducen errores.
 3. Documentación del Código
-   - Comprensión del Proyecto: Las pruebas actúan como documentación viva del comportamiento esperado.
-   - Colaboración: Proveen contexto claro para que otros desarrolladores se integren más rápido.
+   - Comprensión del Proyecto: Las pruebas actúan como documentación viva del
+     comportamiento esperado.
+   - Colaboración: Proveen contexto claro para que otros desarrolladores se
+     integren más rápido.
 4. Fomento de Buenas Prácticas
-   - Mejor Diseño: Obliga a pensar en la funcionalidad y el diseño antes de implementar, resultando en código más robusto y eficiente.
+   - Mejor Diseño: Obliga a pensar en la funcionalidad y el diseño antes de
+     implementar, resultando en código más robusto y eficiente.
 
 ### Principios F.I.R.S.T. de las Pruebas Automatizadas
 
@@ -566,25 +649,32 @@ En el desarrollo de software, las pruebas unitarias y de integración son esenci
 2. Isolated (aisladas): Independientes entre sí y del orden de ejecución.
 3. Repeatable (repetibles): Mismo resultado sin importar el entorno.
 4. Self‑validating (auto‑validadas): Pasan o fallan sin verificación manual.
-5. Timely (oportunas): Escritas a tiempo, idealmente antes o junto con el código (TDD).
+5. Timely (oportunas): Escritas a tiempo, idealmente antes o junto con el código
+   (TDD).
 
 ---
 
 ### Pruebas Unitarias en Spring Boot
 
-¿Qué son? Verifican el comportamiento de una unidad (clase/método) en aislamiento.
+¿Qué son? Verifican el comportamiento de una unidad (clase/método) en
+aislamiento.
 
 Buenas prácticas
-1) Aislamiento
-   - Mocking: Usa bibliotecas para simular dependencias externas. En Java es común Mockito; en Kotlin, MockK. También existe `mockito-kotlin` si programas en Kotlin pero prefieres Mockito.
-   - Inyección de Dependencias: Aprovecha la DI de Spring en capas superiores; en unit tests del dominio no cargues Spring.
-2) Simplicidad y Claridad
+
+1. Aislamiento
+   - Mocking: Usa bibliotecas para simular dependencias externas. En Java es
+     común Mockito; en Kotlin, MockK. También existe `mockito-kotlin` si
+     programas en Kotlin pero prefieres Mockito.
+   - Inyección de Dependencias: Aprovecha la DI de Spring en capas superiores;
+     en unit tests del dominio no cargues Spring.
+2. Simplicidad y Claridad
    - Un solo propósito por prueba y nombres descriptivos.
-3) Cobertura de Código
+3. Cobertura de Código
    - Cubre casos felices y de error, incluidos límites y excepciones.
    - Mide con JaCoCo y prioriza áreas críticas (reglas de negocio).
-4) Rapidez
-   - Evita levantar el contexto de Spring en unit tests. Ejecuta en paralelo cuando sea posible.
+4. Rapidez
+   - Evita levantar el contexto de Spring en unit tests. Ejecuta en paralelo
+     cuando sea posible.
 
 Ejemplo (JUnit 5 + Mockito)
 
@@ -650,18 +740,21 @@ dependencies {
 
 ### Pruebas de Integración en Spring Boot
 
-¿Qué son? Verifican la interacción entre componentes (controladores, servicios, repositorios) y con recursos reales como bases de datos.
+¿Qué son? Verifican la interacción entre componentes (controladores, servicios,
+repositorios) y con recursos reales como bases de datos.
 
 Buenas prácticas
-1) Entorno de Pruebas Realista
+
+1. Entorno de Pruebas Realista
    - Usa H2 en memoria o Testcontainers para bases reales (PostgreSQL, MySQL).
    - Perfiles de prueba: `@ActiveProfiles("test")` para aislar configuración.
-2) Datos de Prueba
-   - Inicializa datos controlados (scripts `data.sql` o `@Sql`) o builders de objetos.
-3) Funcionalidad Completa
+2. Datos de Prueba
+   - Inicializa datos controlados (scripts `data.sql` o `@Sql`) o builders de
+     objetos.
+3. Funcionalidad Completa
    - Prueba endpoints con MockMvc o RestAssured.
    - Valida transacciones y comportamiento en escenarios reales.
-4) Automatización y CI
+4. Automatización y CI
    - Ejecuta en el pipeline CI/CD y monitorea fallos con reportes.
 
 Ejemplo con `@WebMvcTest` + MockMvc
@@ -727,14 +820,20 @@ void shouldCreateReservation() {
 }
 ```
 
-> Nota: En este repositorio ya encontrarás ejemplos reales en [01-crud-con-tdd.md](01-crud-con-tdd.md) y tests de controladores/servicios en `src/test/`.
+> Nota: En este repositorio ya encontrarás ejemplos reales en
+> [01-crud-con-tdd.md](01-crud-con-tdd.md) y tests de controladores/servicios en
+> `src/test/`.
 
 ---
 
 ### Tipos de Pruebas dentro de Integración
-- Pruebas de componentes: enfocadas a un controlador/servicio aislado del resto usando mocks/`@WebMvcTest`.
-- Pruebas de acceso a datos: `@DataJpaTest` para validar consultas personalizadas y mapping de entidades.
-- Pruebas end‑to‑end (E2E): cubren todo el flujo, incluyendo sistemas externos, típicamente con Selenium (UI), Cucumber (BDD) o RestAssured (APIs).
+
+- Pruebas de componentes: enfocadas a un controlador/servicio aislado del resto
+  usando mocks/`@WebMvcTest`.
+- Pruebas de acceso a datos: `@DataJpaTest` para validar consultas
+  personalizadas y mapping de entidades.
+- Pruebas end‑to‑end (E2E): cubren todo el flujo, incluyendo sistemas externos,
+  típicamente con Selenium (UI), Cucumber (BDD) o RestAssured (APIs).
 
 ---
 
@@ -775,10 +874,15 @@ void shouldCreateReservation() {
 ## Estrategia de Testing para este Proyecto
 
 - Unitarias (rápidas): servicios de dominio y funciones puras sin cargar Spring.
-- Integración (selectivas): controladores con MockMvc, adaptadores de persistencia, mapeos y excepciones.
+- Integración (selectivas): controladores con MockMvc, adaptadores de
+  persistencia, mapeos y excepciones.
 - E2E (futuro): flujos de negocio clave.
-- Cobertura: utiliza JaCoCo; apunta a cobertura significativa en lógica de negocio (>70% de líneas es un buen inicio), priorizando ramas críticas. Revisa la sección “¿Qué probar y qué no?” en [01-crud-con-tdd.md](01-crud-con-tdd.md).
-- Automatización: integra tests y linters en GitHub Actions (ver [WORKFLOW.md](../../../WORKFLOW.md)).
+- Cobertura: utiliza JaCoCo; apunta a cobertura significativa en lógica de
+  negocio (>70% de líneas es un buen inicio), priorizando ramas críticas. Revisa
+  la sección “¿Qué probar y qué no?” en
+  [01-crud-con-tdd.md](01-crud-con-tdd.md).
+- Automatización: integra tests y linters en GitHub Actions (ver
+  [WORKFLOW.md](../../../WORKFLOW.md)).
 
 ## Checklist Rápido para tus PR
 
@@ -787,4 +891,6 @@ void shouldCreateReservation() {
 - [ ] Reporte JaCoCo sin caídas drásticas de cobertura.
 - [ ] Mensajes de commit convencionales y documentación actualizada.
 
-Con esta guía, tu roadmap no solo te dice qué aprender, sino también cómo validar que lo aprendido funciona y es mantenible en el tiempo. ¡Sigue iterando con TDD y buenas prácticas!
+Con esta guía, tu roadmap no solo te dice qué aprender, sino también cómo
+validar que lo aprendido funciona y es mantenible en el tiempo. ¡Sigue iterando
+con TDD y buenas prácticas!

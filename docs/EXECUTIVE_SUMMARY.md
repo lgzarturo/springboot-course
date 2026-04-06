@@ -2,7 +2,9 @@
 
 ## 🎯 Objetivo Cumplido
 
-Se ha implementado una **estructura óptima para el proyecto Spring Boot con Kotlin**, siguiendo las mejores prácticas de la industria y aplicando principios de arquitectura limpia.
+Se ha implementado una **estructura óptima para el proyecto Spring Boot con
+Kotlin**, siguiendo las mejores prácticas de la industria y aplicando principios
+de arquitectura limpia.
 
 ---
 
@@ -10,7 +12,8 @@ Se ha implementado una **estructura óptima para el proyecto Spring Boot con Kot
 
 ### **Arquitectura Hexagonal (Ports & Adapters)**
 
-La arquitectura elegida es una de las más recomendadas en la industria por las siguientes razones:
+La arquitectura elegida es una de las más recomendadas en la industria por las
+siguientes razones:
 
 #### ✅ Ventajas Principales
 
@@ -52,7 +55,7 @@ La arquitectura elegida es una de las más recomendadas en la industria por las 
 ### 1. SOLID Principles ✅
 
 | Principio                 | Implementación                                                      |
-|---------------------------|---------------------------------------------------------------------|
+| ------------------------- | ------------------------------------------------------------------- |
 | **S**ingle Responsibility | Cada clase tiene una única responsabilidad clara                    |
 | **O**pen/Closed           | Abierto para extensión (nuevos adapters), cerrado para modificación |
 | **L**iskov Substitution   | Las interfaces pueden ser sustituidas por sus implementaciones      |
@@ -229,7 +232,7 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
    - Recursos adicionales
 
 4. **[IMPLEMENTATION_CHECKLIST.md](IMPLEMENTATION_CHECKLIST.md)** (339 líneas)
-    - Checklist completa de implementación
+   - Checklist completa de implementación
    - Estructura de archivos creados
    - Endpoints disponibles
    - Cómo probar la aplicación
@@ -280,26 +283,26 @@ testImplementation("com.ninja-squad:springmockk:4.0.2")
 ### API REST
 
 | Método | Endpoint                 | Descripción        | Estado |
-|--------|--------------------------|--------------------|--------|
-| GET    | `/api/v1/ping`           | Ping simple        | ✅      |
-| GET    | `/api/v1/ping/{message}` | Ping personalizado | ✅      |
-| GET    | `/api/v1/ping/health`    | Health check       | ✅      |
+| ------ | ------------------------ | ------------------ | ------ |
+| GET    | `/api/v1/ping`           | Ping simple        | ✅     |
+| GET    | `/api/v1/ping/{message}` | Ping personalizado | ✅     |
+| GET    | `/api/v1/ping/health`    | Health check       | ✅     |
 
 ### Documentación
 
 | Endpoint           | Descripción            | Estado |
-|--------------------|------------------------|--------|
-| `/swagger-ui.html` | Interfaz Swagger UI    | ✅      |
-| `/api-docs`        | Especificación OpenAPI | ✅      |
-| `/h2-console`      | Consola H2 Database    | ✅      |
+| ------------------ | ---------------------- | ------ |
+| `/swagger-ui.html` | Interfaz Swagger UI    | ✅     |
+| `/api-docs`        | Especificación OpenAPI | ✅     |
+| `/h2-console`      | Consola H2 Database    | ✅     |
 
 ### Actuator
 
 | Endpoint            | Descripción           | Estado |
-|---------------------|-----------------------|--------|
-| `/actuator/health`  | Estado de salud       | ✅      |
-| `/actuator/info`    | Información de la app | ✅      |
-| `/actuator/metrics` | Métricas              | ✅      |
+| ------------------- | --------------------- | ------ |
+| `/actuator/health`  | Estado de salud       | ✅     |
+| `/actuator/info`    | Información de la app | ✅     |
+| `/actuator/metrics` | Métricas              | ✅     |
 
 ---
 
@@ -336,28 +339,34 @@ testImplementation("com.ninja-squad:springmockk:4.0.2")
 ### ¿Por qué esta estructura es óptima?
 
 #### 1. **Escalabilidad Probada**
+
 Esta estructura es usada por empresas como:
+
 - Netflix
 - Spotify
 - Amazon
 - Google
 
 #### 2. **Mantenibilidad a Largo Plazo**
+
 - Código organizado por responsabilidades
 - Fácil encontrar y modificar funcionalidades
 - Bajo acoplamiento entre capas
 
 #### 3. **Facilita el Trabajo en Equipo**
+
 - Separación clara de responsabilidades
 - Múltiples desarrolladores pueden trabajar en paralelo
 - Menos conflictos en Git
 
 #### 4. **Preparado para el Futuro**
+
 - Fácil agregar nuevas tecnologías
 - Fácil migrar a microservicios
 - Fácil implementar nuevos patrones
 
 #### 5. **Alineado con la Industria**
+
 - Sigue principios SOLID
 - Implementa Clean Architecture
 - Usa Domain-Driven Design
@@ -370,6 +379,7 @@ Esta estructura es usada por empresas como:
 ### Para Agregar un Nuevo Módulo (Ejemplo: Users)
 
 1. **Domain Layer**
+
    ```
    domain/model/User.kt
    domain/port/input/UserUseCase.kt
@@ -378,6 +388,7 @@ Esta estructura es usada por empresas como:
    ```
 
 2. **Infrastructure Layer**
+
    ```
    infrastructure/rest/controller/UserController.kt
    infrastructure/rest/dto/request/CreateUserRequest.kt
@@ -394,32 +405,35 @@ Esta estructura es usada por empresas como:
    test/.../infrastructure/rest/controller/UserControllerTest.kt
    ```
 
-✅ **Sin modificar código existente**  
-✅ **Siguiendo el mismo patrón**  
-✅ **Manteniendo la separación de capas**
+✅ **Sin modificar código existente** ✅ **Siguiendo el mismo patrón** ✅
+**Manteniendo la separación de capas**
 
 ---
 
 ## 📈 Próximos Pasos Recomendados
 
 ### Fase 1: Persistencia (Inmediato)
+
 - [ ] Implementar entidades JPA
 - [ ] Crear repositorios
 - [ ] Implementar adaptadores de persistencia
 - [ ] Agregar migraciones con Flyway
 
 ### Fase 2: Seguridad (Corto plazo)
+
 - [ ] Implementar Spring Security
 - [ ] Agregar autenticación JWT
 - [ ] Implementar autorización basada en roles
 
 ### Fase 3: Módulos de Negocio (Mediano plazo)
+
 - [ ] Módulo de Usuarios
 - [ ] Módulo de Hoteles
 - [ ] Módulo de Reservas
 - [ ] Módulo de Productos
 
 ### Fase 4: Características Avanzadas (Largo plazo)
+
 - [ ] Paginación y filtrado
 - [ ] Caché con Redis
 - [ ] Eventos de dominio
@@ -429,23 +443,23 @@ Esta estructura es usada por empresas como:
 
 ## 🎯 Conclusión
 
-Se ha implementado una **estructura óptima y profesional** para el proyecto Spring Boot con Kotlin, que:
+Se ha implementado una **estructura óptima y profesional** para el proyecto
+Spring Boot con Kotlin, que:
 
-✅ Sigue las mejores prácticas de la industria  
-✅ Implementa arquitectura hexagonal  
-✅ Aplica principios SOLID y Clean Architecture  
-✅ Es escalable y mantenible  
-✅ Está completamente documentada  
-✅ Incluye tests unitarios e integración  
-✅ Tiene documentación automática con Swagger  
-✅ Está lista para crecer y evolucionar  
+✅ Sigue las mejores prácticas de la industria ✅ Implementa arquitectura
+hexagonal ✅ Aplica principios SOLID y Clean Architecture ✅ Es escalable y
+mantenible ✅ Está completamente documentada ✅ Incluye tests unitarios e
+integración ✅ Tiene documentación automática con Swagger ✅ Está lista para
+crecer y evolucionar
 
-Esta estructura proporciona una **base sólida** para construir aplicaciones empresariales robustas y escalables.
+Esta estructura proporciona una **base sólida** para construir aplicaciones
+empresariales robustas y escalables.
 
 ---
 
 ## 📞 Contacto
 
-Si tienes preguntas sobre la estructura o necesitas ayuda para implementar nuevas funcionalidades, consulta la documentación en el directorio `docs/`.
+Si tienes preguntas sobre la estructura o necesitas ayuda para implementar
+nuevas funcionalidades, consulta la documentación en el directorio `docs/`.
 
 **Happy Coding! 🚀**
