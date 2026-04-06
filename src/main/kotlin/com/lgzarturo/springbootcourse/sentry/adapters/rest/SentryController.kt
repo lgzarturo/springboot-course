@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.util.HtmlUtils
 
 /**
  * Controlador REST para la validación de Sentry
@@ -139,6 +140,7 @@ class SentryController {
     fun testCustomFingerprint(
         @RequestParam type: String,
     ): String {
+        val safeType = HtmlUtils.htmlEscape(type)
         try {
             throw SentryTestException("Custom fingerprint test: $type")
         } catch (e: SentryTestException) {
@@ -149,6 +151,6 @@ class SentryController {
             }
         }
 
-        return "Custom fingerprint test completed for type: $type"
+        return "Custom fingerprint test completed for type: $safeType"
     }
 }
