@@ -27,8 +27,8 @@ Kai, el programador aprendiz, llega al Hotel Pokémon, donde cada módulo es una
 
 **Errores y soluciones:**
 
-- **Detekt:** Se encontró que en el archivo SentryController.kt un error de detekt, al momento de capturar la excepcion, ya que al estar capturando la excepcion en el catch se puede lanzar cualquier excepcion con Exception y eso no es recomendable. Lanza el error TooGenericExceptionCaught. 
-  - Esto se evita creando una Exception personalizada para capturar la excepcion y lanzarla en el catch.
+- **Detekt:** Se encontró que en el archivo SentryController.kt un error de detekt, al momento de capturar la excepción, ya que al estar capturando la excepción en el catch se puede lanzar cualquier excepción con Exception y eso no es recomendable. Lanza el error TooGenericExceptionCaught.
+  - Esto se evita creando una Exception personalizada para capturar la excepción y lanzarla en el catch.
 - **KLint:** Al compilar el proyecto se encontraron errores de KLint, estos errores se corrigieron. Esto es especialmente importante para mantener la calidad del código y evitar problemas de compilación.
   - Es importante corregir estos errores para que el proyecto se compile correctamente.
 
@@ -44,7 +44,7 @@ Kai, el programador aprendiz, llega al Hotel Pokémon, donde cada módulo es una
 
 **Logros:**
 
-- **Definir los perfiles**: Se agregan 3 perfiles para la aplicación Spring Boot: "dev", "prod" y "test". Cada perfil tiene su propia configuración de base de datos y otras propiedades específicas, además que el archivo `application.yml` queda con la configuración base y los perfiles sobreescriben algunas propiedades y definen otras. 
+- **Definir los perfiles**: Se agregan 3 perfiles para la aplicación Spring Boot: "dev", "prod" y "test". Cada perfil tiene su propia configuración de base de datos y otras propiedades específicas, además que el archivo `application.yml` queda con la configuración base y los perfiles sobre escriben algunas propiedades y definen otras.
 - **Cobertura completa de perfiles**: Se configuraron y validaron los perfiles dev, prod y test, con `SPRING_PROFILES_ACTIVE` apuntando a dev por defecto y prod utilizado en staging para reproducir el entorno real.
 - **Aislamiento de configuraciones sensibles**: Se incorporó `.env` como fuente opcional para credenciales, permitiendo levantar staging sin exponer datos duros y manteniendo los defaults seguros.
 - **Optimización por entorno**: Se ajustaron pools de Hikari, logging y parámetros de Hibernate según el caso de uso (diagnóstico en dev, observabilidad controlada en prod y silencio en test) para garantizar estabilidad en staging.
@@ -103,6 +103,7 @@ Kai, el programador aprendiz, llega al Hotel Pokémon, donde cada módulo es una
   - Commit: `docs: update TDD guide with commit log and full paths`
 
 Referencias:
+
 - Guía detallada: [docs/course/week-02/06-crud-con-tdd.md](docs/course/week-03/01-crud-con-tdd.md)
 - Rama: [feature/milestone-01-persistence](https://github.com/lgzarturo/springboot-course/tree/refs/heads/feature/milestone-01-persistence)
 - HTTP de prueba: [http/example.http](http/example.http) (POST `/api/v1/examples`)
