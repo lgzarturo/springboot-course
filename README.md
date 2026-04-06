@@ -1,6 +1,6 @@
 # 🚀 Spring Boot Course — API REST Real
 
-[![Release](https://img.shields.io/github/v/release/lgzarturo/springboot-course?label=Latest%20Release)](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.1)
+[![Release](https://img.shields.io/github/v/release/lgzarturo/springboot-course?label=Latest%20Release)](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.3)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.20-blue.svg)](https://kotlinlang.org/)
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
@@ -11,17 +11,22 @@ Este repositorio contiene el código fuente y la documentación para el curso de
 
 ## 📋 Tabla de Contenidos
 
-- [Descripción General](#descripción-general)
-- [Stack Tecnológico](#stack-tecnológico)
-- [Características Principales](#características-principales)
-- [Requisitos](#requisitos)
-- [Configuración del Entorno](#configuración-del-entorno)
-- [Comandos y Scripts](#comandos-y-scripts)
-- [Estructura del Proyecto](#estructura-del-proyecto)
-- [Variables de Entorno](#variables-de-entorno)
-- [Pruebas (Testing)](#pruebas-testing)
-- [Documentación de la API](#documentación-de-la-api)
-- [Licencia](#licencia)
+1. [🚀 Spring Boot Course — API REST Real](#-spring-boot-course--api-rest-real)
+   1. [📋 Tabla de Contenidos](#-tabla-de-contenidos)
+   2. [Descripción General](#descripción-general)
+   3. [Stack Tecnológico](#stack-tecnológico)
+   4. [Características Principales](#características-principales)
+   5. [Requisitos](#requisitos)
+   6. [Configuración del Entorno](#configuración-del-entorno)
+   7. [Comandos y Scripts](#comandos-y-scripts)
+      1. [Desarrollo](#desarrollo)
+      2. [Calidad y Estilo de Código](#calidad-y-estilo-de-código)
+      3. [Base de Datos](#base-de-datos)
+   8. [Estructura del Proyecto](#estructura-del-proyecto)
+   9. [Variables de Entorno](#variables-de-entorno)
+   10. [Pruebas (Testing)](#pruebas-testing)
+   11. [Documentación de la API](#documentación-de-la-api)
+   12. [Licencia](#licencia)
 
 ---
 
@@ -36,11 +41,11 @@ El proyecto consiste en una plataforma de gestión hotelera y ecommerce de ameni
 - **Lenguaje:** Kotlin 2.2.20
 - **Framework Principal:** Spring Boot 4.0.3
 - **Gestor de Dependencias:** Gradle (Kotlin DSL)
-- **Base de Datos:** 
+- **Base de Datos:**
   - PostgreSQL (Producción/Desarrollo Local)
   - H2 Database (Pruebas/Desarrollo rápido)
 - **Persistencia:** Spring Data JPA + Flyway (Migraciones)
-- **Observabilidad:** 
+- **Observabilidad:**
   - Sentry (Error Tracking)
   - Spring Actuator + Micrometer + Prometheus
 - **Documentación:** SpringDoc OpenAPI (Swagger)
@@ -167,6 +172,41 @@ Una vez iniciada la aplicación, puedes acceder a:
 - **Swagger UI:** `http://localhost:8080/swagger-ui.html`
 - **OpenAPI JSON:** `http://localhost:8080/api-docs`
 - **Actuator Health:** `http://localhost:8080/actuator/health`
+
+---
+
+## 🎓 Guía de Aprendizaje: De Novato a Maestro
+
+Este curso sigue una narrativa inspirada en Pokémon donde **Kai**, un joven entrenador, desarrolla el sistema del **Hotel Pokémon** mientras visita 6 gimnasios. Cada gimnasio representa un dominio técnico esencial.
+
+### 🗺️ Ruta de Aprendizaje
+
+| # | Gimnasio | Líder | Insignia | Dominio Técnico | Duración |
+|---|----------|-------|----------|-----------------|----------|
+| 1 | 🏔️ **Pewter** | Brock | Boulder Badge 💎 | JPA, Entidades, Flyway, Repositorios | 24h |
+| 2 | ⚡ **Vermilion** | Lt. Surge | Thunder Badge ⚡ | JWT, Spring Security, OAuth2, RBAC | 20h |
+| 3 | 🌊 **Cerulean** | Misty | Cascade Badge 🌊 | Bean Validation, Excepciones, Transacciones | 16h |
+| 4 | 🌱 **Celadon** | Erika | Rainbow Badge 🌈 | Unit Tests, Integration, E2E, Performance | 24h |
+| 5 | 🧪 **Cinnabar** | Blaine | Volcano Badge 🌋 | Logging, Métricas, Distributed Tracing | 16h |
+| 6 | 🐉 **Viridian** | Giovanni | Earth Badge 🌍 | Docker, CI/CD, Análisis Estático | 20h |
+| 🏆 | **Liga Pokémon** | — | Maestro 🎖️ | Proyecto integrador completo | 8h |
+
+> **Total estimado:** ~128 horas (~3 semanas full-time)
+
+### 📚 Documentación Detallada
+
+| Recurso | Contenido |
+|---------|-----------|
+| [📖 Guía Narrativa](docs/learning-path/narrative-guide.md) | Historia completa de Kai (visión general, motivación) |
+| [🗺️ Itinerario de Desarrollo](docs/learning-path/development-itinerary.md) | Fases con código de ejemplo (entidades, seguridad, testing...) |
+| [🏋️ Roadmap de Ejercicios](docs/learning-path/exercises-roadmap.md) | Ejercicios paso a paso con criterios de aceptación |
+| [🏗️ Plan de Migración MVC](docs/architecture/mvc-migration-plan.md) | Migración de Hexagonal a MVC por features |
+
+### 🚀 ¿Por dónde empezar?
+
+1. **Si eres nuevo:** Lee la [Guía Narrativa](docs/learning-path/narrative-guide.md) para entender el contexto, luego sigue el [Roadmap de Ejercicios](docs/learning-path/exercises-roadmap.md) desde la Fase 1.
+2. **Si tienes experiencia:** Ve directo al [Itinerario de Desarrollo](docs/learning-path/development-itinerary.md) para ver los ejemplos de código.
+3. **Si quieres entender la arquitectura:** Revisa el [Plan de Migración MVC](docs/architecture/mvc-migration-plan.md).
 
 ---
 

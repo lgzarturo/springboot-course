@@ -3,6 +3,7 @@
 ## Contexto
 
 El proyecto actualmente usa arquitectura hexagonal con organización por capas. Esto genera:
+
 - 5-6 niveles de anidación por feature (`adapters/rest/dto/`, `application/ports/output/`, etc.)
 - Interfaces "port" que solo tienen una implementación (ceremonia sin valor)
 - Clases "adapter" que Spring ya resuelve con `@RestController` y `@Repository`
