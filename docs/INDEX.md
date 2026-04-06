@@ -1,6 +1,7 @@
 # 📚 Índice de Documentación del Proyecto
 
-Bienvenido a la documentación completa del proyecto Spring Boot Course. Esta guía te ayudará a navegar por toda la documentación disponible.
+Bienvenido a la documentación completa del proyecto Spring Boot Course. Esta
+guía te ayudará a navegar por toda la documentación disponible.
 
 ---
 
@@ -9,18 +10,22 @@ Bienvenido a la documentación completa del proyecto Spring Boot Course. Esta gu
 Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 
 1. **[README.md](../README.md)** - Comienza aquí para entender el proyecto
-2. **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Resumen ejecutivo de la implementación
-3. **[ARCHITECTURE.md](ARCHITECTURE.md)** - Entiende la arquitectura del proyecto
-4. **[DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)** - Aprende a desarrollar en el proyecto
+2. **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Resumen ejecutivo de la
+   implementación
+3. **[ARCHITECTURE.md](ARCHITECTURE.md)** - Entiende la arquitectura del
+   proyecto
+4. **[DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)** - Aprende a desarrollar en
+   el proyecto
 
 ---
 
 ## 📖 Documentación Disponible
 
 ### 1. 📋 README Principal
-**Archivo**: [README.md](../README.md)  
-**Propósito**: Introducción general al proyecto  
-**Contenido**:
+
+**Archivo**: [README.md](../README.md) **Propósito**: Introducción general al
+proyecto **Contenido**:
+
 - Descripción del proyecto
 - Tecnologías utilizadas
 - Guía de instalación
@@ -33,9 +38,10 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 ---
 
 ### 2. 📊 Resumen Ejecutivo
-**Archivo**: [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)  
-**Propósito**: Visión general de la implementación  
-**Contenido**:
+
+**Archivo**: [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md) **Propósito**: Visión
+general de la implementación **Contenido**:
+
 - Arquitectura implementada
 - Principios de diseño aplicados
 - Estructura de directorios
@@ -50,9 +56,10 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 ---
 
 ### 3. 🏗️ Arquitectura del Proyecto
-**Archivo**: [ARCHITECTURE.md](ARCHITECTURE.md)  
-**Propósito**: Documentación detallada de la arquitectura  
-**Contenido**:
+
+**Archivo**: [ARCHITECTURE.md](ARCHITECTURE.md) **Propósito**: Documentación
+detallada de la arquitectura **Contenido**:
+
 - Arquitectura hexagonal explicada
 - Separación de capas
 - Principios de arquitectura
@@ -65,9 +72,10 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 ---
 
 ### 4. 📐 Diagramas de Arquitectura
-**Archivo**: [ARCHITECTURE_DIAGRAM.md](ARCHITECTURE_DIAGRAM.md)  
-**Propósito**: Representación visual de la arquitectura  
-**Contenido**:
+
+**Archivo**: [ARCHITECTURE_DIAGRAM.md](ARCHITECTURE_DIAGRAM.md) **Propósito**:
+Representación visual de la arquitectura **Contenido**:
+
 - Vista general de la arquitectura
 - Flujo de una petición HTTP
 - Separación de responsabilidades
@@ -77,14 +85,16 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 - Principios SOLID visualizados
 - Escalabilidad
 
-**Cuándo leerlo**: Para visualizar cómo se conectan las diferentes partes del sistema
+**Cuándo leerlo**: Para visualizar cómo se conectan las diferentes partes del
+sistema
 
 ---
 
 ### 5. 🛠️ Guía de Desarrollo
-**Archivo**: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)  
-**Propósito**: Manual para desarrolladores  
-**Contenido**:
+
+**Archivo**: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md) **Propósito**: Manual
+para desarrolladores **Contenido**:
+
 - Inicio rápido
 - Convenciones de código
 - Mejores prácticas de Kotlin
@@ -97,9 +107,10 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 ---
 
 ### 6. ✅ Checklist de Implementación
-**Archivo**: [IMPLEMENTATION_CHECKLIST.md](IMPLEMENTATION_CHECKLIST.md)  
-**Propósito**: Lista de verificación de lo implementado  
-**Contenido**:
+
+**Archivo**: [IMPLEMENTATION_CHECKLIST.md](IMPLEMENTATION_CHECKLIST.md)
+**Propósito**: Lista de verificación de lo implementado **Contenido**:
+
 - Estructura implementada (checklist)
 - Endpoints implementados
 - Arquitectura visual
@@ -115,9 +126,10 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 ---
 
 ### 7. 🌐 Variables de Entorno
-**Archivo**: [ENV_VARIABLES.md](ENV_VARIABLES.md)
-**Propósito**: Documentar las variables de entorno necesarias
-**Contenido**:
+
+**Archivo**: [ENV_VARIABLES.md](ENV_VARIABLES.md) **Propósito**: Documentar las
+variables de entorno necesarias **Contenido**:
+
 - Variables de entorno utilizadas en el proyecto
 - Descripción de cada variable
 
@@ -128,9 +140,12 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 ### Para Desarrolladores Nuevos
 
 1. Lee el [README](../README.md) para entender el proyecto
-2. Revisa el [Resumen Ejecutivo](EXECUTIVE_SUMMARY.md) para ver qué se ha implementado
-3. Estudia la [Arquitectura](ARCHITECTURE.md) para entender las decisiones de diseño
-4. Consulta la [Guía de Desarrollo](DEVELOPMENT_GUIDE.md) antes de escribir código
+2. Revisa el [Resumen Ejecutivo](EXECUTIVE_SUMMARY.md) para ver qué se ha
+   implementado
+3. Estudia la [Arquitectura](ARCHITECTURE.md) para entender las decisiones de
+   diseño
+4. Consulta la [Guía de Desarrollo](DEVELOPMENT_GUIDE.md) antes de escribir
+   código
 5. Usa este [Checklist](IMPLEMENTATION_CHECKLIST.md) como referencia
 
 ### Para Arquitectos de Software
@@ -158,21 +173,25 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 ## 📂 Otros Recursos
 
 ### Archivos HTTP
-**Ubicación**: `http/`  
-**Contenido**:
+
+**Ubicación**: `http/` **Contenido**:
+
 - `ping.http` - Ejemplos de peticiones al PingController
 - `actuator.http` - Ejemplos de peticiones a Actuator
 
-**Cómo usar**: Abre estos archivos en IntelliJ IDEA y ejecuta las peticiones directamente
+**Cómo usar**: Abre estos archivos en IntelliJ IDEA y ejecuta las peticiones
+directamente
 
 ### Configuración
-**Ubicación**: `src/main/resources/`  
-**Archivos**:
+
+**Ubicación**: `src/main/resources/` **Archivos**:
+
 - `application.yaml` - Configuración principal de la aplicación
 
 ### Build
-**Ubicación**: Raíz del proyecto  
-**Archivos**:
+
+**Ubicación**: Raíz del proyecto **Archivos**:
+
 - `build.gradle.kts` - Configuración de Gradle y dependencias
 - `settings.gradle.kts` - Configuración del proyecto Gradle
 
@@ -183,7 +202,7 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 ### ¿Cómo hacer X?
 
 | Pregunta                          | Documento                                               | Sección                              |
-|-----------------------------------|---------------------------------------------------------|--------------------------------------|
+| --------------------------------- | ------------------------------------------------------- | ------------------------------------ |
 | ¿Cómo instalar el proyecto?       | [README](../README.md)                                  | Inicio Rápido                        |
 | ¿Cómo agregar un nuevo endpoint?  | [DEVELOPMENT_GUIDE](DEVELOPMENT_GUIDE.md)               | Cómo Agregar una Nueva Funcionalidad |
 | ¿Por qué esta arquitectura?       | [EXECUTIVE_SUMMARY](EXECUTIVE_SUMMARY.md)               | Justificación de la Estructura       |
@@ -198,21 +217,25 @@ Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 ## 🎯 Objetivos de la Documentación
 
 ### 1. Onboarding Rápido
+
 - Nuevos desarrolladores pueden entender el proyecto en menos de 1 hora
 - Documentación clara y estructurada
 - Ejemplos prácticos
 
 ### 2. Referencia Completa
+
 - Toda la información necesaria está documentada
 - Fácil de buscar y encontrar
 - Actualizada con el código
 
 ### 3. Mejores Prácticas
+
 - Documenta las decisiones de diseño
 - Explica el "por qué" no solo el "cómo"
 - Proporciona ejemplos de código
 
 ### 4. Mantenibilidad
+
 - Documentación vive con el código
 - Fácil de actualizar
 - Versionada con Git
@@ -253,19 +276,23 @@ Si tienes preguntas sobre la documentación o encuentras algo que no está claro
 ## 🎓 Recursos Externos
 
 ### Spring Boot
+
 - [Documentación Oficial](https://docs.spring.io/spring-boot/docs/current/reference/html/)
 - [Spring Guides](https://spring.io/guides)
 
 ### Kotlin
+
 - [Documentación Oficial](https://kotlinlang.org/docs/home.html)
 - [Kotlin for Spring](https://spring.io/guides/tutorials/spring-boot-kotlin/)
 
 ### Arquitectura
+
 - [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [Hexagonal Architecture - Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
 - [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
 
 ### Testing
+
 - [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
 - [MockK Documentation](https://mockk.io/)
 - [Spring Boot Testing](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.testing)
@@ -274,7 +301,8 @@ Si tienes preguntas sobre la documentación o encuentras algo que no está claro
 
 ## 📝 Notas Finales
 
-Esta documentación es un **recurso vivo** que evoluciona con el proyecto. Si encuentras algo que falta o que podría mejorarse, ¡contribuye!
+Esta documentación es un **recurso vivo** que evoluciona con el proyecto. Si
+encuentras algo que falta o que podría mejorarse, ¡contribuye!
 
 **Última actualización**: 2025-10-26
 

@@ -19,10 +19,10 @@ Desarrollar un sistema de reservas de hotel con temática Pokémon que permita:
 
 Principios Aplicados:
 
-1. Screaming Architecture: La estructura "grita" el propósito del negocio 
-2. Hexagonal Architecture: Dominio independiente, puertos y adaptadores 
-3. SOLID: Principios aplicados en cada capa 
-4. TDD: Tests primero, luego implementación 
+1. Screaming Architecture: La estructura "grita" el propósito del negocio
+2. Hexagonal Architecture: Dominio independiente, puertos y adaptadores
+3. SOLID: Principios aplicados en cada capa
+4. TDD: Tests primero, luego implementación
 5. DDD: Domain-Driven Design para la lógica de negocio
 
 ## Diagrama de Alto Nivel

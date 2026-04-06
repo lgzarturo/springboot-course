@@ -1,6 +1,7 @@
 # 🔧 Guía para Corregir el Historial de Commits
 
-Esta guía te ayudará a corregir los errores de commitlint encontrados en tu historial de Git.
+Esta guía te ayudará a corregir los errores de commitlint encontrados en tu
+historial de Git.
 
 ## 📋 Tabla de Contenidos
 
@@ -48,11 +49,14 @@ Se realizan ajustes en la documentación para estandarizar términos y corregir 
    git branch backup-before-rebase
    ```
 
-2. **Coordinación**: Si trabajas en equipo, coordina con tu equipo antes de reescribir el historial.
+2. **Coordinación**: Si trabajas en equipo, coordina con tu equipo antes de
+   reescribir el historial.
 
-3. **Force Push**: Reescribir el historial requiere `git push --force`, lo cual puede afectar a otros colaboradores.
+3. **Force Push**: Reescribir el historial requiere `git push --force`, lo cual
+   puede afectar a otros colaboradores.
 
-4. **Ramas Remotas**: Solo reescribe el historial en ramas que no hayan sido compartidas o en ramas de desarrollo.
+4. **Ramas Remotas**: Solo reescribe el historial en ramas que no hayan sido
+   compartidas o en ramas de desarrollo.
 
 ### ⚠️ NUNCA reescribas el historial en:
 
@@ -86,7 +90,8 @@ git rebase -i <commit-hash>^
 
 ### Paso 3: Marcar commits para editar
 
-En el editor que se abre, cambia `pick` por `reword` (para cambiar el mensaje) o `edit` (para modificar el commit):
+En el editor que se abre, cambia `pick` por `reword` (para cambiar el mensaje) o
+`edit` (para modificar el commit):
 
 ```
 reword a1b2c3d docs: correcciones menores en documentación
@@ -98,9 +103,11 @@ pick i7j8k9l feat: implementar PingController
 
 #### Para el Error 1 (líneas largas):
 
-Cuando Git te muestre el editor para el primer commit, reescribe el mensaje dividiendo las líneas:
+Cuando Git te muestre el editor para el primer commit, reescribe el mensaje
+dividiendo las líneas:
 
 **Formato correcto:**
+
 ```
 docs: correcciones menores en documentación
 
@@ -118,6 +125,7 @@ También se actualiza `.gitignore` para mayor consistencia.
 Reescribe el merge commit con formato convencional:
 
 **Formato correcto:**
+
 ```
 chore: merge feature/issue-1-readme-update (#8)
 
@@ -368,6 +376,7 @@ git rebase -i <hash-anterior>^
 ```
 
 **Nuevo mensaje:**
+
 ```
 docs: correcciones menores en documentación
 
@@ -389,6 +398,7 @@ También se actualiza `.gitignore` para mayor consistencia.
 ```
 
 **Nuevo mensaje:**
+
 ```
 chore: merge feature/issue-1-readme-update (#8)
 
@@ -438,4 +448,5 @@ Si encuentras problemas durante el proceso:
 
 **Última actualización**: 2025-10-20
 
-**Nota**: Esta guía es parte del proyecto Spring Boot Course y está diseñada para ayudarte a mantener un historial de commits limpio y profesional.
+**Nota**: Esta guía es parte del proyecto Spring Boot Course y está diseñada
+para ayudarte a mantener un historial de commits limpio y profesional.

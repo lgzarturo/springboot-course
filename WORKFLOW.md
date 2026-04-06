@@ -16,21 +16,26 @@
 
 ## Introducción
 
-Este documento describe el flujo de trabajo completo para mantener un historial de commits coherente y profesional, gestionar versiones del proyecto de manera automática y generar changelogs informativos que documenten la evolución del proyecto.
+Este documento describe el flujo de trabajo completo para mantener un historial
+de commits coherente y profesional, gestionar versiones del proyecto de manera
+automática y generar changelogs informativos que documenten la evolución del
+proyecto.
 
 ### Objetivos
 
-✅ **Commits descriptivos y estandarizados** que cuenten una historia clara  
-✅ **Versionado automático** basado en el tipo de cambios  
-✅ **Changelog generado automáticamente** con información relevante  
-✅ **Proceso documentado y reproducible** para todo el equipo  
-✅ **Integración con CI/CD** para automatizar el release  
+✅ **Commits descriptivos y estandarizados** que cuenten una historia clara ✅
+**Versionado automático** basado en el tipo de cambios ✅ **Changelog generado
+automáticamente** con información relevante ✅ **Proceso documentado y
+reproducible** para todo el equipo ✅ **Integración con CI/CD** para automatizar
+el release
 
 ---
 
 ## Conventional Commits
 
-Los **Conventional Commits** son una especificación para dar formato a los mensajes de commit de manera consistente. Esto facilita la generación automática de changelogs y el versionado semántico.
+Los **Conventional Commits** son una especificación para dar formato a los
+mensajes de commit de manera consistente. Esto facilita la generación automática
+de changelogs y el versionado semántico.
 
 ### Estructura Básica
 
@@ -45,7 +50,7 @@ Los **Conventional Commits** son una especificación para dar formato a los mens
 ### Tipos de Commit
 
 | Tipo       | Descripción                                              | Incrementa Versión |
-|------------|----------------------------------------------------------|--------------------|
+| ---------- | -------------------------------------------------------- | ------------------ |
 | `feat`     | Nueva funcionalidad                                      | MINOR (0.x.0)      |
 | `fix`      | Corrección de bugs                                       | PATCH (0.0.x)      |
 | `docs`     | Cambios en documentación                                 | No incrementa      |
@@ -130,14 +135,15 @@ Seguimos **Semantic Versioning 2.0.0** (SemVer): `MAJOR.MINOR.PATCH`
 
 ### Formato: X.Y.Z
 
-- **MAJOR (X)**: Cambios incompatibles con versiones anteriores (Breaking Changes)
+- **MAJOR (X)**: Cambios incompatibles con versiones anteriores (Breaking
+  Changes)
 - **MINOR (Y)**: Nueva funcionalidad compatible con versiones anteriores
 - **PATCH (Z)**: Correcciones de bugs compatibles con versiones anteriores
 
 ### Ejemplos de Incrementos
 
 | Versión Actual | Cambio                               | Nueva Versión      |
-|----------------|--------------------------------------|--------------------|
+| -------------- | ------------------------------------ | ------------------ |
 | 1.0.0          | `fix: corregir validación`           | 1.0.1              |
 | 1.0.1          | `feat: agregar endpoint de búsqueda` | 1.1.0              |
 | 1.1.0          | `feat!: cambiar estructura de API`   | 2.0.0              |
@@ -215,7 +221,8 @@ git push -u origin feature/nombre-descriptivo
 1. Crear Pull Request en GitHub
 2. Asegurarse de que los checks de CI pasen
 3. Solicitar revisión de código
-4. Una vez aprobado, hacer **Squash and Merge** con un mensaje conventional commit
+4. Una vez aprobado, hacer **Squash and Merge** con un mensaje conventional
+   commit
 
 ### 6. Release (Automatizado)
 
@@ -236,7 +243,8 @@ Usamos **GitHub Flow** simplificado:
 ### Ramas Principales
 
 - **`main`**: Rama principal, siempre estable y desplegable
-- **`develop`** (opcional): Para proyectos grandes con múltiples features en paralelo
+- **`develop`** (opcional): Para proyectos grandes con múltiples features en
+  paralelo
 
 ### Ramas de Trabajo
 
@@ -251,12 +259,9 @@ chore/nombre-de-la-tarea      # Tareas de mantenimiento
 
 ### Reglas
 
-✅ Crear rama desde `main` actualizado  
-✅ Un commit por cambio lógico  
-✅ Nombres descriptivos en inglés o español consistente  
-✅ Pull Request para todos los cambios  
-✅ Squash commits en el merge a `main`  
-✅ Borrar rama después del merge  
+✅ Crear rama desde `main` actualizado ✅ Un commit por cambio lógico ✅ Nombres
+descriptivos en inglés o español consistente ✅ Pull Request para todos los
+cambios ✅ Squash commits en el merge a `main` ✅ Borrar rama después del merge
 
 ---
 
@@ -272,32 +277,39 @@ El changelog se genera automáticamente a partir de los commits conventional.
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
 ### Added
+
 - Cambios añadidos pero no lanzados aún
 
 ## [1.2.0] - 2024-01-20
 
 ### Added
+
 - feat(reservas): implementar sistema de reservas (#45)
 - feat(api): agregar paginación a endpoints de listado (#42)
 
 ### Fixed
+
 - fix(pagos): corregir cálculo de impuestos (#48)
 - fix(auth): resolver error de token expirado (#47)
 
 ### Changed
+
 - refactor(service): mejorar estructura de servicios de dominio
 
 ## [1.1.0] - 2024-01-15
 
 ### Added
+
 - feat(ping): implementar endpoint de health check
 
 ### Fixed
+
 - fix(tests): corregir tests de PingController
 ```
 
@@ -535,4 +547,5 @@ Si tienes dudas sobre el flujo de trabajo:
 
 **¡Happy Coding! 🚀**
 
-Recuerda: Un buen historial de commits es la mejor documentación de la evolución de tu proyecto.
+Recuerda: Un buen historial de commits es la mejor documentación de la evolución
+de tu proyecto.

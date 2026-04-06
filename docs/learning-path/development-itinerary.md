@@ -1,6 +1,10 @@
 # Fases del proyecto
 
-¡Perfecto, entrenador! Veo que Kai está a punto de comenzar su gran aventura en el **Hotel Pokémon Spring Boot**. Con base en ese diagrama UML del proyecto (![sistema de reservas hoteleras con temática Pokémon](resources/images/21-diagrama-entidades-uml.png)), es importante diseñar ejercicios progresivos, historia inmersiva y desafíos técnicos concretos.
+¡Perfecto, entrenador! Veo que Kai está a punto de comenzar su gran aventura en
+el **Hotel Pokémon Spring Boot**. Con base en ese diagrama UML del proyecto
+(![sistema de reservas hoteleras con temática Pokémon](../resources/images/21-diagrama-entidades-uml.png)),
+es importante diseñar ejercicios progresivos, historia inmersiva y desafíos
+técnicos concretos.
 
 Aquí tienes el itinerario completo de la Liga Pokémon del Código:
 
@@ -8,9 +12,9 @@ Aquí tienes el itinerario completo de la Liga Pokémon del Código:
 
 ## 🏨 FASE 1: Gimnasio de Pewter - "La Roca de la Persistencia"
 
-**Líder:** Brock (especialista en bases de datos sólidas)
-**Insignia:** Boulder Badge 💎
-**Objetivo:** Domesticar las entidades y hacer que los datos persistan como la roca más dura.
+**Líder:** Brock (especialista en bases de datos sólidas) **Insignia:** Boulder
+Badge 💎 **Objetivo:** Domesticar las entidades y hacer que los datos persistan
+como la roca más dura.
 
 ### 🎯 Ejercicios Técnicos
 
@@ -44,7 +48,10 @@ data class Room(
 )
 ```
 
-**Desafío Team Rocket 🚀:** Brock advierte que Team Rocket intentó usar `EAGER` fetching en todas las relaciones, causando el "N+1 Query of Doom". Kai debe configurar correctamente el `FetchType` y usar `EntityGraph` cuando sea necesario.
+**Desafío Team Rocket 🚀:** Brock advierte que Team Rocket intentó usar `EAGER`
+fetching en todas las relaciones, causando el "N+1 Query of Doom". Kai debe
+configurar correctamente el `FetchType` y usar `EntityGraph` cuando sea
+necesario.
 
 #### 1.2 Repositorios con Spring Data (Nivel: Geodude)
 
@@ -145,15 +152,16 @@ ADD CONSTRAINT chk_dates CHECK (check_out_date > check_in_date),
 ADD CONSTRAINT chk_guests CHECK (number_of_guests > 0);
 ```
 
-**Misión Especial:** Implementar un `FlywayCallback` que pre-poble la tabla `rooms` con habitaciones temáticas de Pikachu, Charizard y Blastoise si la base de datos está vacía.
+**Misión Especial:** Implementar un `FlywayCallback` que pre-poble la tabla
+`rooms` con habitaciones temáticas de Pikachu, Charizard y Blastoise si la base
+de datos está vacía.
 
 ---
 
 ## ⚡ FASE 2: Gimnasio de Vermilion - "El Trueno de la Seguridad"
 
-**Líder:** Lt. Surge (experto en defensa eléctrica)
-**Insignia:** Thunder Badge ⚡
-**Objetivo:** Proteger el Hotel Pokémon de intrusiones de Team Rocket.
+**Líder:** Lt. Surge (experto en defensa eléctrica) **Insignia:** Thunder Badge
+⚡ **Objetivo:** Proteger el Hotel Pokémon de intrusiones de Team Rocket.
 
 ### 🎯 Ejercicios Técnicos:
 
@@ -306,14 +314,15 @@ class ReservationController(private val reservationService: ReservationService) 
 }
 ```
 
-**Trampa de Team Rocket 🚀:** Lt. Surge advierte que Team Rocket intenta hacer JWT spoofing. Kai debe implementar `TokenBlacklist` usando Redis para invalidar tokens en logout y detectar tokens robados.
+**Trampa de Team Rocket 🚀:** Lt. Surge advierte que Team Rocket intenta hacer
+JWT spoofing. Kai debe implementar `TokenBlacklist` usando Redis para invalidar
+tokens en logout y detectar tokens robados.
 
 ---
 
 ## 🌊 FASE 3: Gimnasio de Cerulean - "La Cascada de la Validación"
 
-**Líder:** Misty (perfeccionista del flujo)
-**Insignia:** Cascade Badge 🌊
+**Líder:** Misty (perfeccionista del flujo) **Insignia:** Cascade Badge 🌊
 **Objetivo:** Ningún dato inválido debe atravesar las defensas del hotel.
 
 ### 🎯 Ejercicios Técnicos
@@ -495,14 +504,15 @@ class GlobalExceptionHandler(private val messageSource: MessageSource) {
 }
 ```
 
-**Desafío Misty:** Implementar validación asíncrona usando `@Async` para verificar disponibilidad de habitaciones en tiempo real sin bloquear el hilo principal.
+**Desafío Misty:** Implementar validación asíncrona usando `@Async` para
+verificar disponibilidad de habitaciones en tiempo real sin bloquear el hilo
+principal.
 
 ---
 
 ## 🌱 FASE 4: Gimnasio de Celadon - "El Jardín del Testing"
 
-**Líder:** Erika (maestra de la perfección)
-**Insignia:** Rainbow Badge 🌈
+**Líder:** Erika (maestra de la perfección) **Insignia:** Rainbow Badge 🌈
 **Objetivo:** Código sin tests es como un Pokémon sin entrenar.
 
 ### 🎯 Ejercicios Técnicos
@@ -803,13 +813,14 @@ class RoomAvailabilityBenchmark {
 }
 ```
 
-**Reto Erika:** Alcanzar 80% de cobertura de código y 100% de cobertura en lógica de negocio crítica (cálculos de precios, disponibilidad).
+**Reto Erika:** Alcanzar 80% de cobertura de código y 100% de cobertura en
+lógica de negocio crítica (cálculos de precios, disponibilidad).
 
 ---
 
 ## 🧪 FASE 5: Gimnasio de Cinnabar - "El Laboratorio de la Observabilidad"
-**Líder:** Blaine (científico de datos)
-**Insignia:** Volcano Badge 🌋
+
+**Líder:** Blaine (científico de datos) **Insignia:** Volcano Badge 🌋
 **Objetivo:** Monitorizar cada rincón del hotel como si fuera un experimento.
 
 ### 🎯 Ejercicios Técnicos
@@ -1031,6 +1042,7 @@ class AsyncReservationProcessor(
 ```
 
 **Experimento Blaine:** Crear un dashboard en Grafana que muestre:
+
 - Tasa de ocupación del hotel en tiempo real
 - Ingresos por hora
 - Tiempo promedio de checkout
@@ -1040,8 +1052,7 @@ class AsyncReservationProcessor(
 
 ## 🐉 FASE 6: Gimnasio de Viridian - "La Liga de la Entrega Continua"
 
-**Líder:** Giovanni (arquitecto de sistemas)
-**Insignia:** Earth Badge 🌍
+**Líder:** Giovanni (arquitecto de sistemas) **Insignia:** Earth Badge 🌍
 **Objetivo:** El hotel debe operar 24/7 sin interrupciones.
 
 ### 🎯 Ejercicios Técnicos
@@ -1105,7 +1116,7 @@ services:
     build: .
     container_name: hotel-pokemon-api
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/hotel_pokemon
@@ -1131,7 +1142,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ash -d hotel_pokemon"]
+      test: ['CMD-SHELL', 'pg_isready -U ash -d hotel_pokemon']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -1150,8 +1161,8 @@ services:
     image: nginx:alpine
     container_name: hotel-pokemon-gateway
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
@@ -1401,9 +1412,11 @@ tasks.check {
 ```
 
 **Plan Maestro Giovanni:** Implementar un pipeline de GitOps con ArgoCD donde:
+
 - Cada PR genera un preview environment efímero
 - Los merge a `develop` deployan automáticamente a Staging
-- Los tags de versión deployan a Producción con estrategia Canary (10% → 50% → 100%)
+- Los tags de versión deployan a Producción con estrategia Canary (10% → 50% →
+  100%)
 
 ---
 
@@ -1413,12 +1426,18 @@ tasks.check {
 
 Kai debe implementar:
 
-1. **Feature Flagging:** Usar Spring Boot Actuator para activar/desactivar funciones en caliente (ej.: "Modo Torneo Pokémon")
-2. **Rate Limiting:** Proteger el API de creación de reservas (máximo 5 intentos/minuto por usuario)
-3. **Webhook System:** Notificar a sistemas externos cuando una reserva se confirma
-4. **Caching Estratificado:** Redis para datos de sesión, Caffeine para catálogo de habitaciones
-5. **GraphQL Endpoint:** Permitir queries flexibles para el frontend de recepción
-6. **Multi-tenancy:** Soporte para múltiples cadenas hoteleras (Hotel Kanto, Hotel Johto)
+1. **Feature Flagging:** Usar Spring Boot Actuator para activar/desactivar
+   funciones en caliente (ej.: "Modo Torneo Pokémon")
+2. **Rate Limiting:** Proteger el API de creación de reservas (máximo 5
+   intentos/minuto por usuario)
+3. **Webhook System:** Notificar a sistemas externos cuando una reserva se
+   confirma
+4. **Caching Estratificado:** Redis para datos de sesión, Caffeine para catálogo
+   de habitaciones
+5. **GraphQL Endpoint:** Permitir queries flexibles para el frontend de
+   recepción
+6. **Multi-tenancy:** Soporte para múltiples cadenas hoteleras (Hotel Kanto,
+   Hotel Johto)
 
 **Evaluación del Profesor Oak:** El proyecto se considera completo cuando:
 
@@ -1430,4 +1449,6 @@ Kai debe implementar:
 
 ---
 
-**¡Ahora Kai está listo para desafiar a la Liga!** Cada fase incluye checkpoints donde "Team Rocket" (bugs intencionales) intenta sabotear el sistema, y Kai debe usar sus habilidades para defender el Hotel Pokémon.
+**¡Ahora Kai está listo para desafiar a la Liga!** Cada fase incluye checkpoints
+donde "Team Rocket" (bugs intencionales) intenta sabotear el sistema, y Kai debe
+usar sus habilidades para defender el Hotel Pokémon.

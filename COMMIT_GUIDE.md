@@ -1,6 +1,8 @@
 # 📝 Guía Rápida de Commits y Versionado
 
-**Guía definitiva para commits, versionado y releases en este proyecto**: Aprende a usar Conventional Commits, Semantic Versioning y el flujo de trabajo completo
+**Guía definitiva para commits, versionado y releases en este proyecto**:
+Aprende a usar Conventional Commits, Semantic Versioning y el flujo de trabajo
+completo
 
 > **Referencia rápida para commits con Conventional Commits**
 >
@@ -58,32 +60,32 @@ Este proyecto usa **Semantic Versioning (SemVer)**: `MAJOR.MINOR.PATCH`
 
 ### Tipos que Generan Release
 
-| Tipo       | Descripción                               | Incrementa | Ejemplo        |
-|------------|-------------------------------------------|------------|----------------|
-| `feat`     | Nueva funcionalidad                       | MINOR      | 1.0.0 → 1.1.0  |
-| `fix`      | Corrección de bugs                        | PATCH      | 1.0.0 → 1.0.1  |
-| `perf`     | Mejoras de rendimiento                    | PATCH      | 1.0.0 → 1.0.1  |
-| `refactor` | Refactorización de código                 | PATCH      | 1.0.0 → 1.0.1  |
-| `build`    | Cambios en sistema de build/dependencias  | PATCH      | 1.0.0 → 1.0.1  |
-| `feat!`    | Breaking change (cualquier tipo con `!`)  | MAJOR      | 1.0.0 → 2.0.0  |
+| Tipo       | Descripción                              | Incrementa | Ejemplo       |
+| ---------- | ---------------------------------------- | ---------- | ------------- |
+| `feat`     | Nueva funcionalidad                      | MINOR      | 1.0.0 → 1.1.0 |
+| `fix`      | Corrección de bugs                       | PATCH      | 1.0.0 → 1.0.1 |
+| `perf`     | Mejoras de rendimiento                   | PATCH      | 1.0.0 → 1.0.1 |
+| `refactor` | Refactorización de código                | PATCH      | 1.0.0 → 1.0.1 |
+| `build`    | Cambios en sistema de build/dependencias | PATCH      | 1.0.0 → 1.0.1 |
+| `feat!`    | Breaking change (cualquier tipo con `!`) | MAJOR      | 1.0.0 → 2.0.0 |
 
 ### Tipos que NO Generan Release
 
 | Tipo
 
-| Descripción                          | Uso                           |
-|-----------|--------------------------------------|-------------------------------|
-| `docs`    | Solo documentación                   | README, guías, comentarios    |
-| `style`   | Formato, espacios, lint              | Prettier, formato de código   |
-| `test`    | Agregar o modificar tests            | Unit tests, integration tests |
-| `ci`      | Cambios en CI/CD                     | GitHub Actions, workflows     |
-| `chore`   | Tareas de mantenimiento              | Configuración, scripts        |
+| Descripción | Uso                       |
+| ----------- | ------------------------- | ----------------------------- |
+| `docs`      | Solo documentación        | README, guías, comentarios    |
+| `style`     | Formato, espacios, lint   | Prettier, formato de código   |
+| `test`      | Agregar o modificar tests | Unit tests, integration tests |
+| `ci`        | Cambios en CI/CD          | GitHub Actions, workflows     |
+| `chore`     | Tareas de mantenimiento   | Configuración, scripts        |
 
 ### Breaking Changes
 
 Cualquier commit con `!` o `BREAKING CHANGE:` incrementa la versión MAJOR:
 
-```bash
+````bash
 # Opción 1: Usar ! después del tipo
 git commit -m "feat(api)!: cambiar estructura de respuesta"
 
@@ -125,7 +127,7 @@ docs(readme): actualizar sección de instalación
 test(controller): agregar tests para PingController
 refactor(service): extraer lógica de validación
 perf(query): optimizar consulta de disponibilidad
-```
+````
 
 ### Con Cuerpo
 
@@ -179,11 +181,11 @@ main (producción)
 
 ### Estrategia de versionado
 
-| Tipo           | Tipo de release          | Incrementa    | Cuando Usar                   |
-|----------------|--------------------------|---------------|-------------------------------|
-| `main`         | Estable                  | v1.0.0        | Listo para producción         |
-| `develop`      | Beta/Pre-release         | v1.0.0-beta.1 | Pruebas antes de integración  |
-| `feature/*`    | Sin release              | -             | Desarrollo de nuevas features |
+| Tipo        | Tipo de release  | Incrementa    | Cuando Usar                   |
+| ----------- | ---------------- | ------------- | ----------------------------- |
+| `main`      | Estable          | v1.0.0        | Listo para producción         |
+| `develop`   | Beta/Pre-release | v1.0.0-beta.1 | Pruebas antes de integración  |
+| `feature/*` | Sin release      | -             | Desarrollo de nuevas features |
 
 ### Flujo completo
 
@@ -253,31 +255,31 @@ git commit -m "chore: actualizar .gitignore [skip ci]"
 
 ### Workflows Configurados
 
-1. CI (Integración Continua) - Trigger: Push o PR a main, develop, feature/*
+1. CI (Integración Continua) - Trigger: Push o PR a main, develop, feature/\*
 
-    ```plaintext
-    # Se ejecuta automáticamente en:
-    - Push a cualquier branch
-    - Pull Requests a main o develop
-    
-    # Ejecuta:
-    - Tests unitarios
-    - Build de la aplicación
-    - Validación de código
-    ```
+   ```plaintext
+   # Se ejecuta automáticamente en:
+   - Push a cualquier branch
+   - Pull Requests a main o develop
+
+   # Ejecuta:
+   - Tests unitarios
+   - Build de la aplicación
+   - Validación de código
+   ```
 
 2. Release (Manual)—Trigger: Manual desde GitHub Actions
 
-    ```plaintext
-    # Se ejecuta SOLO manualmente:
-    - GitHub → Actions → Release → Run workflow
-    
-    # Ejecuta:
-    - Tests
-    - Semantic Release (crea tag y release)
-    - Build y publica JAR
-    - Actualiza CHANGELOG.md
-    ```
+   ```plaintext
+   # Se ejecuta SOLO manualmente:
+   - GitHub → Actions → Release → Run workflow
+
+   # Ejecuta:
+   - Tests
+   - Semantic Release (crea tag y release)
+   - Build y publica JAR
+   - Actualiza CHANGELOG.md
+   ```
 
 Ejemplo del flujo completo:
 
@@ -304,8 +306,10 @@ git push  # ⏭️ Salta CI
 
 ## Proceso de Releases
 
-> Releases Manuales (Recomendado): Este proyecto usa releases manuales para mantener control total sobre el versionado. Otro objetivo es que los programadores tengan una, guía por medio de las herramientas del repositorio para ver todo lo que se ha realizado en cada versión.
-
+> Releases Manuales (Recomendado): Este proyecto usa releases manuales para
+> mantener control total sobre el versionado. Otro objetivo es que los
+> programadores tengan una, guía por medio de las herramientas del repositorio
+> para ver todo lo que se ha realizado en cada versión.
 
 ### Paso 1: Checklist Antes de Commit
 
@@ -344,24 +348,19 @@ git log --oneline v1.0.0..HEAD
 2. Selecciona el workflow "Release"
 3. Click en "Run workflow"
 4. Selecciona el branch:
-
-    - develop → Crea release beta (ej: v1.1.0-beta.1)
-    - main → Crea release estable (ej: v1.1.0)
-    - Click en "Run workflow"
+   - develop → Crea release beta (ej: v1.1.0-beta.1)
+   - main → Crea release estable (ej: v1.1.0)
+   - Click en "Run workflow"
 
 ### Paso 5: Verificar el Release
 
 El workflow automáticamente:
 
-✅ Ejecuta todos los tests
-✅ Analiza los commits con Semantic Release
-✅ Calcula la nueva versión según SemVer
-✅ Actualiza build.gradle.kts con la nueva versión
-✅ Genera/actualiza CHANGELOG.md
-✅ Crea el tag (ej.: v1.1.0)
-✅ Crea la GitHub Release con notas
-✅ Sube el JAR como asset
-✅ Hace commit con [skip ci] para evitar bucles
+✅ Ejecuta todos los tests ✅ Analiza los commits con Semantic Release ✅
+Calcula la nueva versión según SemVer ✅ Actualiza build.gradle.kts con la nueva
+versión ✅ Genera/actualiza CHANGELOG.md ✅ Crea el tag (ej.: v1.1.0) ✅ Crea la
+GitHub Release con notas ✅ Sube el JAR como asset ✅ Hace commit con [skip ci]
+para evitar bucles
 
 ### Paso 6: Sincronizar Local
 
@@ -684,17 +683,21 @@ El CHANGELOG.md se genera automáticamente durante el proceso de release.
 ## [1.1.0] - 2024-01-15
 
 ### ✨ Nuevas Funcionalidades
+
 - **api**: agregar endpoint de búsqueda avanzada (#42)
 - **auth**: implementar refresh token (#45)
 
 ### 🐛 Correcciones de Bugs
+
 - **validation**: corregir validación de email (#43)
 - **database**: solucionar problema de conexión (#44)
 
 ### 📦 Refactorizaciones
+
 - **service**: extraer lógica de negocio a servicios (#46)
 
 ### 📚 Documentación
+
 - **readme**: actualizar guía de instalación
 - **api**: documentar nuevos endpoints
 
@@ -707,7 +710,7 @@ El CHANGELOG.md se genera automáticamente durante el proceso de release.
 
 > **Configuración del Changelog:** el formato se configura en `.releaserc.json`
 
-###  Documentar Cambios Importantes
+### Documentar Cambios Importantes
 
 **En el commit**
 
@@ -727,18 +730,22 @@ Closes #42"
 
 ```markdown
 ## Descripción
+
 Implementa paginación en todos los endpoints de listado.
 
 ## Cambios
+
 - ✨ Nuevo: Parámetros de paginación (page, size, sort)
 - 📦 Refactor: DTO con PageResponse wrapper
 - 📚 Docs: Actualizar OpenAPI specs
 - 🚨 Tests: Casos de paginación
 
 ## Breaking Changes
+
 Ninguno
 
 ## Checklist
+
 - [x] Tests pasan
 - [x] Documentación actualizada
 - [x] Conventional commits
@@ -912,18 +919,12 @@ Usa alcances consistentes para mejor organización:
 
 **Por Módulo**
 
-`auth` - Autenticación/Autorización
-`user` - Gestión de usuarios
-`product` - Productos
-`order` - Pedidos
-`payment` - Pagos
+`auth` - Autenticación/Autorización `user` - Gestión de usuarios `product` -
+Productos `order` - Pedidos `payment` - Pagos
 
 **Por Tipo de Archivo**
 
-test - Tests
-docs - Documentación
-build - Sistema de build
-ci - CI/CD
+test - Tests docs - Documentación build - Sistema de build ci - CI/CD
 
 **Checklist Antes de Commit**
 
@@ -966,8 +967,7 @@ ci - CI/CD
 ¿Dudas sobre commits, versionado o releases?
 
 1. Revisa esta guía completa
-2. Consulta COMMIT_FIXING_GUIDE.md para cor
-regir errores
+2. Consulta COMMIT_FIXING_GUIDE.md para cor regir errores
 3. Abre un Issue con la etiqueta `question`
 
 **¡Happy Coding! 🚀**

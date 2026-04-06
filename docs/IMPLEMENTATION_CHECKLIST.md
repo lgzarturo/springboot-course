@@ -3,45 +3,57 @@
 ## 📋 Estructura Implementada
 
 ### ✅ Capa de Dominio (Domain Layer)
-- [X] `domain/model/Ping.kt` - Modelo de dominio
-- [X] `domain/port/input/PingUseCase.kt` - Caso de uso (interfaz)
-- [X] `domain/service/PingService.kt` - Servicio de dominio (implementación)
+
+- [x] `domain/model/Ping.kt` - Modelo de dominio
+- [x] `domain/port/input/PingUseCase.kt` - Caso de uso (interfaz)
+- [x] `domain/service/PingService.kt` - Servicio de dominio (implementación)
 
 ### ✅ Capa de Infraestructura (Infrastructure Layer)
 
 #### REST (Entrada)
-- [X] `infrastructure/rest/controller/PingController.kt` - Controlador REST
-- [X] `infrastructure/rest/dto/response/PingResponse.kt` - DTO de respuesta
-- [X] `infrastructure/rest/mapper/PingMapper.kt` - Mapper de DTOs
+
+- [x] `infrastructure/rest/controller/PingController.kt` - Controlador REST
+- [x] `infrastructure/rest/dto/response/PingResponse.kt` - DTO de respuesta
+- [x] `infrastructure/rest/mapper/PingMapper.kt` - Mapper de DTOs
 
 #### Exception Handling
-- [X] `infrastructure/exception/ErrorResponse.kt` - Respuesta de error estándar
-- [X] `infrastructure/exception/GlobalExceptionHandler.kt` - Manejador global de excepciones
+
+- [x] `infrastructure/exception/ErrorResponse.kt` - Respuesta de error estándar
+- [x] `infrastructure/exception/GlobalExceptionHandler.kt` - Manejador global de
+      excepciones
 
 ### ✅ Capa de Configuración (Config Layer)
-- [X] `config/WebConfig.kt` - Configuración de CORS y MVC
-- [X] `config/OpenApiConfig.kt` - Configuración de Swagger/OpenAPI
+
+- [x] `config/WebConfig.kt` - Configuración de CORS y MVC
+- [x] `config/OpenApiConfig.kt` - Configuración de Swagger/OpenAPI
 
 ### ✅ Capa Compartida (Shared Layer)
-- [X] `shared/constant/AppConstants.kt` - Constantes de la aplicación
-- [X] `shared/extension/DateTimeExtensions.kt` - Extension functions
+
+- [x] `shared/constant/AppConstants.kt` - Constantes de la aplicación
+- [x] `shared/extension/DateTimeExtensions.kt` - Extension functions
 
 ### ✅ Tests
-- [X] `test/.../domain/service/PingServiceTest.kt` - Tests unitarios del servicio
-- [X] `test/.../infrastructure/rest/controller/PingControllerTest.kt` - Tests de integración del controller
+
+- [x] `test/.../domain/service/PingServiceTest.kt` - Tests unitarios del
+      servicio
+- [x] `test/.../infrastructure/rest/controller/PingControllerTest.kt` - Tests de
+      integración del controller
 
 ### ✅ Configuración
-- [X] `application.yaml` - Configuración completa de la aplicación
-- [X] `build.gradle.kts` - Dependencias actualizadas (OpenAPI, MockK)
+
+- [x] `application.yaml` - Configuración completa de la aplicación
+- [x] `build.gradle.kts` - Dependencias actualizadas (OpenAPI, MockK)
 
 ### ✅ Documentación
-- [X] `docs/ARCHITECTURE.md` - Documentación de arquitectura
-- [X] `docs/DEVELOPMENT_GUIDE.md` - Guía de desarrollo
-- [X] `http/ping.http` - Ejemplos de peticiones HTTP
+
+- [x] `docs/ARCHITECTURE.md` - Documentación de arquitectura
+- [x] `docs/DEVELOPMENT_GUIDE.md` - Guía de desarrollo
+- [x] `http/ping.http` - Ejemplos de peticiones HTTP
 
 ## 🎯 Endpoints Implementados
 
 ### Ping API
+
 ```
 GET /api/v1/ping                    → Ping simple
 GET /api/v1/ping/{message}          → Ping con mensaje personalizado
@@ -49,12 +61,14 @@ GET /api/v1/ping/health             → Health check
 ```
 
 ### Documentación
+
 ```
 GET /swagger-ui.html                → Interfaz de Swagger UI
 GET /api-docs                       → Especificación OpenAPI JSON
 ```
 
 ### Actuator
+
 ```
 GET /actuator/health                → Estado de salud
 GET /actuator/info                  → Información de la aplicación
@@ -113,13 +127,16 @@ GET /actuator/metrics               → Métricas
 ## 🔑 Principios Aplicados
 
 ### 1. ✅ SOLID Principles
+
 - **S**ingle Responsibility: Cada clase tiene una única responsabilidad
 - **O**pen/Closed: Abierto para extensión, cerrado para modificación
-- **L**iskov Substitution: Las interfaces pueden ser sustituidas por sus implementaciones
+- **L**iskov Substitution: Las interfaces pueden ser sustituidas por sus
+  implementaciones
 - **I**nterface Segregation: Interfaces específicas (PingUseCase)
 - **D**ependency Inversion: Dependencias apuntan hacia abstracciones
 
 ### 2. ✅ Clean Architecture
+
 - Independencia de frameworks
 - Independencia de UI
 - Independencia de base de datos
@@ -127,12 +144,14 @@ GET /actuator/metrics               → Métricas
 - Independencia de cualquier agente externo
 
 ### 3. ✅ Hexagonal Architecture (Ports & Adapters)
+
 - **Puertos de Entrada**: Use Cases (PingUseCase)
 - **Puertos de Salida**: Repository interfaces (futuro)
 - **Adaptadores de Entrada**: REST Controllers
 - **Adaptadores de Salida**: JPA Repositories (futuro)
 
 ### 4. ✅ DDD (Domain-Driven Design)
+
 - Modelos de dominio ricos
 - Servicios de dominio
 - Separación clara entre dominio e infraestructura
@@ -151,6 +170,7 @@ testImplementation("com.ninja-squad:springmockk:4.0.2")
 ## 🧪 Cómo Probar
 
 ### 1. Compilar el proyecto
+
 ```bash
 # Linux/Mac
 ./gradlew clean build
@@ -160,6 +180,7 @@ testImplementation("com.ninja-squad:springmockk:4.0.2")
 ```
 
 ### 2. Ejecutar la aplicación
+
 ```bash
 # Linux/Mac
 ./gradlew bootRun
@@ -171,6 +192,7 @@ testImplementation("com.ninja-squad:springmockk:4.0.2")
 ### 3. Probar los endpoints
 
 #### Usando curl
+
 ```bash
 # Ping simple
 curl http://localhost:8080/api/v1/ping
@@ -183,12 +205,15 @@ curl http://localhost:8080/api/v1/ping/health
 ```
 
 #### Usando el archivo HTTP
+
 Abrir `http/ping.http` en IntelliJ IDEA y ejecutar las peticiones
 
 #### Usando Swagger UI
+
 Abrir en el navegador: http://localhost:8080/swagger-ui.html
 
 ### 4. Ejecutar tests
+
 ```bash
 # Todos los tests
 ./gradlew test
@@ -256,25 +281,30 @@ http/
 ## 🎓 Ventajas de esta Estructura
 
 ### 1. **Escalabilidad**
+
 - Fácil agregar nuevos módulos siguiendo el mismo patrón
 - Cada capa puede evolucionar independientemente
 
 ### 2. **Mantenibilidad**
+
 - Código organizado y fácil de encontrar
 - Responsabilidades claras
 - Bajo acoplamiento
 
 ### 3. **Testabilidad**
+
 - Tests unitarios sin Spring (rápidos)
 - Tests de integración con Spring (completos)
 - Fácil mockear dependencias
 
 ### 4. **Flexibilidad**
+
 - Cambiar tecnologías sin afectar el dominio
 - Múltiples adaptadores para el mismo puerto
 - Independencia de frameworks
 
 ### 5. **Documentación**
+
 - Swagger UI automático
 - Código autodocumentado
 - Guías de desarrollo
@@ -282,32 +312,38 @@ http/
 ## 🚀 Próximos Pasos Recomendados
 
 ### Fase 1: Persistencia
+
 - [ ] Implementar entidades JPA
 - [ ] Crear repositorios
 - [ ] Implementar adaptadores de persistencia
 - [ ] Agregar migraciones con Flyway/Liquibase
 
 ### Fase 2: Seguridad
+
 - [ ] Implementar Spring Security
 - [ ] Agregar autenticación JWT
 - [ ] Implementar autorización basada en roles
 
 ### Fase 3: Validación y Manejo de Errores
+
 - [ ] Agregar validaciones personalizadas
 - [ ] Crear excepciones de dominio
 - [ ] Mejorar manejo de errores
 
 ### Fase 4: Testing
+
 - [ ] Aumentar cobertura de tests
 - [ ] Agregar tests E2E
 - [ ] Implementar tests de performance
 
 ### Fase 5: Observabilidad
+
 - [ ] Configurar logging estructurado
 - [ ] Agregar métricas personalizadas
 - [ ] Implementar tracing distribuido
 
 ### Fase 6: DevOps
+
 - [ ] Dockerizar la aplicación
 - [ ] Configurar CI/CD
 - [ ] Agregar análisis de código estático
@@ -316,14 +352,16 @@ http/
 
 - **Arquitectura**: `docs/ARCHITECTURE.md`
 - **Desarrollo**: `docs/DEVELOPMENT_GUIDE.md`
-- **API Docs**: http://localhost:8080/swagger-ui.html (cuando la app esté corriendo)
+- **API Docs**: http://localhost:8080/swagger-ui.html (cuando la app esté
+  corriendo)
 
 ## ✨ Características Destacadas
 
 1. **Arquitectura Hexagonal**: Separación clara entre dominio e infraestructura
 2. **Clean Code**: Código limpio y bien documentado
 3. **SOLID Principles**: Aplicación de principios SOLID
-4. **Kotlin Idioms**: Uso de características de Kotlin (data classes, extension functions)
+4. **Kotlin Idioms**: Uso de características de Kotlin (data classes, extension
+   functions)
 5. **Testing**: Tests unitarios e integración
 6. **Documentation**: OpenAPI/Swagger automático
 7. **Error Handling**: Manejo global de excepciones
@@ -332,4 +370,5 @@ http/
 
 ---
 
-**Nota**: Para ejecutar la aplicación, asegúrate de tener Java 21 configurado en tu sistema.
+**Nota**: Para ejecutar la aplicación, asegúrate de tener Java 21 configurado en
+tu sistema.

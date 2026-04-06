@@ -3,6 +3,7 @@
 ## 🚀 Inicio Rápido
 
 ### Prerrequisitos
+
 - Java 21 o superior
 - Gradle 8.x
 - IDE (IntelliJ IDEA recomendado)
@@ -67,6 +68,7 @@ class PingService : PingUseCase {
 ### Naming Conventions
 
 #### Clases
+
 ```kotlin
 // Controllers
 class PingController
@@ -90,6 +92,7 @@ class User
 ```
 
 #### Funciones
+
 ```kotlin
 // Use Cases (verbos en infinitivo)
 fun getPing(): Ping
@@ -103,6 +106,7 @@ fun toDomain(entity: UserEntity): User
 ```
 
 #### Variables
+
 ```kotlin
 // camelCase para variables
 val userName: String
@@ -117,6 +121,7 @@ const val DEFAULT_TIMEOUT = 30
 ### Kotlin Best Practices
 
 #### 1. Data Classes para DTOs y Models
+
 ```kotlin
 // ✅ Correcto
 data class PingResponse(
@@ -132,6 +137,7 @@ class PingResponse {
 ```
 
 #### 2. Inmutabilidad (val sobre var)
+
 ```kotlin
 // ✅ Correcto
 val message: String = "pong"
@@ -142,6 +148,7 @@ var message: String = "pong"
 ```
 
 #### 3. Null Safety
+
 ```kotlin
 // ✅ Correcto
 fun findUser(id: Long): User?
@@ -157,6 +164,7 @@ fun findUser(id: Long): User  // Puede lanzar NullPointerException
 ```
 
 #### 4. Extension Functions
+
 ```kotlin
 // ✅ Correcto
 fun LocalDateTime.toIsoString(): String {
@@ -169,6 +177,7 @@ val isoString = timestamp.toIsoString()
 ```
 
 #### 5. Constructor Injection
+
 ```kotlin
 // ✅ Correcto
 @RestController
@@ -190,6 +199,7 @@ class PingController {
 ### Ejemplo: Agregar un módulo de Usuarios
 
 #### 1. Crear el Modelo de Dominio
+
 ```kotlin
 // domain/model/User.kt
 package com.lgzarturo.springbootcourse.domain.model
@@ -203,6 +213,7 @@ data class User(
 ```
 
 #### 2. Crear el Puerto de Entrada (Use Case)
+
 ```kotlin
 // domain/port/input/UserUseCase.kt
 package com.lgzarturo.springbootcourse.domain.port.input
@@ -215,6 +226,7 @@ interface UserUseCase {
 ```
 
 #### 3. Crear el Puerto de Salida (Repository Interface)
+
 ```kotlin
 // domain/port/output/UserRepository.kt
 package com.lgzarturo.springbootcourse.domain.port.output
@@ -227,6 +239,7 @@ interface UserRepository {
 ```
 
 #### 4. Implementar el Servicio de Dominio
+
 ```kotlin
 // domain/service/UserService.kt
 package com.lgzarturo.springbootcourse.domain.service
@@ -235,16 +248,16 @@ package com.lgzarturo.springbootcourse.domain.service
 class UserService(
     private val userRepository: UserRepository
 ) : UserUseCase {
-    
+
     override fun createUser(username: String, email: String): User {
         val user = User(username = username, email = email)
         return userRepository.save(user)
     }
-    
+
     override fun findUserById(id: Long): User? {
         return userRepository.findById(id)
     }
-    
+
     override fun getAllUsers(): List<User> {
         return userRepository.findAll()
     }
@@ -252,6 +265,7 @@ class UserService(
 ```
 
 #### 5. Crear la Entidad JPA
+
 ```kotlin
 // infrastructure/persistence/entity/UserEntity.kt
 package com.lgzarturo.springbootcourse.infrastructure.persistence.entity
@@ -262,19 +276,20 @@ data class UserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    
+
     @Column(nullable = false, unique = true)
     val username: String,
-    
+
     @Column(nullable = false, unique = true)
     val email: String,
-    
+
     @Column(nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
 )
 ```
 
 #### 6. Crear el Repositorio JPA
+
 ```kotlin
 // infrastructure/persistence/repository/JpaUserRepository.kt
 package com.lgzarturo.springbootcourse.infrastructure.persistence.repository
@@ -283,6 +298,7 @@ interface JpaUserRepository : JpaRepository<UserEntity, Long>
 ```
 
 #### 7. Implementar el Adaptador de Persistencia
+
 ```kotlin
 // infrastructure/persistence/adapter/UserRepositoryAdapter.kt
 package com.lgzarturo.springbootcourse.infrastructure.persistence.adapter
@@ -292,19 +308,19 @@ class UserRepositoryAdapter(
     private val jpaUserRepository: JpaUserRepository,
     private val userMapper: UserEntityMapper
 ) : UserRepository {
-    
+
     override fun save(user: User): User {
         val entity = userMapper.toEntity(user)
         val savedEntity = jpaUserRepository.save(entity)
         return userMapper.toDomain(savedEntity)
     }
-    
+
     override fun findById(id: Long): User? {
         return jpaUserRepository.findById(id)
             .map { userMapper.toDomain(it) }
             .orElse(null)
     }
-    
+
     override fun findAll(): List<User> {
         return jpaUserRepository.findAll()
             .map { userMapper.toDomain(it) }
@@ -313,12 +329,13 @@ class UserRepositoryAdapter(
 ```
 
 #### 8. Crear los DTO
+
 ```kotlin
 // infrastructure/rest/dto/request/CreateUserRequest.kt
 data class CreateUserRequest(
     @field:NotBlank(message = "Username is required")
     val username: String,
-    
+
     @field:Email(message = "Email must be valid")
     @field:NotBlank(message = "Email is required")
     val email: String
@@ -334,6 +351,7 @@ data class UserResponse(
 ```
 
 #### 9. Crear el Mapper de DTOs
+
 ```kotlin
 // infrastructure/rest/mapper/UserMapper.kt
 @Component
@@ -350,6 +368,7 @@ class UserMapper {
 ```
 
 #### 10. Crear el Controller
+
 ```kotlin
 // infrastructure/rest/controller/UserController.kt
 @RestController
@@ -359,7 +378,7 @@ class UserController(
     private val userUseCase: UserUseCase,
     private val userMapper: UserMapper
 ) {
-    
+
     @PostMapping
     @Operation(summary = "Create a new user")
     fun createUser(
@@ -369,7 +388,7 @@ class UserController(
         val response = userMapper.toResponse(user)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
-    
+
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID")
     fun getUserById(@PathVariable id: Long): ResponseEntity<UserResponse> {
@@ -378,7 +397,7 @@ class UserController(
         val response = userMapper.toResponse(user)
         return ResponseEntity.ok(response)
     }
-    
+
     @GetMapping
     @Operation(summary = "Get all users")
     fun getAllUsers(): ResponseEntity<List<UserResponse>> {
@@ -390,21 +409,22 @@ class UserController(
 ```
 
 #### 11. Crear Tests
+
 ```kotlin
 // Test unitario del servicio
 class UserServiceTest {
     private val userRepository = mockk<UserRepository>()
     private val userService = UserService(userRepository)
-    
+
     @Test
     fun `should create user successfully`() {
         // Given
         val user = User(username = "john", email = "john@example.com")
         every { userRepository.save(any()) } returns user.copy(id = 1L)
-        
+
         // When
         val result = userService.createUser("john", "john@example.com")
-        
+
         // Then
         assertNotNull(result.id)
         assertEquals("john", result.username)
@@ -417,17 +437,17 @@ class UserServiceTest {
 class UserControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
-    
+
     @MockkBean
     private lateinit var userUseCase: UserUseCase
-    
+
     @Test
     fun `should create user successfully`() {
         // Given
         val request = CreateUserRequest("john", "john@example.com")
         val user = User(id = 1L, username = "john", email = "john@example.com")
         every { userUseCase.createUser(any(), any()) } returns user
-        
+
         // When & Then
         mockMvc.perform(
             post("/api/v1/users")
@@ -444,12 +464,13 @@ class UserControllerTest {
 ## 🔍 Debugging Tips
 
 ### 1. Logging
+
 ```kotlin
 import org.slf4j.LoggerFactory
 
 class UserService {
     private val logger = LoggerFactory.getLogger(UserService::class.java)
-    
+
     fun createUser(username: String, email: String): User {
         logger.debug("Creating user with username: $username")
         // ...
@@ -460,6 +481,7 @@ class UserService {
 ```
 
 ### 2. Actuator Endpoints
+
 ```bash
 # Health check
 curl http://localhost:8080/actuator/health
