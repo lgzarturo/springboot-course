@@ -298,6 +298,8 @@ Esta es una historia de Kai, un desarrollador que busca mejorar sus habilidades 
    ver los ejemplos de código.
 3. **Si quieres entender la arquitectura:** Revisa el
    [Plan de Migración MVC](docs/architecture/mvc-migration-plan.md).
+4. **Guía de inicio rápido con Spring Boot y Kotlin:** Aprende los conceptos 
+5. básicos de [MVC con Spring Boot y Kotlin](docs/course/lectures/quickstart-springboot-kotlin.md).
 
 ---
 
