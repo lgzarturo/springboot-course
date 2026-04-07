@@ -1,23 +1,28 @@
 # MVC con Spring Boot y Kotlin
 
-En Spring Boot con Kotlin, la forma más limpia de organizar el acceso a datos es seguir el patrón de 3 capas: el
-Controlador recibe las peticiones HTTP, el Servicio contiene la lógica de negocio, y el Repositorio habla con la base de
-datos. Nunca deberías inyectar un Repositorio directamente en un Controlador. Parece un atajo, pero créeme a la larga te
-genera acoplamiento y hace el código más dificil de probar.
+En Spring Boot con Kotlin, la forma más limpia de organizar el acceso a datos es
+seguir el patrón de 3 capas: el Controlador recibe las peticiones HTTP, el
+Servicio contiene la lógica de negocio, y el Repositorio habla con la base de
+datos. Nunca deberías inyectar un Repositorio directamente en un Controlador.
+Parece un atajo, pero créeme a la larga te genera acoplamiento y hace el código
+más difícil de probar.
 
 ## Configuración del proyecto
 
 ### Dependencias
 
-Antes de entrar en el código de la aplicación, hay que revisar que Gradle tiene las dependencias necesarias y los
-plugins que necesitamos para que Kotlin y JPA funcionen correctamente.
+Antes de entrar en el código de la aplicación, hay que revisar que Gradle tiene
+las dependencias necesarias y los plugins que necesitamos para que Kotlin y JPA
+funcionen correctamente.
 
-- El plugin `kotlin("plugin.jpa")` es requerido porque JPA requiere constructores sin argumentos, y en Kotlin eso no
-  existe por defecto en las clases normales. Este plugin genera automáticamente constructores sin argumentos para las
-  entidades.
-- El plugin `kotlin("plugin.spring")` es requerido para que Spring pueda trabajar con Kotlin. Este plugin proporciona
-  soporte para Spring Boot y Spring MVC en Kotlin. Además, hace las clases `open` para que Spring pueda inyectarlas en
-  los controladores y otros componentes.
+- El plugin `kotlin("plugin.jpa")` es requerido porque JPA requiere
+  constructores sin argumentos, y en Kotlin eso no existe por defecto en las
+  clases normales. Este plugin genera automáticamente constructores sin
+  argumentos para las entidades.
+- El plugin `kotlin("plugin.spring")` es requerido para que Spring pueda
+  trabajar con Kotlin. Este plugin proporciona soporte para Spring Boot y Spring
+  MVC en Kotlin. Además, hace las clases `open` para que Spring pueda
+  inyectarlas en los controladores y otros componentes.
 
 Dependencia del archivo `build.gradle.kts`:
 
@@ -54,28 +59,28 @@ dependencies {
 
 ```yaml
 spring:
-    application:
-        name: hotel-plokemon-api
-    jpa:
-        hibernate:
-            ddl-auto: create-drop
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.H2Dialect
-                format_sql: true
-                jdbc:
-                    batch_size: 20
-                    fetch_size: 50
-    datasource:
-        url: jdbc:h2:mem:testdb
-        driver-class-name: org.h2.Driver
+  application:
+    name: hotel-plokemon-api
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
 
-    h2:
-        console:
-            enabled: true
+  h2:
+    console:
+      enabled: true
 
 server:
-    port: 8080
+  port: 8080
 ```
 
 ## Arquitectura en capas
@@ -98,22 +103,28 @@ Entity → Repository → Service → Controller
 └───────────────────────────────────────┘
 ```
 
-La forma recomendada de estructurar esto en Spring Boot sigue el patrón de capas. Cada capa tiene una responsabilidad
-clara y no se mezcla con las demás. La idea es simple: el controlador no sabe nada de la base de datos, y la entidad no
-sabe nada del HTTP. Lo que los conecta es el servicio, y lo que viaja entre capas son los DTOs (objetos de transferencia
-de datos).
+La forma recomendada de estructurar esto en Spring Boot sigue el patrón de
+capas. Cada capa tiene una responsabilidad clara y no se mezcla con las demás.
+La idea es simple: el controlador no sabe nada de la base de datos, y la entidad
+no sabe nada del HTTP. Lo que los conecta es el servicio, y lo que viaja entre
+capas son los DTOs (objetos de transferencia de datos).
 
-Para este ejemplo, vamos a usar un dominio concreto para los ejemplos: Pokemon, KindPokemon, Trainer y TrainerProfile.
+Para este ejemplo, vamos a usar un dominio concreto para los ejemplos: Pokemon,
+KindPokemon, Trainer y TrainerProfile.
 
 ## La entidad base es la Trainer.
 
 ```kotlin
+// @EntityListeners es obligatorio para que @CreatedDate y @LastModifiedDate funcionen.
+// Sin esto, Hibernate no invoca el listener de auditoría y los campos quedan con el
+// valor por defecto (Instant.now()) pero nunca se actualizan automáticamente.
 @Entity
 @Table(name = "trainers")
+@EntityListeners(AuditingEntityListener::class)
 class Trainer(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long? = null,
     @Column(nullable = false, length = 100)
     var name: String,
     @Column(nullable = false, unique = true)
@@ -131,9 +142,19 @@ class Trainer(
 }
 ```
 
-> Pon atención sobre el uso de `var` solo en los atributos que pueden cambiar (name, email, updatedAt) y el uso de `val`
-> en los atributos que no pueden cambiar (id, createdAt, updatedAt) porque deben ser valores inmutables. Esto es una buena
-> práctica en Kotlin porque el compilador te protege de modificaciones accidentales.
+> Pon atención sobre el uso de `var` solo en los atributos que pueden cambiar
+> (name, email, updatedAt) y el uso de `val` en los atributos que no pueden
+> cambiar (id, createdAt) porque deben ser valores inmutables. Esto es una
+> buena práctica en Kotlin porque el compilador te protege de modificaciones
+> accidentales.
+>
+> Para que `@CreatedDate` y `@LastModifiedDate` funcionen también necesitas
+> agregar `@EnableJpaAuditing` en una clase de configuración:
+> ```kotlin
+> @Configuration
+> @EnableJpaAuditing
+> class JpaConfig
+> ```
 
 ## Ahora vamos a definir el repositorio.
 
@@ -144,7 +165,7 @@ interface TrainerRepository : JpaRepository<Trainer, Long> {
     fun findByEmail(email: String): Trainer?
 
     // Puedes usar @Query para definir consultas más complejas
-    @Query("SELECT e FROM Trainer e WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    @Query("SELECT e FROM Trainer e WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))")
     fun findByName(@Param("name") name: String): List<Trainer>
 
     // Puedes usar @Query para definir consultas con relaciones
@@ -153,12 +174,14 @@ interface TrainerRepository : JpaRepository<Trainer, Long> {
 }
 ```
 
-El método `findByEmail` es una consulta simple, si no existe el entrenador con el email proporcionado, devuelve `null`.
-En lugar de lanzar una excepción. Esto es mucho más idiomático que el `Optional<Trainer>` de Java.
+El método `findByEmail` es una consulta simple, si no existe el entrenador con
+el email proporcionado, devuelve `null`. En lugar de lanzar una excepción. Esto
+es mucho más idiomático que el `Optional<Trainer>` de Java.
 
-Hasta este punto, el repositorio y la entidad son la capa de acceso a datos. Es importante tener en cuenta que la
-comunicación del servicio al repositorio se hace con la entidad, pero del servicio al controlador se hace con el modelo
-de dominio (los famosos DTOs).
+Hasta este punto, el repositorio y la entidad son la capa de acceso a datos. Es
+importante tener en cuenta que la comunicación del servicio al repositorio se
+hace con la entidad, pero del servicio al controlador se hace con el modelo de
+dominio (los famosos DTOs).
 
 ## Ahora vamos a definir unos DTOs
 
@@ -189,7 +212,10 @@ data class TrainerResponse(
     companion object {
         // Este método se usa para convertir una entidad Trainer en un DTO
         fun from(trainer: Trainer) = TrainerResponse(
-            id = trainer.id,
+            // trainer.id es Long? porque JPA lo asigna al persistir.
+            // requireNotNull lanza IllegalStateException si se intenta convertir
+            // un Trainer que todavía no fue guardado (id == null).
+            id = requireNotNull(trainer.id) { "Trainer debe tener id al ser convertido a response" },
             name = trainer.name,
             email = trainer.email,
             createdAt = trainer.createdAt,
@@ -214,9 +240,9 @@ data class PokemonResponse(
 
 ## Ahora vamos a definir el servicio.
 
-En esta caso, el servicio va a ser una clase que va a contener los métodos que van a interactuar con el repositorio y
-que van a ser usados por el controlador. El objetivo es que el controlador no tenga que saber nada sobre la
-persistencia.
+En esta caso, el servicio va a ser una clase que va a contener los métodos que
+van a interactuar con el repositorio y que van a ser usados por el controlador.
+El objetivo es que el controlador no tenga que saber nada sobre la persistencia.
 
 ```kotlin
 @Service
@@ -240,7 +266,8 @@ class TrainerService(
         if (trainerRepository.findByEmail(request.email) != null) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "El email ${request.email} ya está en uso")
         }
-        val trainer = Trainer(name = request.name, email = request.email)
+        // id = null porque JPA lo asigna automáticamente al persistir (GenerationType.IDENTITY)
+        val trainer = Trainer(id = null, name = request.name, email = request.email)
         return TrainerResponse.from(trainerRepository.save(trainer))
     }
 
@@ -250,7 +277,14 @@ class TrainerService(
 
         // El operador `?.` (safe call) + let solo ejecuta si el valor no es null
         request.name?.let { trainer.name = it }
-        request.email?.let { trainer.email = it }
+        request.email?.let { newEmail ->
+            // Verificar que el nuevo email no esté en uso por otro entrenador
+            val existing = trainerRepository.findByEmail(newEmail)
+            if (existing != null && existing.id != trainer.id) {
+                throw ResponseStatusException(HttpStatus.CONFLICT, "El email $newEmail ya está en uso")
+            }
+            trainer.email = newEmail
+        }
         return TrainerResponse.from(trainerRepository.save(trainer))
     }
 
@@ -261,22 +295,34 @@ class TrainerService(
         trainerRepository.deleteById(id)
     }
 
-    fun addPokemonToTrainer(authorId: Long, request: CreatePokemonRequest): TrainerResponse {
-        val trainer = trainerRepository.findById(authorId)
+    @Transactional(readOnly = true)
+    fun getPokemonsByTrainer(trainerId: Long): List<PokemonResponse> {
+        val trainer = trainerRepository.findById(trainerId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Entrenador no encontrado") }
+        return trainer.pokemons.map { PokemonResponse.from(it) }
+    }
+
+    fun addPokemonToTrainer(trainerId: Long, request: CreatePokemonRequest): PokemonResponse {
+        val trainer = trainerRepository.findById(trainerId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Entrenador no encontrado") }
 
         val pokemon = Pokemon(
+            id = null,
             name = request.name,
-            kind = request.kind
+            kind = request.kind,
+            // El trainer se asigna aquí; addPokemon también sincroniza pokemon.trainer = this
+            trainer = trainer
         )
 
         // Usamos el helper para mantener la consistencia bidireccional
         trainer.addPokemon(pokemon)
 
         // Como Pokemon tiene cascade desde Trainer, solo necesitamos guardar Trainer
-        trainerRepository.save(trainer)
+        val savedTrainer = trainerRepository.save(trainer)
 
-        return TrainerResponse.from(trainer)
+        // Recuperamos el Pokemon recién creado (tiene id asignado tras el save)
+        val savedPokemon = savedTrainer.pokemons.last()
+        return PokemonResponse.from(savedPokemon)
     }
 }
 ```
@@ -352,17 +398,18 @@ class TrainerController(private val trainerService: TrainerService) {
     // Es un método GET que devuelve todos los Pokémon de un entrenador
     // Si todo va bien, retorna 200 OK con una lista de PokémonResponse
     // Si no se encuentra el entrenador, retorna 404 Not Found
-    // Si hay un error, retorna 500 Internal Server Error, a menos que se especifique lo contrario  
+    // Si hay un error, retorna 500 Internal Server Error, a menos que se especifique lo contrario
     @GetMapping("/{id}/pokemons")
     fun getPokemons(@PathVariable id: Long): ResponseEntity<List<PokemonResponse>> {
-        val trainer = trainerService.findById(id)
-        return ResponseEntity.ok(trainer.pokemons.map { PokemonResponse.from(it) })
+        // El servicio expone un método específico para obtener los pokemones del entrenador.
+        // TrainerResponse no incluye la colección; delegar al servicio mantiene el controlador limpio.
+        return ResponseEntity.ok(trainerService.getPokemonsByTrainer(id))
     }
 
     // Es un método DELETE que borra un entrenador por su id
     // Si todo va bien, retorna 204 No Content
     // Si no se encuentra el entrenador, retorna 404 Not Found
-    // Si hay un error, retorna 500 Internal Server Error, a menos que se especifique lo contrario   
+    // Si hay un error, retorna 500 Internal Server Error, a menos que se especifique lo contrario
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {
         trainerService.delete(id)
@@ -373,17 +420,20 @@ class TrainerController(private val trainerService: TrainerService) {
 
 ## Una pequeña nota sobre el método `PATCH`.
 
-La diferencia entre `PATCH` y `PUT` es meramente conceptual, pero es importante tener en cuenta, ya que en la
-especificación HTTP se menciona lo siguiente:
+La diferencia entre `PATCH` y `PUT` es meramente conceptual, pero es importante
+tener en cuenta, ya que en la especificación HTTP se menciona lo siguiente:
 
-`PUT` remplaza el recurso completo, Si un entrenador tiene nombre y correo, una llamada PUT debería enviar ambos campos.
-Si omites uno, se entiende que quieres borrarlo o dejarlo en blanco.
+`PUT` remplaza el recurso completo, Si un entrenador tiene nombre y correo, una
+llamada PUT debería enviar ambos campos. Si omites uno, se entiende que quieres
+borrarlo o dejarlo en blanco.
 
-`PATCH` actualiza solo los campos que enviaste. Si solo quieres cambiar el correo de un entrenador, mandas solo el campo
-de correo y el resto se queda igual.
+`PATCH` actualiza solo los campos que enviaste. Si solo quieres cambiar el
+correo de un entrenador, mandas solo el campo de correo y el resto se queda
+igual.
 
-Es por esa razón que en `PatchTrainerRequest` todos los campos son `nullables` con valor por defecto `null`. La lógica
-de negocio es que si el campo es null, lo dejo como está; pero si el campo es no null, lo actualizo.
+Es por esa razón que en `PatchTrainerRequest` todos los campos son `nullables`
+con valor por defecto `null`. La lógica de negocio es que si el campo es null,
+lo dejo como está; pero si el campo es no null, lo actualizo.
 
 ```kotlin
 // El cliente envía solo lo que quiere cambiar:
@@ -394,33 +444,38 @@ de negocio es que si el campo es null, lo dejo como está; pero si el campo es n
 // PatchTrainerRequest(name = null, email = "nuevo@correo.com")
 
 // Y en el service:
-request.name?.let { trainier.name = it }    // null, no se toca
-request.email?.let { trainier.email = it }  // tiene valor, se actualiza
+request.name?.let { trainer.name = it }    // null, no se toca
+request.email?.let { trainer.email = it }  // tiene valor, se actualiza
 ```
 
-> Esto es mucho más eficiente que forzar al cliente a enviar todo el objeto cada vez que quiere cambiar un solo campo.
+> Esto es mucho más eficiente que forzar al cliente a enviar todo el objeto cada
+> vez que quiere cambiar un solo campo.
 
 ## Relaciones y buenas prácticas
 
-Justo en este punto, es donde la mayoría de los programadores junior tienen problemas. En este punto, vamos a
-profundizar en las relaciones entre entidades y a explicarlas en detalle.
+Justo en este punto, es donde la mayoría de los programadores junior tienen
+problemas. En este punto, vamos a profundizar en las relaciones entre entidades
+y a explicarlas en detalle.
 
 ### El entrenador tiene muchos Pokemones.
 
 Esta es una de las relaciones más comunes.
 
-Un entrenador puede tener muchos Pokémon, pero cada Pokémon pertenece a un solo entrenador. Esta es una relación clásica
-de uno a muchos.
+Un entrenador puede tener muchos Pokémon, pero cada Pokémon pertenece a un solo
+entrenador. Esta es una relación clásica de uno a muchos.
 
-Aunque varios Pokémon puedan ser del mismo tipo o especie, no son copias entre sí. Cada uno es un individuo único, con
-su propio nombre, nivel, estadísticas y características. Dos entrenadores pueden tener, por ejemplo, un Pikachu, pero en
+Aunque varios Pokémon puedan ser del mismo tipo o especie, no son copias entre
+sí. Cada uno es un individuo único, con su propio nombre, nivel, estadísticas y
+características. Dos entrenadores pueden tener, por ejemplo, un Pikachu, pero en
 realidad se trata de criaturas distintas.
 
-Piensa en el tipo de Pokémon como una especie. Define rasgos generales, pero no la identidad del individuo. La identidad
-aparece cuando ese Pokémon forma un vínculo con su entrenador y adquiere atributos propios que lo diferencian de los
+Piensa en el tipo de Pokémon como una especie. Define rasgos generales, pero no
+la identidad del individuo. La identidad aparece cuando ese Pokémon forma un
+vínculo con su entrenador y adquiere atributos propios que lo diferencian de los
 demás.
 
-Por eso, aunque externamente parezcan iguales, cada Pokémon debe tratarse como una entidad única dentro del sistema.
+Por eso, aunque externamente parezcan iguales, cada Pokémon debe tratarse como
+una entidad única dentro del sistema.
 
 ```kotlin
 @Entity
@@ -437,12 +492,13 @@ class Pokemon(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "VARCHAR(20)")
     var kind: KindPokemon = KindPokemon.NORMAL,
-    // El dueño de la relación es el entrenador. Este es el que tiene la FK en la BD
-    // LAZY es crítico para evitar carga excesiva de datos en consultas, especialmente en relaciones muchos a uno
-    // de lo contrario, cada vez que se consulta un entrenador, también se cargan todos sus Pokémon, lo que puede ser ineficiente
+    // El dueño de la relación es Pokemon, quien tiene la FK (trainer_id) en la BD.
+    // LAZY es crítico para evitar carga excesiva de datos en consultas.
+    // Debe ser 'var' y nullable para que los helpers de Trainer puedan sincronizar
+    // ambos lados de la relación (trainer.addPokemon / trainer.removePokemon).
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trainer_id")
-    val trainer: Trainer
+    var trainer: Trainer? = null
 )
 
 
@@ -461,15 +517,16 @@ enum class KindPokemon {
 }
 ```
 
-Ahora vamos a modificar el lado del entrenador para que pueda tener muchos Pokémon.
+Ahora vamos a modificar el lado del entrenador para que pueda tener muchos
+Pokémon.
 
 ```kotlin
 @Entity
-@Table(name = "trainer_profiles")
+@Table(name = "trainers")
 class Trainer(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long? = null,
     @Column(nullable = false, length = 100)
     var name: String,
     @Column(nullable = false, unique = true)
@@ -483,7 +540,9 @@ class Trainer(
         orphanRemoval = true,
         fetch = FetchType.LAZY
     )
-    val pokemons: Set<Pokemon> = HashSet(),
+    // MutableSet es necesario para que los helpers addPokemon/removePokemon puedan modificar la colección.
+    // JPA requiere que la colección sea inicializada aquí para evitar NullPointerException.
+    val pokemons: MutableSet<Pokemon> = mutableSetOf(),
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column(name = "updated_at", nullable = false, updatable = true)
@@ -493,10 +552,10 @@ class Trainer(
         return "Entrenador(id=$id, nombre='$name')"
     }
 
-    // Métodos helper para mantener ambos lados de la relación sincronizados
+    // Métodos helper para mantener ambos lados de la relación sincronizados.
     // Esto es una buena práctica para mantener la integridad referencial y evitar inconsistencias
-    // en la base de datos. Muchos desarrolladores no lo hacen porque es muy complicado y luego se 
-    // preguntan por qué JPA se comporta raro.
+    // en la base de datos. Muchos desarrolladores no lo hacen y luego se preguntan por qué JPA
+    // se comporta raro dentro de la misma sesión de Hibernate.
 
     fun addPokemon(pokemon: Pokemon) {
         pokemons.add(pokemon)
@@ -522,7 +581,7 @@ data class PokemonResponse(
 ) {
     companion object {
         fun from(pokemon: Pokemon) = PokemonResponse(
-            id = pokemon.id,
+            id = requireNotNull(pokemon.id) { "Pokemon debe tener id al ser convertido a response" },
             name = pokemon.name,
             kind = pokemon.kind,
             trainerId = pokemon.trainer?.id,
@@ -532,22 +591,24 @@ data class PokemonResponse(
 }
 ```
 
-> El atributo `trainerName` es opcional porque el Pokémon no tiene que pertenecer a un entrenador. Es cuando está en un
-> estado salvaje. Además, no se requiere el objeto `TrainerResponse`. Esta es una forma de evitar referencias circulares
-> en la serialización JSON.
+> El atributo `trainerName` es opcional porque el Pokémon no tiene que
+> pertenecer a un entrenador. Es cuando está en un estado salvaje. Además, no se
+> requiere el objeto `TrainerResponse`. Esta es una forma de evitar referencias
+> circulares en la serialización JSON.
 
 ## El entrenador tiene un perfil
 
-Ahora la relación `@OneToOne`, esta se usa cuando dos entidades comparten una relación exclusiva. Aquí cada entrenador
-tiene exactamente un perfil con su biografía y foto.
+Ahora la relación `@OneToOne`, esta se usa cuando dos entidades comparten una
+relación exclusiva. Aquí cada entrenador tiene exactamente un perfil con su
+biografía y foto.
 
 ```kotlin
 @Entity
-@Table(name = "trainers")
+@Table(name = "trainer_profiles")
 class TrainerProfile(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long? = null,
 
     @Column(columnDefinition = "TEXT")
     var biography: String? = null,
@@ -558,8 +619,8 @@ class TrainerProfile(
     @Column(name = "website_url")
     var websiteUrl: String? = null,
 
-    // El lado dueño de la relación (tiene la FK)
-    // JoinColumn indica que Trainer es quien "posee" la relación
+    // TrainerProfile es el lado dueño de la relación @OneToOne (tiene la FK trainer_id).
+    // @JoinColumn define la columna de clave foránea en esta tabla (trainer_profiles.trainer_id).
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trainer_id", nullable = false, unique = true)
     val trainer: Trainer
@@ -574,7 +635,7 @@ Y ahora modificamos el entrenador para que tenga un perfil.
 class Trainer(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long? = null,
     @Column(nullable = false, length = 100)
     var name: String,
     @Column(nullable = false, unique = true)
@@ -585,17 +646,17 @@ class Trainer(
         orphanRemoval = true,
         fetch = FetchType.LAZY
     )
-    val pokemons: Set<Pokemon> = HashSet(),
-    // @OneToOne: Trainer posee la relación porque tiene el @JoinColumn aquí
-    // cascade = ALL significa que si guardas Author, también se guarda el perfil
-    // orphanRemoval = true: si desvinculás el perfil, se borra de la DB
+    val pokemons: MutableSet<Pokemon> = mutableSetOf(),
+    // mappedBy = "trainer" indica que TrainerProfile es el lado dueño (tiene la FK trainer_id).
+    // Trainer es el lado inverso: NO debe tener @JoinColumn — eso le correspondería al dueño.
+    // cascade = ALL: guardar/borrar Trainer propaga la operación al perfil.
+    // orphanRemoval = true: si desvinculás el perfil, se borra de la DB.
     @OneToOne(
         mappedBy = "trainer",
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
         fetch = FetchType.LAZY
     )
-    @JoinColumn(name = "profile_id", referencedColumnName = "id")
     var profile: TrainerProfile? = null,
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
@@ -618,34 +679,40 @@ class Trainer(
 }
 ```
 
-> Un pequeño detalle: `Hibernate` tiene una limitación conocida con el lado inverso de `@OneToOne`. En la práctica, él
-`LAZY` no funciona en el lado inverso si la relación es nullable, esto hay que tenerlo en cuenta. Ya que `Hibernate` no
-> sabe si el entrenador tiene un perfil o no, entonces necesita hacer una `query` para saber si el perfil existe o es
-`null`, y ya que va a la base de datos, trae todo el objeto. Si esto llega a generar problemas de rendimiento, algunas
-> alternativas son usar `@MapsId` para compartir la misma `PK` o modelar como un `@OneToMany` con máximo logico de uno.
+> **Limitación conocida de Hibernate con `@OneToOne` en el lado inverso:**
+> `LAZY` no funciona de forma fiable en el lado inverso (`mappedBy`) cuando la
+> relación es nullable. Hibernate no sabe si el entrenador tiene un perfil o no
+> sin ir a la base de datos, por lo que termina cargando el objeto completo
+> aunque se declare `LAZY`. Si esto genera problemas de rendimiento, la
+> alternativa más robusta es usar `@MapsId` en `TrainerProfile` para que
+> comparta la misma PK que `Trainer` — así Hibernate sabe que siempre existe y
+> puede diferir la carga correctamente.
 
 ## Resumen visual de las relaciones
 
 Para que quede claro cómo se mapea todo esto en la base de datos:
 
 ```
-trainer_profiles          trainers                   pokemons
-─────────────────         ──────────────────────     ──────────────────────
-id (PK)          ←──FK──  id (PK)                    id (PK)
-biography                 name                       name
-photo_url                 email                      kind
-website_url               profile_id (FK) ──────┘    trainer_id (FK) ──→ trainers.id
-                          created_at                 
-                          updated_at
+trainer_profiles                    trainers                   pokemons
+──────────────────────────────      ──────────────────────     ──────────────────────
+id (PK)                             id (PK)                    id (PK)
+biography                           name                       name
+photo_url                           email                      kind
+website_url                         created_at                 trainer_id (FK) ──→ trainers.id
+trainer_id (FK) ──→ trainers.id     updated_at
 ```
 
-La columna `profile_id` está en `trainers` porque Trainer es el lado dueño del `@OneToOne`. La columna `trainer_id` está
-en `pokemons` porque `@ManyToOne` siempre pone la FK en el lado "muchos".
+La columna `trainer_id` está en `trainer_profiles` porque `TrainerProfile` es el
+lado dueño del `@OneToOne` (tiene el `@JoinColumn`). `Trainer` es el lado inverso
+y usa `mappedBy = "trainer"`, por lo que **no** tiene ninguna columna FK para esta
+relación. La columna `trainer_id` también está en `pokemons` porque `@ManyToOne`
+siempre pone la FK en el lado "muchos".
 
 ## Manejando errores
 
-Para cerrar el círculo del controlador, es recomendable manejar los errores. Una solución robusta es usar un handler que
-convierta las excepciones en respuestas HTTP limpias.
+Para cerrar el círculo del controlador, es recomendable manejar los errores. Una
+solución robusta es usar un handler que convierta las excepciones en respuestas
+HTTP limpias.
 
 ```kotlin
 // GlobalExceptionHandler.kt
@@ -682,41 +749,55 @@ class GlobalExceptionHandler {
 }
 ```
 
-> Esta clase complementa el controlador de entrenadores, ya que cada que se produce un error en el servicio, se devuelve
-> un error HTTP.
+> Esta clase complementa el controlador de entrenadores, ya que cada que se
+> produce un error en el servicio, se devuelve un error HTTP.
 
 ## Preguntas frecuentes
 
-1. **¿Por qué `LAZY` siempre en colecciones?** Imagina este escenario: tienes un entrenador con 500 pokemones. Si la
-   relación se define como `EAGER`, cada vez que cargas al entrenador, Hibernate ejecuta una query adicional para traer
-   los 500 pokemones. Aunque solo quieras saber el nombre del entrenador. En cambio, con `LAZY`, los pokemones solo
-   serán cargados cuando accedes de forma explícita a `trainer.pokemones`.
-2. **¿Por qué los métodos helper?** Cuando la relación es bidireccional, JPA necesita que ambos lados de la relación
-   estén sincronizados en la memoria. Si haces una llamada a `trainer.pokemons.add(pokemon)` y luego
-   `pokemon.trainer = trainer`, puedes tener un estado inconsistente en la base de datos dentro de la sesión de
-   Hibernate. Los helpers garantizan que siempre estén en sintonía.
-3. **¿Por qué usar DTOs y no exponer la entidad directamente?**: Si expones la entidad en el controlador, cualquier
-   cambio en la base de datos rompe tu API pública. Además, puedes tener campos sensibles (contraseñas, datos internos)
+1. **¿Por qué `LAZY` siempre en colecciones?** Imagina este escenario: tienes un
+   entrenador con 500 pokemones. Si la relación se define como `EAGER`, cada vez
+   que cargas al entrenador, Hibernate ejecuta una query adicional para traer
+   los 500 pokemones. Aunque solo quieras saber el nombre del entrenador. En
+   cambio, con `LAZY`, los pokemones solo serán cargados cuando accedes de forma
+   explícita a `trainer.pokemones`.
+2. **¿Por qué los métodos helper?** Cuando la relación es bidireccional, JPA
+   necesita que ambos lados de la relación estén sincronizados en la memoria. Si
+   haces una llamada a `trainer.pokemons.add(pokemon)` y luego
+   `pokemon.trainer = trainer`, puedes tener un estado inconsistente en la base
+   de datos dentro de la sesión de Hibernate. Los helpers garantizan que siempre
+   estén en sintonía.
+3. **¿Por qué usar DTOs y no exponer la entidad directamente?**: Si expones la
+   entidad en el controlador, cualquier cambio en la base de datos rompe tu API
+   pública. Además, puedes tener campos sensibles (contraseñas, datos internos)
    que nunca deberían salir en el JSON.
-4. **¿Qué problemas suceden con las relaciones Bidireccionales?** Cuando trabajas con relaciones bidireccionales en
-   Hibernate, tienes un desafío: ambos lados de la relación apuntan el uno al otro, y si no lo manejas bien, puedes
-   terminar con problemas de lazy loading, ciclos infinitos en la serialización a JSON, o actualizaciones que no
-   funcionan como esperabas. La clave está en entender que una relación siempre tiene un "dueño" (el que tiene la clave
-   foránea en la base de datos) y el otro lado es simplemente una referencia inversa. El dueño es quien dice "yo soy
-   responsable de guardar esta relación", y el otro lado dice "yo solo consulto, la relación la maneja el otro".
+4. **¿Qué problemas suceden con las relaciones Bidireccionales?** Cuando
+   trabajas con relaciones bidireccionales en Hibernate, tienes un desafío:
+   ambos lados de la relación apuntan el uno al otro, y si no lo manejas bien,
+   puedes terminar con problemas de lazy loading, ciclos infinitos en la
+   serialización a JSON, o actualizaciones que no funcionan como esperabas. La
+   clave está en entender que una relación siempre tiene un "dueño" (el que
+   tiene la clave foránea en la base de datos) y el otro lado es simplemente una
+   referencia inversa. El dueño es quien dice "yo soy responsable de guardar
+   esta relación", y el otro lado dice "yo solo consulto, la relación la maneja
+   el otro".
 
 ## Factos interesantes
 
-- Todas las relaciones deben ser LAZY por defecto, especialmente si son colecciones.
+- Todas las relaciones deben ser LAZY por defecto, especialmente si son
+  colecciones.
 - Usa siempre DTOs en lugar de exponer entidades.
-- El lado @ManyToOne es el que tiene la FK en la base de datos. (por lo tanto define al dueño de la relación)
+- El lado @ManyToOne es el que tiene la FK en la base de datos. (por lo tanto
+  define al dueño de la relación)
 - Para relaciones bidireccionales, siempre usa los helpers.
-- `@PatchMapping` es para actualizaciones parciales: en Kotlin esto es elegante porque puedes usar campos `nullable` en
-  el DTO y el operador `?.let` para aplicar solo lo que llegó.
+- `@PatchMapping` es para actualizaciones parciales: en Kotlin esto es elegante
+  porque puedes usar campos `nullable` en el DTO y el operador `?.let` para
+  aplicar solo lo que llegó.
 - `@PatchMapping` va sin `@Valid` porque los campos son opcionales.
-- `PATCH` es mejor que `PUT` para APIs modernas. Es más eficiente y la experiencia es mejor para los clientes.
-- `@Transactional(readOnly = true)` en los métodos de lectura es un detalle pequeño que puede mejorar mucho la
-  performance en aplicaciones con carga alta.
-- Las relaciones bidireccionales son poderosas pero requieren disciplina. Muchos prefieren las relaciones
-  unidireccionales, porque es fácil olvidarse de mantenerlas sincronizadas. Pero las unidireccionales tienden a dejar
-  datos inconsistentes en la base de datos.
+- `PATCH` es mejor que `PUT` para APIs modernas. Es más eficiente y la
+  experiencia es mejor para los clientes.
+- `@Transactional(readOnly = true)` en los métodos de lectura es un detalle
+  pequeño que puede mejorar mucho la performance en aplicaciones con carga alta.
+- Las relaciones bidireccionales son poderosas pero requieren disciplina. Muchos
+  prefieren las relaciones unidireccionales, porque es fácil olvidarse de
+  mantenerlas sincronizadas. Pero las unidireccionales tienden a dejar datos
+  inconsistentes en la base de datos.

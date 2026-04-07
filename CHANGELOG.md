@@ -6,6 +6,115 @@ El formato está basado en
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), y este proyecto se
 basa en [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 0.0.4
+
+Milestone 3: Refactorización a Screaming Architecture completa, mejoras de
+seguridad, soporte para migraciones automáticas y herramientas de desarrollo
+con IA — Se completó la migración del dominio `example` a la nueva estructura
+por features, se mejoró la persistencia de hoteles y habitaciones, se
+corrigieron vulnerabilidades de seguridad y se agregó documentación extensa
+del curso (semanas 4 y 5).
+
+### Added
+
+- **Screaming Architecture para `example`**: Migración completa del dominio
+  - Reestructuración de paquetes siguiendo MVC por Features
+  - `ExampleUseCasePort`, `ExampleRepositoryPort` en `application/ports/`
+  - `ExampleServiceConfig` para inyección de dependencias
+  - `ExampleController` migrado a `adapters/rest/`
+  - `ExampleRepositoryAdapter` y `ExampleJpaRepository` en `adapters/persistence/`
+- **Mejoras en Feature Hotels**:
+  - `HotelRoomJpaRepository` para persistencia de habitaciones por hotel
+  - `HotelServiceConfig` para configuración de dependencias
+  - `PageResponse` mejorado con soporte de paginación
+  - Endpoints REST ampliados con soporte de cliente REST (`RestTestClientConfig`)
+- **Soporte para migraciones automáticas**:
+  - Script `generate-migration.sh` para generar migraciones de BD automáticamente
+  - Script `generate-migration.ps1` para entornos Windows
+  - Perfil `application-migration.yaml` para generación de DDL desde entidades JPA
+  - `docker-compose.migration.yml` para base de datos temporal de migración
+  - `Makefile` con tareas de automatización del proyecto
+- **Documentación del curso — Semana 4**:
+  - Screaming Architecture: guía completa con ejemplos
+  - Configuración de Swagger UI y documentación OpenAPI
+  - Implementación de funcionalidades con patrones MVC
+  - Clean Core: separación de dominio e infraestructura
+  - Validación de datos con Bean Validation
+- **Documentación del curso — Semana 5**:
+  - Spring Security: autenticación y autorización
+  - TDD en práctica: Red/Green/Refactor para hoteles
+  - Retos y fases del curso con ejercicios prácticos
+  - Cuestionario sobre Spring Boot + Kotlin
+- **Guías de aprendizaje**:
+  - `docs/lectures/quickstart-springboot-kotlin.md`: guía rápida de Spring Boot
+    con Kotlin
+  - `docs/learning-path/narrative-guide.md`: guía narrativa del camino de
+    aprendizaje
+  - Roadmap para aprender Java y Spring Boot con hipervínculos
+- **Herramientas de desarrollo con IA**:
+  - `CLAUDE.md` con instrucciones para Claude Code
+  - `.junie/AGENTS.md` para Junie (JetBrains AI)
+  - Skills de agentes en `.agents/skills/`: `aws-rds-spring-boot-integration`,
+    `java-coding-standards`, `java-spring-boot`, `jpa-patterns`,
+    `kotlin-spring`, `kotlin-spring-boot`, `langchain4j-spring-boot-integration`,
+    `debug-spring-boot`, `refactor-spring-boot`
+- **Utilidades de tests**:
+  - `ClasspathDiagnosticTest` para diagnóstico del classpath en pruebas E2E
+  - `MockkTestConfig` centralizado para configuración de mocks
+  - `GenerateDdlTest` para validar generación de esquema DDL
+
+### Changed
+
+- **Arquitectura `ping`**: Refactorización para eliminar casos de uso
+  redundantes y ajustar al patrón de features
+- **`RoomEntity`**: Mejoras en la entidad con nuevos campos y relaciones
+- **Detekt**: Actualización de configuración a versión 2.0.0-alpha.1 con reglas
+  ajustadas para el proyecto
+- **Build (`build.gradle.kts`)**: Actualización de dependencias, soporte para
+  Spring Boot actualizado y nuevas tareas de Gradle
+- **Gradle Wrapper**: Actualización de versión
+- **Tests de integración**: Renombrado `application-tests.yaml` →
+  `application-test.yaml` para consistencia
+- **`HotelE2ETest`**: Refactorización completa con mejoras en cobertura y
+  claridad de pruebas
+- **README**: Reestructuración completa con justificación del proyecto,
+  estructura de módulos y guías de contribución
+
+### Fixed
+
+- **Seguridad — XSS en `SentryController`**: Corrección de vulnerabilidad de
+  Cross-site scripting detectada por GitHub code scanning (alerta #8)
+- **Sanitización de mensajes en Sentry**: Los mensajes enviados a Sentry ahora
+  son sanitizados para evitar inyección de datos sensibles o maliciosos
+- **Compatibilidad de Swagger UI**: Corrección de incompatibilidad con la
+  versión actual de Spring Boot
+- **Imports innecesarios**: Limpieza en múltiples archivos de dominio y
+  adaptadores
+
+### Removed
+
+- **Stubs vacíos restantes**: Eliminación definitiva de `cart/`,
+  `gamification/`, `payments/`, `pokemon/`, `reservations/`, `reviews/`,
+  `services/` que solo contenían `PackageInfo.kt`
+- **Dependencias de infraestructura en el core**: El dominio ahora está
+  completamente libre de dependencias de Spring/JPA
+
+### Tests
+
+- Pruebas unitarias para `UserService` con value objects
+- Pruebas de integración ampliadas para `HotelController` y `HotelService`
+- `HotelJpaRepositoryIntegrationTest` con Testcontainers
+- Configuración mejorada de MockK para pruebas más robustas
+- Soporte de Testcontainers condicional (`DockerAvailableCondition`) con
+  fallback a H2
+
+### Configuration
+
+- Nuevo perfil `migration` para generación automática de DDL
+- `docker-compose.migration.yml` para entorno de migración aislado
+- `CLAUDE.md` y `.junie/AGENTS.md` para herramientas de IA
+- Scripts de migración disponibles para Linux/Mac y Windows
+
 ## [0.0.3] - 2025-11-14
 
 Milestone 2: Migración a Screaming Architecture y nuevas features de dominio —
@@ -204,6 +313,7 @@ entidad `Example`.
 - CORS configurado
 - Manejo global de excepciones
 
+[Unreleased]: https://github.com/lgzarturo/springboot-course/compare/v0.0.3...HEAD
 [0.0.1]: https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.1
 [0.0.2]: https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.2
 [0.0.3]: https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.3
