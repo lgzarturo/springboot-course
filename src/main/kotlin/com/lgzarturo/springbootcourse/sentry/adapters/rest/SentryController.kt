@@ -92,7 +92,8 @@ class SentryController {
         @RequestParam(defaultValue = "Test message") message: String,
     ): String {
         Sentry.captureMessage(message, SentryLevel.INFO)
-        return "Message sent to Sentry: $message"
+        val safeMessage = HtmlUtils.htmlEscape(message)
+        return "Message sent to Sentry: $safeMessage"
     }
 
     @GetMapping("/transaction")
