@@ -1,0 +1,64 @@
+package com.lgzarturo.springbootcourse.features.examples
+
+import com.lgzarturo.springbootcourse.common.pagination.PageRequest
+import com.lgzarturo.springbootcourse.common.pagination.PageResult
+import com.lgzarturo.springbootcourse.features.examples.dto.ExamplePatchUpdate
+
+/**
+ * Port de entrada para los casos de uso de ejemplo.
+ * Define las operaciones que se pueden realizar sobre los ejemplos.
+ */
+interface ExampleUseCasePort {
+    /**
+     * Crea un nuevo ejemplo
+     * @param example Objeto Example con los datos del ejemplo a crear
+     * @return Example con los datos del ejemplo creado
+     */
+    fun create(example: Example): Example
+
+    /**
+     * Actualiza un ejemplo
+     * @param id ID del ejemplo a actualizar
+     * @param example Objeto Example con los datos del ejemplo a actualizar
+     * @return Example con los datos del ejemplo actualizado
+     */
+    fun update(
+        id: Long,
+        example: Example,
+    ): Example
+
+    /**
+     * Obtiene un ejemplo por su ID
+     * @param id ID del ejemplo a obtener
+     * @return Example con los datos del ejemplo obtenido
+     */
+    fun findById(id: Long): Example
+
+    /**
+     * Elimina un ejemplo por su ID
+     * @param id ID del ejemplo a eliminar
+     */
+    fun delete(id: Long)
+
+    /**
+     * Obtiene una lista paginada de ejemplos, opcionalmente filtrados por texto de búsqueda
+     * @param searchText Texto de búsqueda para filtrar los ejemplos (opcional)
+     * @param pageable Objeto PageRequest para la paginación
+     * @return Página de Example con los ejemplos obtenidos
+     */
+    fun findAll(
+        searchText: String?,
+        pageable: PageRequest,
+    ): PageResult<Example>
+
+    /**
+     * Actualiza un ejemplo
+     * @param id ID del ejemplo a actualizar
+     * @param update Objeto ExamplePatchUpdate con los datos del ejemplo a actualizar
+     * @return Example con los datos del ejemplo actualizado
+     */
+    fun patch(
+        id: Long,
+        update: ExamplePatchUpdate,
+    ): Example
+}

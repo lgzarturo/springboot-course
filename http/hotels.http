@@ -1,0 +1,46 @@
+### Hotel Controller Tests
+### Base URL
+@baseUrl = http://localhost:8080
+@apiVersion = v1
+@hotelId = d4597953-e627-4e39-9acd-7aa945d70ffb
+
+### 1. Obtener hoteles
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/hotels
+Accept: application/json
+
+### 2. Buscar hoteles por su nombre
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/hotels?name=Ejemplo
+Accept: application/json
+
+### 3. Crear un hotel
+#@no-cookie-jar
+POST {{baseUrl}}/api/{{apiVersion}}/hotels
+Content-Type: application/json
+
+{
+    "name": "Hotel Pokémon",
+    "address": "El hotel mas exclusivo de la ciudad Paleta"
+}
+
+### 4. Obtener hotel por su id
+#@no-cookie-jar
+GET {{baseUrl}}/api/{{apiVersion}}/hotels/{{hotelId}}
+Accept: application/json
+
+### 5. Editar un hotel
+#@no-cookie-jar
+PUT {{baseUrl}}/api/{{apiVersion}}/hotels/{{hotelId}}
+Content-Type: application/json
+
+{
+    "name": "Hotel Pokémon (updated)",
+    "address": "El hotel mas exclusivo de la ciudad Paleta (updated)"
+}
+
+### 6. Borrar un hotel
+#@no-cookie-jar
+DELETE {{baseUrl}}/api/{{apiVersion}}/hotels/{{hotelId}}
+
+###

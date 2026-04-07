@@ -5,7 +5,7 @@
 # Ejemplo: make migrate DESC="add_users_table"
 # =============================================================================
 
-GRADLEW := ./gradlew
+GRADLEW := gradlew
 
 # Detección de sistema operativo
 UNAME := $(shell uname 2>/dev/null || echo Windows)
