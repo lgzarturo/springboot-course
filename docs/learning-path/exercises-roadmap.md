@@ -101,6 +101,116 @@ crear relación One-to-Many bidireccional con Reservation.
 
 ---
 
+### Ejercicio 1.2.1: El Buscador del Profesor Oak — Filtrado dinámico con Specification
+
+**Historia**: El Profesor Oak recibe a diario docenas de entrenadores con
+requisitos muy distintos: uno quiere una habitación tipo Agua con capacidad para
+3, precio máximo de $150, disponible esta semana. Otro quiere cualquier suite
+con tema Mewtwo sin importar el precio. El sistema hoy solo puede buscar por un
+campo a la vez. Brock exige que haya un único endpoint de búsqueda que acepte
+cualquier combinación de filtros opcionales sin que el código explote en una
+cadena de if anidados. El sistema necesita un endpoint de búsqueda que acepte
+cualquier combinación de filtros opcionales.
+
+**Qué enseña**: JPA Specification API (Criteria API). La idea central es que no
+puedes escribir un método de repositorio diferente para cada combinación posible
+de filtros. Specification te permite construir queries dinámicas componiendo
+predicados en tiempo de ejecución, sin JPQL manual.
+
+**Objetivo Técnico**: Implementar búsqueda dinámica de habitaciones usando JPA
+Specification (Criteria API). El objetivo es construir queries en tiempo de
+ejecución componiéndolas a partir de los parámetros que lleguen, dejando fuera
+los que no vengan en la petición.
+
+**Desarrollo Esperado:**
+
+1. Crear RoomFilterRequest como DTO de búsqueda con todos los campos opcionales
+2. Crear RoomSpecifications como objeto con funciones estáticas que devuelvan
+   Specification<Room>
+3. Hacer que RoomRepository extienda JpaSpecificationExecutor<Room>
+4. Crear RoomSearchService que combine los predicados
+5. Crear GET /api/rooms/search que reciba el RoomFilterRequest como
+   @RequestParam (no @RequestBody, es un GET) y devuelva página de resultados
+
+**Criterios de Aceptación:**
+
+- [ ] GET /api/rooms/search sin parámetros devuelve todas las habitaciones
+      disponibles paginadas
+- [ ] GET /api/rooms/search?roomType=SUITE&maxPricePerNight=200 devuelve solo
+      suites que cuestan ≤ $200
+- [ ] GET /api/rooms/search?checkIn=2025-03-01&checkOut=2025-03-05 devuelve solo
+      habitaciones sin reserva activa en esas fechas (no habitaciones con
+      CHECKED_OUT o CANCELLED, esas sí cuentan como disponibles)
+- [ ] Combinación de tres filtros simultáneos produce query con tres predicados
+      AND (verificable con Hibernate SQL logging en DEBUG)
+- [ ] Test de integración con TestContainers: insertar 5 habitaciones con
+      diferentes tipos y precios, ejecutar búsquedas con filtros distintos y
+      verificar que el resultado es el esperado en cada caso
+
+**Tiempo Estimado:** 10 horas **Insignia Ganada:** Búsqueda Dinámica con
+Criteria API
+
+### Ejercicio 1.2.2: El Pokédex Paginado — Paginación avanzada y proyecciones
+
+**Historia**: El panel de administración del Profesor Oak muestra un historial
+de todas las reservas del hotel. En temporada alta pueden ser 50,000 registros.
+Cargarlos todos a memoria no es una opción: la aplicación morirá de un
+OutOfMemoryError antes de que llegue la respuesta al cliente. Además, el panel
+solo necesita mostrar: nombre del entrenador, número de habitación, fechas y
+estado. Traer todas las entidades completas con todas sus relaciones es un
+desperdicio. Brock quiere paginación real y proyecciones.
+
+**Qué enseña**: Pageable de Spring Data con soporte para ordenamiento dinámico
+(Sort), la diferencia entre Page (con count total) y Slice (sin count, más
+eficiente para scroll infinito), y las proyecciones JPA que permiten traer solo
+los campos necesarios en lugar de la entidad completa. Este último punto es
+importante: las proyecciones evitan el problema de cargar relaciones que no
+necesitas.
+
+**Objetivo Técnico**: Implementar paginación con Pageable de Spring Data,
+entender la diferencia entre Page y Slice, y usar proyecciones JPA para traer
+solo los campos necesarios en lugar de entidades completas.
+
+**Desarrollo Esperado:**
+
+1. Crear proyección de interfaz ReservationSummary
+2. Añadir al repositorio la query con proyección
+3. Implementar endpoint de admin con paginación y ordenamiento:
+
+```
+GET /api/admin/reservations?page=0&size=20&sort=checkInDate,desc&status=CONFIRMED
+### Respuesta envuelta en PagedResponse<T> propio con metadatos
+```
+
+4. Añadir endpoint de scroll con Slice (sin count total, más eficiente para
+   carga infinita del frontend):
+
+```
+GET /api/rooms/browse?page=0&size=10 que devuelva Slice<RoomResponse>
+### El Slice solo tiene hasNext(), no el total, lo que evita el COUNT(*)
+extra que Page necesita
+```
+
+5. Configurar límite máximo de size para que nadie pida size=999999:
+
+**Criterios de Aceptación:**
+
+- [ ] GET /api/admin/reservations?page=0&size=5 devuelve exactamente 5 registros
+      con metadatos de paginación correctos (totalPages, totalElements, isLast)
+- [ ] La respuesta de proyección incluye userFirstName y roomNumber sin haber
+      cargado las entidades User y Room completas (verificable con Hibernate
+      SQL: solo un JOIN, no queries adicionales)
+- [ ] Ordenamiento por múltiples campos funciona:
+      ?sort=status,asc&sort=checkInDate,desc
+- [ ] Solicitar size=500 es rechazado o ajustado al máximo configurado (100) con
+      mensaje informativo
+- [ ] Test de integración: insertar 25 reservas, paginar de 10 en 10 y verificar
+      que la tercera página devuelve 5 y isLast=true
+
+**Tiempo Estimado:** 8 horas **Insignia Ganada:** Paginación Real y Proyecciones
+
+---
+
 ### Ejercicio 1.3: Sistema de Reservas (Reservation Entity + Lógica de Negocio)
 
 **Historia:** Misty llega al hotel y quiere reservar la "Charizard Chamber" por
@@ -387,6 +497,59 @@ cuentas.
 
 ---
 
+### Ejercicio 2.5: El PC Box del Entrenador — Caché con Redis
+
+**Historia**: El catálogo de habitaciones disponibles se consulta cientos de
+veces por minuto. Cada consulta va a la base de datos aunque el catálogo cambia
+muy pocas veces al día. Sin embargo, cada llamada va a la base de datos, ejecuta
+joins y regresa resultados idénticos a los de hace dos segundos. Lt. Surge
+detecta que esto es un desperdicio de recursos y pide a Kai que implemente
+caché.
+
+**Qué enseña**: Spring Cache abstraction (@Cacheable, @CacheEvict, @CachePut)
+con Redis como backend. La lección más valiosa es la invalidación del caché:
+cuando una habitación pasa a MAINTENANCE, el caché de disponibilidad debe
+invalidarse. Introduce también la diferencia entre caché de lectura y el riesgo
+de servir datos stale.
+
+**Objetivo Técnico**: Implementar caché de aplicación usando la abstracción
+Spring Cache con Redis como backend. Aprender cuándo cachear, cuándo invalidar,
+y cuáles son los riesgos de servir datos stale.
+
+**Desarrollo Esperado:**
+
+1. Añadir dependencias y configuración de Redis
+2. Habilitar caché y configurar serialización JSON (no Java serialization)
+3. Anotar los métodos de servicio correctamente
+4. Implementar caché del catálogo de servicios con TTL de 1 hora
+5. Añadir endpoint de administración para invalidar caché manualmente:
+
+```
+DELETE /api/admin/cache/{cacheName} (solo PROFESOR_OAK)
+### Útil cuando se actualiza datos directamente en BD sin pasar por la API
+```
+
+6. Configurar Redis en docker-compose.yml del proyecto
+
+**Criterios de Aceptación:**
+
+- [ ] Segunda llamada a GET /api/rooms?status=AVAILABLE responde en <5ms
+      (primera llamada puede tomar lo que tome la BD)
+- [ ] Cambiar estado de habitación a MAINTENANCE invalida el caché: siguiente
+      llamada va a BD y no devuelve la habitación ya no disponible
+- [ ] Reiniciar la aplicación no pierde el caché (está en Redis, no en memoria)
+- [ ] Si Redis no está disponible, la app sigue funcionando sin caché
+      (degradación elegante): configurar @ConditionalOnBean o capturar
+      CacheException
+- [ ] Test unitario verifica que el repositorio solo se llama una vez aunque el
+      método del servicio se invoque tres veces seguidas (el mock solo debe
+      registrar una invocación)
+- [ ] Logs en DEBUG muestran cuándo se produce un cache hit vs cache miss
+
+**Tiempo Estimado**: 5 horas **Insignia Ganada**: Caché de Aplicación con Redis
+
+---
+
 ## 🌊 FASE 3: GIMNASIO CERULEAN - "LA PRECISIÓN DEL AGUA"
 
 **Líder:** Misty (Perfeccionista) **Insignia:** Cascade Badge 🌊 **Duración
@@ -581,6 +744,225 @@ especificación JSON/YAML automáticamente.
 
 ---
 
+### Ejercicio 3.5: La Fila de Espera de Celadon — Waitlist de habitaciones
+
+**Historia**: La Charizard Chamber es la habitación más popular del hotel.
+Siempre está ocupada. Cuando Ash llega y ve que no está disponible, el sistema
+le ofrece unirse a la lista de espera. En cuanto la reserva activa termina o se
+cancela, el primer entrenador en la fila recibe una notificación interna y tiene
+2 horas para confirmar. Si no confirma, pasa al siguiente. Misty quiere que esto
+ocurra de forma automática, sin que el GYM_LEADER tenga que intervenir
+manualmente.
+
+**Qué enseña**: ApplicationEventPublisher de Spring para eventos internos de
+dominio. Cuando una reserva cambia a CANCELLED o CHECKED_OUT, se publica un
+evento RoomAvailableEvent. Un listener separado consulta la waitlist y actúa.
+Introduce la idea de que la lógica de negocio no tiene que vivir junta en un
+solo servicio.
+
+**Objetivo Técnico**: Implementar comunicación desacoplada entre componentes
+usando ApplicationEventPublisher de Spring. El servicio de reservas no conoce al
+servicio de waitlist: simplemente publica que algo ocurrió, y quien quiera
+reaccionar lo hace de forma independiente.
+
+**Desarrollo Esperado:**
+
+1. Crear entidad WaitlistEntry
+2. Definir los eventos de dominio como data classes simples
+3. Publicar eventos desde ReservationService sin saber quién los escucha
+4. Implementar WaitlistEventListener en el servicio de waitlist
+5. Endpoints:
+
+```
+POST /api/rooms/{id}/waitlist — unirse a la fila de espera con fechas
+deseadas
+GET /api/me/waitlist — ver posición en la fila y estado
+POST /api/waitlist/{entryId}/confirm — confirmar cuando el sistema te
+notificó (dentro del plazo de 2 horas)
+DELETE /api/waitlist/{entryId} — salir de la fila voluntariamente
+```
+
+**Criterios de Aceptación:**
+
+- [ ] Al cancelar una reserva, el primer entrenador en espera de esa habitación
+      cambia automáticamente a estado NOTIFIED sin intervención manual
+- [ ] Si el listener falla, la cancelación de la reserva NO hace rollback (el
+      @TransactionalEventListener con AFTER_COMMIT garantiza que el commit ya
+      ocurrió antes de procesar el evento)
+- [ ] WaitlistService no tiene ninguna referencia directa a ReservationService y
+      viceversa (el desacoplamiento es real, verificable en el código)
+- [ ] Test: publicar ReservationCancelledEvent directamente en el test y
+      verificar que el estado del waitlist cambia correctamente (sin necesidad
+      de cancelar una reserva real)
+- [ ] Posición en la fila se recalcula correctamente cuando alguien en el medio
+      sale voluntariamente
+
+**Tiempo Estimado:** 16 horas **Insignia Ganada:** Eventos de Dominio
+Desacoplados
+
+---
+
+### Ejercicio 3.6: El Festival Pokémon — Precios dinámicos por temporada
+
+**Historia**: Brock le explica a Kai que durante el Festival Pokémon (temporada
+alta) los precios suben un 30%. Los fines de semana tienen un recargo del 10%.
+Una habitación ELITE_FOUR_SUITE nunca tiene descuento. El precio que ve el
+entrenador al reservar debe ser el precio real de esas fechas, no el precio base
+del catálogo. Y si el entrenador es usuario PREMIUM (más de 5 estancias
+previas), tiene un descuento fijo del 5%. El precio que se muestra al confirmar
+una reserva debe reflejar todos estos factores, no el precio base del catálogo.
+
+**Qué enseña**: El patrón Strategy aplicado a cálculo de precios. En lugar de
+una función monolítica con múltiples if, hay un PricingStrategy como interfaz
+con implementaciones: SeasonalPricing, WeekendPricing, BasePrice. Se componen
+mediante una cadena. También toca el manejo de BigDecimal para cálculos
+financieros correctos (sin Double).
+
+**Objetivo Técnico**: Implementar cálculo de precios mediante el patrón
+Strategy. En lugar de una función monolítica con múltiples if, cada regla de
+negocio es una implementación independiente que se compone con las demás.
+
+**Desarrollo Esperado:**
+
+1. Definir la interfaz PricingRule y las implementaciones
+2. Crear PriceCalculatorService que componga las reglas en cadena
+3. Añadir endpoint de cotización sin crear reserva:
+
+```
+POST /api/rooms/{id}/quote con body { checkIn, checkOut }
+### Devuelve PriceBreakdown con el desglose completo de los ajustes aplicados
+Esto permite al frontend mostrar al entrenador exactamente cuánto pagará y
+por qué, antes de confirmar
+```
+
+4. Persistir el PriceBreakdown junto a la Reservation al crearla (snapshot del
+   precio en el momento de la reserva, no recalcular al consultar)
+
+**Criterios de Aceptación:**
+
+- [ ] Cotización de habitación estándar para noches de verano (julio) devuelve
+      precio base + 30%, no el precio base del catálogo
+- [ ] El campo adjustedPricePerNight en la respuesta muestra el precio
+      modificado, y el campo basePrice muestra el original: el entrenador ve
+      exactamente qué se aplicó
+- [ ] Añadir una nueva regla de negocio (ej: descuento del 20% para reservas de
+      más de 14 días) no requiere modificar PriceCalculatorService, solo crear
+      un nuevo bean que implemente PricingRule
+- [ ] Tests unitarios para cada regla en aislamiento, sin contexto de Spring
+- [ ] Test: combinación de reglas temporada alta + fin de semana produce el
+      multiplicador correcto (1.30 × 1.10 = 1.43), no un solo if que solo
+      aplique una
+
+**Tiempo Estimado:** 5 horas **Insignia Ganada:** Patrón Strategy y Lógica de
+Precios
+
+---
+
+### Ejercicio 3.7: El Diario del Investigador — Auditoría de cambios con Envers
+
+**Historia**: Un entrenador llama furioso porque su reserva pasó de CONFIRMED a
+CANCELLED sin que él lo hiciera. El GYM_LEADER dice que tampoco fue él. El
+Profesor Oak necesita saber quién cambió qué y cuándo, con evidencia
+irrefutable. Sin un sistema de auditoría, la única respuesta posible es un
+encogimiento de hombros. Misty exige que cada cambio en entidades críticas quede
+registrado en el historial.
+
+**Qué enseña**: Hibernate Envers para auditoría automática de entidades
+(@Audited). Crea tablas de historial automáticamente y permite consultar el
+estado de una entidad en cualquier punto del tiempo. También toca el concepto de
+"quién hizo el cambio" con AuditorAware de Spring Data para inyectar el usuario
+autenticado actual.
+
+**Objetivo Técnico**: Implementar auditoría automática de cambios en entidades
+usando Hibernate Envers. Configurar AuditorAware para registrar quién hizo cada
+cambio. Crear endpoints de consulta del historial de cambios.
+
+**Desarrollo Esperado:**
+
+1. Añadir dependencia y habilitar Envers en el sistema
+2. Anotar las entidades que deben auditarse
+3. Crear migration V9\_\_create_audit_tables.sql. En este caso Envers puede
+   generarlas automáticamente en desarrollo, pero para producción se necesita el
+   SQL explícito
+4. Implementar AuditQueryService para consultar el historial
+5. Endpoint de auditoría (solo PROFESOR_OAK):
+
+```
+GET /api/admin/reservations/{id}/history — lista de revisiones con quién
+cambió qué y cuándo
+```
+
+**Criterios de Aceptación:**
+
+- [ ] Crear, modificar y cancelar una reserva produce 3 registros en la tabla
+      reservations_aud con revtype 0, 1 y 1 respectivamente
+- [ ] Cada registro de auditoría incluye el username del usuario que hizo el
+      cambio (no solo el ID)
+- [ ] El endpoint de historial muestra el estado anterior y el nuevo en cada
+      revisión (el auditor puede reconstruir exactamente qué campo cambió)
+- [ ] Eliminar físicamente una reserva (si ocurre en algún flujo de limpieza)
+      deja un registro revtype=2 en la tabla de auditoría, no desaparece
+- [ ] La tabla revinfo muestra el timestamp en formato legible en la respuesta
+      del endpoint (no como epoch milisegundos)
+
+**Tiempo Estimado:** 10 horas **Insignia Ganada:** Auditoría de Cambios
+
+---
+
+### Ejercicio 3.8:. Las Medallas del Entrenador — Sistema de puntos de lealtad
+
+**Historia**: El Profesor Oak quiere fidelizar a los entrenadores con un sistema
+de puntos. Cada estadía completada (CHECKED_OUT) le suma PokéCoins al
+entrenador: 1 PokéCoin por cada noche, 2x si la habitación es SUITE o superior.
+Al acumular 20 PokéCoins, el entrenador puede aplicar un descuento de $25 en su
+siguiente reserva. Los puntos no se pierden si la reserva se cancela después del
+check-in. Misty advierte que si el saldo de puntos y el estado de la reserva
+quedan desincronizados en BD, el sistema tiene un bug grave.
+
+**Qué enseña**: Efectos secundarios transaccionales. Cuando una reserva completa
+su ciclo, el sistema debe actualizar los puntos del usuario en la misma
+transacción (para que no quede un estado inconsistente si algo falla en el
+camino). Introduce @Transactional con propagación, y la diferencia entre un
+"proceso de negocio" y un simple guardado de datos.
+
+**Objetivo Técnico**: Implementar efectos secundarios transaccionales. Cuando el
+ciclo de vida de una reserva cambia (CHECKED_OUT), se debe actualizar el saldo
+de puntos del usuario en la misma transacción que cambia el estado.
+
+**Desarrollo Esperado:**
+
+1. Añadir campo pokeCoinBalance: Int = 0 a la entidad User con su columna en BD,
+   y crear migration V8\_\_add_pokecoin_balance.sql
+2. Crear entidad PokeCoinTransaction para el historial de movimientos
+3. Implementar PokeCoinService con la lógica de acumulación y la de aplicar
+   descuento
+4. Llamar a awardCoinsForCompletedStay desde ReservationService.checkout()
+   dentro del mismo @Transactional
+5. Endpoints para el entrenador:
+
+```
+GET /api/me/pokécoins — saldo actual + últimas 10 transacciones
+POST /api/reservations/{id}/apply-discount con body { coinsToRedeem: Int }
+```
+
+**Criterios de Aceptación:**
+
+- [ ] Test de integración: hacer checkout de reserva de 3 noches en habitación
+      SUITE -> usuario tiene exactamente 6 PokéCoins más (3 noches × 2)
+- [ ] Test de rollback: simular que awardCoinsForCompletedStay lanza excepción
+      -> el estado de la reserva sigue siendo CHECKED_IN (no quedó CHECKED_OUT
+      sin sus puntos)
+- [ ] No se pueden redimir menos de 20 PokéCoins (error 400 con mensaje claro)
+- [ ] El historial de transacciones muestra tanto la ganancia de la estadía como
+      el bono de suite como líneas separadas (trazabilidad completa)
+- [ ] Cancelación post check-in (CHECKED_IN -> CANCELLED) no resta los puntos
+      que ya se ganaron
+
+**Tiempo Estimado:** 6 horas **Insignia Ganada:** Efectos Secundarios
+Transaccionales
+
+---
+
 ## 🌱 FASE 4: GIMNASIO CELADON - "EL JARDÍN DE LOS TESTS"
 
 **Líder:** Erika (Maestra de la perfección) **Insignia:** Rainbow Badge 🌈
@@ -752,6 +1134,52 @@ bottlenecks.
 
 ---
 
+### Ejercicio 4.5: La Migración del Gran Hotel — Importación masiva desde CSV
+
+**Historia**: El Hotel Pokémon compra el edificio de al lado y necesita
+registrar 50 habitaciones nuevas de una sola vez. El GYM_LEADER tiene el
+inventario en un archivo CSV. No es razonable crear cada habitación de una en
+una desde el formulario. Erika advierte que si el proceso falla a mitad de la
+importación, no puede dejar 30 habitaciones creadas y 20 sin crear: el
+comportamiento ante errores debe ser predecible y documentado.
+
+**Qué enseña**: Subida de archivos con MultipartFile, procesamiento de CSV línea
+por línea, validación por fila con reporte de errores estructurado (fila 3:
+roomNumber inválido, fila 7: capacidad negativa), y el concepto de importación
+parcial con rollback selectivo. También toca el diseño de una respuesta de error
+que sea útil para quien sube el archivo.
+
+**Objetivo Técnico**: Implementar subida de archivos con MultipartFile,
+validación por fila con reporte estructurado de errores, y decisión consciente
+sobre estrategia ante errores parciales (todo-o-nada vs. mejores esfuerzo).
+
+**Desarrollo Esperado:**
+
+1. Definir el formato del CSV que acepta el sistema
+2. Crear los DTOs del resultado
+3. Implementar el controller con @RequestParam para el archivo
+4. Tests de la lógica de importación con diferentes escenarios
+
+**Criterios de Aceptación:**
+
+- [ ] CSV sin errores de 50 filas crea exactamente 50 habitaciones y devuelve
+      201 Created con { imported: 50, errors: [] }
+- [ ] CSV con 3 filas inválidas devuelve 422 Unprocessable Entity con los 3
+      errores detallados (número de fila, contenido, mensaje), y no crea ninguna
+      habitación
+- [ ] Archivo que no es CSV (ej: .xlsx) es rechazado con 400 Bad Request antes
+      de intentar procesarlo
+- [ ] Fila con roomNumber duplicado (ya existe en BD) se reporta como error en
+      el resultado, no como excepción de SQL sin procesar
+- [ ] El test de importación exitosa verifica que el número de habitaciones en
+      BD aumentó exactamente en n (usando assertThat(roomRepository.count())
+      antes y después)
+
+**Tiempo Estimado:** 6 horas **Insignia Ganada:** Procesamiento de Archivos y
+Manejo de Errores en Bulk
+
+---
+
 ## 🧪 FASE 5: GIMNASIO CINNABAR - "EL LABORATORIO DE DATOS"
 
 **Líder:** Blaine (Científico de datos) **Insignia:** Volcano Badge 🌋
@@ -886,6 +1314,115 @@ visualizar en Zipkin.
 - [ ] Trace ID se propaga a logs (misma ID en logs y en tracing)
 
 **Tiempo Estimado:** 6 horas **Insignia Ganada:** _Tracing Distribuido_
+
+---
+
+### Ejercicio 5.4: El Automatismo de la Pokéball — Tareas programadas
+
+**Historia**: Blaine muestra a Kai el problema de las "reservas fantasma":
+entrenadores que crean una reserva pero nunca la confirman. Esas reservas en
+estado PENDING bloquean habitaciones sin razón durante días. Además, las
+habitaciones en estado CLEANING deberían pasar a AVAILABLE automáticamente
+después de 2 horas. Nadie quiere hacerlo manualmente. Blaine quiere que el hotel
+se gestione solo mientras duerme.
+
+**Qué enseña**: @Scheduled con expresiones cron, manejo transaccional en tareas
+programadas, y por qué estas tareas necesitan sus propios logs estructurados (si
+falla a las 3am, ¿cómo lo sabes?). También toca el problema de ejecutar tareas
+programadas en múltiples instancias del servicio (el problema de la doble
+ejecución con ShedLock).
+
+**Objetivo Técnico**: Implementar tareas periódicas con @Scheduled, manejar
+correctamente las transacciones en tareas de fondo, y asegurarse de que los logs
+de estas tareas sean observables y rastreables.
+
+**Desarrollo Esperado:**
+
+1. Habilitar el soporte de tareas programadas
+2. Implementar las tareas en un componente dedicado
+3. El problema del ejecutor múltiple: si se despliegan 2 instancias del
+   servicio, ambas corren las tareas y pueden cancelar la misma reserva dos
+   veces. Introducir ShedLock para garantizar ejecución en un solo nodo
+4. Añadir métrica de Micrometer para monitorear la tarea
+5. Documentar en el README del proyecto cómo verificar que las tareas corren:
+
+```
+GET /actuator/scheduledtasks muestra las tareas registradas y su última
+ejecución
+```
+
+**Criterios de Aceptación:**
+
+- [ ] Reserva creada hace 25 horas en estado PENDING es cancelada en la
+      siguiente ejecución de la tarea (test de integración con TestContainers:
+      insertar reserva con createdAt manipulado)
+- [ ] Si una reserva individual falla al cancelarse, las demás siguen
+      procesándose (el try/catch dentro del forEach está ahí por una razón)
+- [ ] Los logs de cada ejecución incluyen cuántas reservas/habitaciones se
+      procesaron, incluso cuando el resultado es cero ("sin reservas vencidas")
+- [ ] GET /actuator/scheduledtasks muestra ambas tareas con su expresión cron y
+      la última ejecución
+- [ ] Test: ejecutar la tarea directamente desde el test (@Autowired el
+      componente y llamar el método) y verificar que el estado de los registros
+      en BD cambió como se esperaba
+
+**Tiempo Estimado:** 15 horas **Insignia Ganada:** Automatización y Tareas de
+Fondo
+
+---
+
+### Ejercicio 5.5: El Sistema de Alertas de la Pokédex — Webhooks a servicios externos
+
+**Historia**: El Hotel Pokémon firma un contrato con una app externa de
+mensajería para entrenadores. El acuerdo: cuando una reserva se confirma o
+cancela, el hotel hace un POST al endpoint de la app con los datos del evento.
+La app de mensajería no siempre está disponible. Blaine exige que si el primer
+intento falla, el sistema lo reintente automáticamente. Y si sigue fallando, que
+no se pierda el evento: que quede en la base de datos esperando el próximo
+intento.
+
+**Qué enseña**: WebClient de Spring para llamadas HTTP salientes (no
+bloqueantes), el patrón de reintentos con backoff exponencial (Resilience4j o
+RetryTemplate), y el problema de entrega garantizada: si el servicio externo
+está caído, ¿qué haces? Introduce la idea de una outbox table como solución
+simple: guardas el evento pendiente en BD y lo envías cuando el destino vuelve.
+Es el primer contacto con patrones de sistemas distribuidos, sin
+sobre-ingeniería.
+
+**Objetivo Técnico**: Implementar llamadas HTTP salientes con WebClient,
+reintentos con backoff exponencial, y el patrón Outbox para garantizar que
+ningún evento se pierde si el servicio externo está caído.
+
+**Desarrollo Esperado:**
+
+1. Crear la entidad OutboxEvent que guarda los eventos pendientes de enviar:
+2. Guardar el evento en la misma transacción que confirma la reserva
+3. Implementar WebhookDispatcherService con WebClient y reintentos
+4. Configurar el destino del webhook externamente (nunca hardcoded)
+5. Endpoint de administración para reintentar eventos fallidos manualmente:
+
+```
+POST /api/admin/outbox/{eventId}/retry (solo PROFESOR_OAK)
+GET /api/admin/outbox?status=FAILED — ver eventos que necesitan atención
+```
+
+**Criterios de Aceptación:**
+
+- [ ] Test de integración: confirmar reserva + simular endpoint externo caído
+      (WireMock) -> evento queda en BD con status=PENDING y attempts=1
+- [ ] En el intento 2, el endpoint externo responde 200 -> evento pasa a
+      status=SENT y no se reenvía en el siguiente ciclo
+- [ ] Después de 5 intentos fallidos, el evento pasa a status=FAILED y deja de
+      intentarse automáticamente (necesita intervención manual)
+- [ ] Si la confirmación de la reserva hace rollback por cualquier motivo, el
+      evento tampoco se guardó en la tabla outbox_events (la transacción
+      compartida garantiza esto)
+- [ ] GET /api/admin/outbox?status=FAILED muestra los eventos fallidos con el
+      mensaje de error del último intento, para que el equipo de soporte pueda
+      entender qué salió mal
+
+**Tiempo Estimado:** 12 horas **Insignia Ganada:** Integración Confiable con
+Servicios Externos
 
 ---
 
