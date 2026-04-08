@@ -101,6 +101,34 @@ crear relación One-to-Many bidireccional con Reservation.
 
 ---
 
+### Ejercicio 1.2.1: El Buscador del Profesor Oak — Filtrado dinámico con Specification
+
+**Historia**: El Profesor Oak recibe a diario docenas de entrenadores con
+requisitos muy distintos: uno quiere una habitación tipo Agua con capacidad para
+3, precio máximo de $150, disponible esta semana. Otro quiere cualquier suite
+con tema Mewtwo. El sistema necesita un endpoint de búsqueda que acepte
+cualquier combinación de filtros opcionales.
+
+**Qué enseña**: JPA Specification API (Criteria API). La idea central es que no
+puedes escribir un método de repositorio diferente para cada combinación posible
+de filtros. Specification te permite construir queries dinámicas componiendo
+predicados en tiempo de ejecución, sin JPQL manual.
+
+### Ejercicio 1.2.2: El Pokédex Paginado — Paginación avanzada y proyecciones
+
+**Historia**: El Profesor Oak pide un reporte de todas las reservas del mes con
+el nombre del entrenador, el número de habitación, el precio total y el estado.
+Son 10,000 registros. Traerlos todos a memoria de una sola vez no es una opción.
+
+**Qué enseña**: Pageable de Spring Data con soporte para ordenamiento dinámico
+(Sort), la diferencia entre Page (con count total) y Slice (sin count, más
+eficiente para scroll infinito), y las proyecciones JPA que permiten traer solo
+los campos necesarios en lugar de la entidad completa. Este último punto es
+importante: las proyecciones evitan el problema de cargar relaciones que no
+necesitas.
+
+---
+
 ### Ejercicio 1.3: Sistema de Reservas (Reservation Entity + Lógica de Negocio)
 
 **Historia:** Misty llega al hotel y quiere reservar la "Charizard Chamber" por
@@ -387,6 +415,21 @@ cuentas.
 
 ---
 
+### Ejercicio 2.5: El PC Box del Entrenador — Caché con Redis
+
+**Historia**: El catálogo de habitaciones disponibles se consulta cientos de
+veces por minuto. Cada consulta va a la base de datos aunque el catálogo cambia
+muy pocas veces al día. Lt. Surge detecta que esto es un desperdicio de recursos
+y pide a Kai que implemente caché.
+
+**Qué enseña**: Spring Cache abstraction (@Cacheable, @CacheEvict, @CachePut)
+con Redis como backend. La lección más valiosa es la invalidación del caché:
+cuando una habitación pasa a MAINTENANCE, el caché de disponibilidad debe
+invalidarse. Introduce también la diferencia entre caché de lectura y el riesgo
+de servir datos stale.
+
+---
+
 ## 🌊 FASE 3: GIMNASIO CERULEAN - "LA PRECISIÓN DEL AGUA"
 
 **Líder:** Misty (Perfeccionista) **Insignia:** Cascade Badge 🌊 **Duración
@@ -581,6 +624,68 @@ especificación JSON/YAML automáticamente.
 
 ---
 
+### Ejercicio 3.5: La Fila de Espera de Celadon — Waitlist de habitaciones
+
+**Historia**: La Charizard Chamber siempre está llena. Ash intenta reservarla
+pero está ocupada. En lugar de devolver solo un error, el sistema le ofrece
+unirse a la lista de espera. Cuando la reserva activa se cancela o termina, el
+sistema notifica automáticamente al siguiente en la fila.
+
+**Qué enseña**: ApplicationEventPublisher de Spring para eventos internos de
+dominio. Cuando una reserva cambia a CANCELLED o CHECKED_OUT, se publica un
+evento RoomAvailableEvent. Un listener separado consulta la waitlist y actúa.
+Introduce la idea de que la lógica de negocio no tiene que vivir junta en un
+solo servicio.
+
+---
+
+### Ejercicio 3.6: El Festival Pokémon — Precios dinámicos por temporada
+
+**Historia**: Brock le explica a Kai que durante el Festival Pokémon (temporada
+alta) los precios suben un 30%. Los fines de semana tienen un recargo del 10%.
+Una habitación ELITE_FOUR_SUITE nunca tiene descuento. El precio que ve el
+entrenador al reservar debe ser el precio real de esas fechas, no el precio base
+del catálogo.
+
+**Qué enseña**: El patrón Strategy aplicado a cálculo de precios. En lugar de
+una función monolítica con múltiples if, hay un PricingStrategy como interfaz
+con implementaciones: SeasonalPricing, WeekendPricing, BasePrice. Se componen
+mediante una cadena. También toca el manejo de BigDecimal para cálculos
+financieros correctos (sin Double).
+
+---
+
+### Ejercicio 3.7: El Diario del Investigador — Auditoría de cambios con Envers
+
+**Historia**: Un entrenador reclama que su reserva fue modificada sin su
+consentimiento. El Profesor Oak, como administrador, necesita saber quién cambió
+qué y cuándo. Sin auditoría, la respuesta es: "no tenemos forma de saberlo". Con
+auditoría, hay un historial completo.
+
+**Qué enseña**: Hibernate Envers para auditoría automática de entidades
+(@Audited). Crea tablas de historial automáticamente y permite consultar el
+estado de una entidad en cualquier punto del tiempo. También toca el concepto de
+"quién hizo el cambio" con AuditorAware de Spring Data para inyectar el usuario
+autenticado actual.
+
+---
+
+### Ejercicio 3.8:. Las Medallas del Entrenador — Sistema de puntos de lealtad
+
+**Historia**: Cada estadía completada (CHECKED_OUT) le suma PokéCoins al
+entrenador: 1 PokéCoin por cada noche, 2x si la habitación es SUITE o superior.
+Al acumular 10 PokéCoins, el entrenador puede aplicar un descuento del 15% en su
+siguiente reserva. Los puntos no se pierden si la reserva se cancela después del
+check-in.
+
+**Qué enseña**: Efectos secundarios transaccionales. Cuando una reserva completa
+su ciclo, el sistema debe actualizar los puntos del usuario en la misma
+transacción (para que no quede un estado inconsistente si algo falla en el
+camino). Introduce @Transactional con propagación, y la diferencia entre un
+"proceso de negocio" y un simple guardado de datos.
+
+---
+
 ## 🌱 FASE 4: GIMNASIO CELADON - "EL JARDÍN DE LOS TESTS"
 
 **Líder:** Erika (Maestra de la perfección) **Insignia:** Rainbow Badge 🌈
@@ -752,6 +857,21 @@ bottlenecks.
 
 ---
 
+### Ejercicio 4.5: La Migración del Gran Hotel — Importación masiva desde CSV
+
+**Historia**: El Hotel Pokémon compra el edificio de al lado y necesita
+registrar 50 habitaciones nuevas de una sola vez. El GYM_LEADER sube un archivo
+CSV con los datos y el sistema los valida, reporta errores por fila, y carga los
+que son válidos. Una fila con error no debe cancelar la importación completa.
+
+**Qué enseña**: Subida de archivos con MultipartFile, procesamiento de CSV línea
+por línea, validación por fila con reporte de errores estructurado (fila 3:
+roomNumber inválido, fila 7: capacidad negativa), y el concepto de importación
+parcial con rollback selectivo. También toca el diseño de una respuesta de error
+que sea útil para quien sube el archivo.
+
+---
+
 ## 🧪 FASE 5: GIMNASIO CINNABAR - "EL LABORATORIO DE DATOS"
 
 **Líder:** Blaine (Científico de datos) **Insignia:** Volcano Badge 🌋
@@ -886,6 +1006,38 @@ visualizar en Zipkin.
 - [ ] Trace ID se propaga a logs (misma ID en logs y en tracing)
 
 **Tiempo Estimado:** 6 horas **Insignia Ganada:** _Tracing Distribuido_
+
+---
+
+### Ejercicio 5.4: El Automatismo de la Pokéball — Tareas programadas
+
+**Historia**: Las reservas en estado PENDING que nadie confirmó en 24 horas
+bloquean habitaciones sin razón. Las habitaciones en CLEANING deberían pasar a
+AVAILABLE automáticamente después de 2 horas. Blaine quiere que el hotel se
+maneje solo mientras duerme.
+
+**Qué enseña**: @Scheduled con expresiones cron, manejo transaccional en tareas
+programadas, y por qué estas tareas necesitan sus propios logs estructurados (si
+falla a las 3am, ¿cómo lo sabes?). También toca el problema de ejecutar tareas
+programadas en múltiples instancias del servicio (el problema de la doble
+ejecución con ShedLock).
+
+---
+
+### Ejercicio 5.5: El Sistema de Alertas de la Pokédex — Webhooks a servicios externos
+
+**Historia**: El hotel quiere notificar a una app externa (por ejemplo, el
+sistema de mensajería de los entrenadores) cada vez que una reserva se confirma
+o cancela. El sistema externo tiene un endpoint que recibe un POST. Si falla, el
+hotel debe reintentar sin perder la notificación.
+
+**Qué enseña**: WebClient de Spring para llamadas HTTP salientes (no
+bloqueantes), el patrón de reintentos con backoff exponencial (Resilience4j o
+RetryTemplate), y el problema de entrega garantizada: si el servicio externo
+está caído, ¿qué haces? Introduce la idea de una outbox table como solución
+simple: guardas el evento pendiente en BD y lo envías cuando el destino vuelve.
+Es el primer contacto con patrones de sistemas distribuidos, sin
+sobre-ingeniería.
 
 ---
 
