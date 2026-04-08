@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -c \"import sys,json; d=json.load(sys.stdin); f=d.get('tool_input',{}).get('file_path',''); sys.exit(0 if f.endswith('.kt') else 1)\" && make format 2>/dev/null || true",
+            "timeout": 120,
+            "statusMessage": "Formateando Kotlin (KTLint + Detekt)..."
+          }
+        ]
+      }
+    ]
+  }
+}

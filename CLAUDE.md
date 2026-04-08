@@ -4,89 +4,112 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A Spring Boot + Kotlin REST API course project simulating a hotel management platform. Built with Hexagonal Architecture (Ports & Adapters) following Clean Architecture and DDD principles. Java 21, Kotlin, Spring Boot 4.x, PostgreSQL (prod) / H2 (dev/test).
+A Spring Boot + Kotlin REST API course project simulating a hotel management platform. Built with **MVC organized by feature** (Screaming Architecture), migrating away from Hexagonal Architecture. Java 21, Kotlin, Spring Boot 4.x, PostgreSQL (prod) / H2 (dev/test).
 
 ## Common Commands
 
+Use `make <target>` for all common tasks (see `make help` for the full list):
+
 ```bash
 # Build
-./gradlew clean build
+make build          # clean + compile + assemble
+make compile        # compile only (no tests, no clean)
 
-# Run (uses 'dev' profile by default)
-./gradlew bootRun
+# Run
+make run            # perfil dev (default)
+make run-dev        # perfil dev explícito
+make run-prod       # perfil prod
 
-# Run with explicit profile
-./gradlew bootRun --args='--spring.profiles.active=dev'
+# Tests
+make test                              # todos los tests
+make test-class CLASS=HotelServiceTest # una clase específica
+make coverage                          # tests + reporte JaCoCo (build/reports/jacoco/)
+make coverage-check                    # verifica umbral del 85%
 
-# Run all tests
-./gradlew test
+# Calidad de código
+make lint           # KTLint check + Detekt (solo verifica)
+make format         # KTLint format + Detekt autoCorrect (aplica correcciones)
+make fix            # alias de format
+make quality        # gate completo: lint + tests + cobertura
 
-# Run a single test class
-./gradlew test --tests "com.lgzarturo.springbootcourse.hotels.service.HotelServiceTest"
+# Base de datos
+make ddl                               # genera build/schema-create.sql desde entidades JPA
+make create-migration VER=2 DESC="add_users"
+make migrate DESC="add_users_table"    # usa el script de migración automática
 
-# Run tests with coverage report (output: build/reports/jacoco/test/html/index.html)
-./gradlew jacocoTestReport
+# Docker
+make docker-up      # levanta servicios (BD)
+make docker-down    # detiene servicios
+make docker-logs    # logs de contenedores
 
-# Lint and static analysis
-./gradlew checkCodeStyle      # runs ktlintCheck + detekt
-./gradlew formatCode          # auto-fix with ktlintFormat + detektAutoCorrect
-./gradlew fixAll              # alias for formatCode
-
-# Full quality gate (lint + tests + coverage)
-./gradlew codeQuality
-
-# Database migrations
-./gradlew generateDDL         # generates build/schema-create.sql from JPA entities
-./gradlew createMigration -Pmigration_version=2 -Pdescription="add_users"
+# Atajos
+make ci             # simula pipeline CI completo (build + quality)
+make setup          # configura entorno local (.env + docker-up)
+make reset          # limpia build artifacts y detiene Docker
 ```
+
+> Los comandos `make` llaman a las tareas de Gradle correspondientes. Si necesitas invocar Gradle directamente,
+> usa `./gradlew <task>` en Linux/Mac o `gradlew <task>` en Windows.
 
 ## Architecture
 
-The codebase is organized **by domain module** first, then by layer within each module. Each domain (e.g., `hotels`, `ping`, `users`, `example`) follows this internal structure:
+The codebase uses **MVC organized by feature** (Screaming Architecture). Each feature is a self-contained
+package grouping all its layers. The top-level structure reflects the domain, not the technical layer.
 
 ```
-<domain>/
-├── adapters/
-│   ├── persistence/        # JPA entities, Spring Data repositories, repository adapters
-│   │   └── entity/
-│   └── rest/               # Spring MVC controllers, DTOs (request/response), mappers
-│       └── dto/
-├── application/
-│   └── ports/
-│       ├── input/          # Use case interfaces (what the domain exposes)
-│       └── output/         # Repository port interfaces (what the domain needs)
-├── domain/                 # Pure domain models, value objects, domain exceptions
-├── config/                 # Spring @Configuration beans specific to this domain
-└── service/                # Use case implementations
+src/main/kotlin/com/lgzarturo/springbootcourse/
+├── SpringbootCourseApplication.kt
+├── config/                   # Infraestructura transversal (CORS, OpenAPI, Security)
+├── common/                   # Componentes reutilizables (errores, paginación, extensiones)
+└── features/                 # Cada feature es autocontenida
+    ├── hotels/
+    │   ├── HotelController.kt        # @RestController — capa HTTP
+    │   ├── HotelService.kt           # @Service — lógica de negocio
+    │   ├── HotelJpaRepository.kt     # @Repository — Spring Data JPA
+    │   ├── HotelEntity.kt            # @Entity — modelo de persistencia JPA
+    │   ├── Hotel.kt                  # Modelo de dominio (Kotlin puro, sin anotaciones Spring)
+    │   ├── HotelServiceConfig.kt     # @Configuration beans específicos de esta feature
+    │   └── dto/
+    │       ├── CreateHotelRequest.kt
+    │       ├── UpdateHotelRequest.kt
+    │       └── HotelResponse.kt
+    ├── ping/                         # Ejemplo canónico de TDD
+    ├── users/                        # Gestión de usuarios con value objects
+    ├── rooms/                        # Habitaciones del hotel
+    └── examples/                     # Implementación de referencia con patrón hexagonal completo
 ```
 
-Global cross-cutting code lives in `shared/` (config, exception handling, extensions, constants).
+**Regla de oro:** máximo 2 niveles de anidación dentro de una feature. `hotels/dto/` es el límite.
+Si se necesitan más niveles, la feature es demasiado grande y debe dividirse.
 
 ### Key Architectural Rules
 
-- **Domain layer has zero Spring/JPA dependencies** — pure Kotlin classes only.
-- **Controllers depend on use case ports** (`*UseCasePort`), never on services directly.
-- **Services implement use case ports** and depend on repository ports.
-- **JPA entities are separate from domain models**; persistence adapters translate between them using mappers.
-- **DTOs are never passed into the domain** — controllers map DTOs → domain before calling use cases.
+- **Controllers → Services → Repositories**: flujo MVC clásico. Los controllers no acceden al repositorio directamente.
+- **Features son autocontenidas**: no hay imports cruzados entre features. La comunicación entre features
+  va a través de `common/` o mediante eventos de Spring.
+- **El modelo de dominio es Kotlin puro**: `Hotel.kt` no tiene `@Entity` ni dependencias de Spring.
+  `HotelEntity.kt` es el objeto JPA que el servicio traduce hacia/desde el dominio.
+- **DTOs no entran al servicio como DTOs**: el controller mapea Request → dominio antes de llamar al servicio.
+- **La feature `examples/`** mantiene el patrón hexagonal completo (puertos, adaptadores) como referencia
+  de cómo se construía antes. No replicar ese patrón en features nuevas.
 
-### Active Domains
+### Active Features
 
-- `ping` — simple health/ping endpoints, the canonical TDD example
-- `hotels` — hotel CRUD with search/pagination (most complete example)
-- `rooms` — hotel rooms (persistence entities defined, domain in progress)
-- `users` — user management with value objects (`Email`, `Password`, `PhoneNumber`, `UserId`)
-- `example` — reference CRUD implementation with full adapter stack
-- `cart`, `gamification`, `payments`, `pokemon`, `reservations`, `reviews`, `services` — stubs/placeholders (`PackageInfo.kt` only)
+- `ping` — health/ping endpoints, ejemplo canónico de TDD en el proyecto
+- `hotels` — CRUD completo con búsqueda paginada (ejemplo MVC más completo)
+- `rooms` — habitaciones (entidades JPA definidas, servicio en progreso)
+- `users` — gestión de usuarios con value objects (`Email`, `Password`, `PhoneNumber`, `UserId`)
+- `examples` — referencia de implementación hexagonal (no replicar en features nuevas)
+- `cart`, `gamification`, `payments`, `pokemon`, `reservations`, `reviews`, `services` — stubs (`PackageInfo.kt` only)
 
 ## Profiles
 
-| Profile | Database | Purpose |
-|---------|----------|---------|
-| `dev` | H2 in-memory + H2 console enabled | Local development (default) |
-| `test` | H2 (E2E) or Testcontainers PostgreSQL (integration, Docker required) | Tests |
-| `prod` | PostgreSQL via env vars | Production |
-| `generate-ddl` | H2, Flyway disabled | DDL generation from JPA entities |
+| Profile        | Database                                                             | Purpose                          |
+|----------------|----------------------------------------------------------------------|----------------------------------|
+| `dev`          | H2 in-memory + H2 console enabled                                    | Local development (default)      |
+| `test`         | H2 (E2E) or Testcontainers PostgreSQL (integration, Docker required) | Tests                            |
+| `prod`         | PostgreSQL via env vars                                              | Production                       |
+| `generate-ddl` | H2, Flyway disabled                                                  | DDL generation from JPA entities |
 
 ## Testing Strategy
 
@@ -125,18 +148,35 @@ Breaking changes: add `BREAKING CHANGE:` footer or `!` after type (`feat!:`).
 
 ## Naming Conventions
 
-- Controllers: `*Controller.kt`
-- Use case ports: `*UseCasePort.kt`
-- Repository ports: `*RepositoryPort.kt`
-- Services: `*Service.kt`
-- DTOs: `*Request.kt`, `*Response.kt`
-- Mappers: `*Mapper.kt`
-- JPA repositories: `*JpaRepository.kt`
-- JPA entities: no suffix (e.g., `HotelEntity.kt`)
+| Artefacto            | Convención                    | Ejemplo                      |
+|----------------------|-------------------------------|------------------------------|
+| Controller           | `*Controller.kt`              | `HotelController.kt`         |
+| Service              | `*Service.kt`                 | `HotelService.kt`            |
+| Spring Data repo     | `*JpaRepository.kt`           | `HotelJpaRepository.kt`      |
+| JPA entity           | `*Entity.kt`                  | `HotelEntity.kt`             |
+| Domain model         | sin sufijo                    | `Hotel.kt`                   |
+| DTO entrada          | `*Request.kt`                 | `CreateHotelRequest.kt`      |
+| DTO salida           | `*Response.kt`                | `HotelResponse.kt`           |
+| Mapper               | `*Mapper.kt`                  | `HotelMapper.kt`             |
+| Value object         | en subpaquete `valueobjects/` | `Email.kt`, `Password.kt`    |
+| Config específica    | `*ServiceConfig.kt`           | `HotelServiceConfig.kt`      |
+| Excepción de dominio | `*Exception.kt`               | `DuplicateEmailException.kt` |
 
 ## Code Quality
 
-- **KTLint 1.7.1** — enforces formatting; run `./gradlew ktlintFormat` to auto-fix
-- **Detekt 1.23.8** — static analysis; config at `config/detekt/detekt.yml`; `autoCorrect = true` is enabled
-- **JaCoCo** — 85% coverage minimum enforced by `jacocoTestCoverageVerification`
-- Lint reports: `build/reports/ktlint/` and `build/reports/detekt/`
+| Herramienta | Versión                       | Propósito                      | Comando               |
+|-------------|-------------------------------|--------------------------------|-----------------------|
+| **KTLint**  | 1.7.1 (plugin Gradle: 14.1.0) | Formateo consistente de Kotlin | `make format`         |
+| **Detekt**  | 2.0.0-alpha.1 (`dev.detekt`)  | Análisis estático, code smells | `make lint`           |
+| **JaCoCo**  | (managed by Spring Boot BOM)  | Cobertura de código ≥ 85%      | `make coverage-check` |
+
+- Configuración de Detekt: `config/detekt/detekt.yml` con `autoCorrect = true`
+- Reportes de KTLint: `build/reports/ktlint/`
+- Reportes de Detekt: `build/reports/detekt/` (HTML + SARIF)
+- Reporte de JaCoCo: `build/reports/jacoco/test/html/index.html`
+
+```bash
+make lint     # solo verifica — no modifica archivos
+make format   # aplica correcciones automáticas de KTLint y Detekt
+make quality  # gate completo: lint + tests + cobertura (equivale a CI local)
+```
