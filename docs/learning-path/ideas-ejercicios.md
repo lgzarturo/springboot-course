@@ -1,1242 +1,1017 @@
-# Sistema Pokémon Hotelero - Guía de Ejercicios
+# Sistema Pokémon Hotelero — Ejercicios Complementarios
 
 ## Índice
 
-1. [Visión General del Sistema](#1-visión-general-del-sistema)
-2. [Entidades y Relaciones](#2-entidades-y-relaciones)
-3. [Nivel 1: Fundamentos (CRUD Básico)](#3-nivel-1-fundamentos-crud-básico)
-4. [Nivel 2: Core de Negocio (Reservas y Usuarios)](#4-nivel-2-core-de-negocio-reservas-y-usuarios)
-5. [Nivel 3: Funcionalidades Avanzadas (Pokémon, Tours y Pagos)](#5-nivel-3-funcionalidades-avanzadas-pokémon-tours-y-pagos)
-6. [Nivel 4: Casos de Uso Integrados](#6-nivel-4-casos-de-uso-integrados)
-7. [Roadmap de Implementación](#7-roadmap-de-implementación)
-8. [Recursos y Referencias](#8-recursos-y-referencias)
+1. [Propósito de este Documento](#1-propósito-de-este-documento)
+2. [Mapa de Entidades y Relaciones](#2-mapa-de-entidades-y-relaciones)
+3. [Fase 1 — Pewter: Módulos de Persistencia Pendientes](#3-fase-1--pewter-módulos-de-persistencia-pendientes)
+4. [Fase 2 — Vermilion: Seguridad para Módulos Adicionales](#4-fase-2--vermilion-seguridad-para-módulos-adicionales)
+5. [Fase 3 — Cerulean: Validaciones en Módulos Pendientes](#5-fase-3--cerulean-validaciones-en-módulos-pendientes)
+6. [Fase 4 — Celadon: Testing por Capa](#6-fase-4--celadon-testing-por-capa)
+7. [Fase 5 — Cinnabar: Estadísticas y Automatización](#7-fase-5--cinnabar-estadísticas-y-automatización)
+8. [Fase 6 — Viridian: Configuración Avanzada de Producción](#8-fase-6--viridian-configuración-avanzada-de-producción)
+9. [Módulos Integradores para la Liga Pokémon](#9-módulos-integradores-para-la-liga-pokémon)
+10. [Tabla Resumen](#10-tabla-resumen)
 
 ---
 
-## 1. Visión General del Sistema
+## 1. Propósito de este Documento
 
-### Objetivo
+Este documento es un complemento al [Roadmap de Ejercicios](exercises-roadmap.md). El roadmap construye el
+sistema usando las reservas y habitaciones como hilo conductor, pero deja como stubs varios módulos del Hotel
+Pokémon: `amenities`, `tours`, `pokemon`, `payments`, `reviews`, `cart` y `gamification`.
 
-Crear un sistema integrado de **hotelería + Pokémon** usando **Spring Boot +
-Kotlin** que permita:
+**Este documento propone ejercicios para:**
 
-- **Administradores de hoteles**: Gestionar hoteles, habitaciones, amenities,
-  reservas y servicios.
-- **Entrenadores Pokémon**: Buscar hoteles, realizar reservas, explorar tours,
-  capturar Pokémon y dejar reseñas.
+1. **Completar los módulos stub** con el mismo nivel de cuidado que el roadmap principal
+2. **Ofrecer variantes de menor complejidad** que sirven como calentamiento antes de los ejercicios avanzados
+   del roadmap
+3. **Plantear escenarios de integración** entre módulos que el roadmap no cubre directamente
 
-### Arquitectura de Alto Nivel
+**Cómo usar este documento:**
+- Trabaja en paralelo: termina la Fase N del roadmap, luego practica con los ejercicios de la Fase N de aquí
+- O úsalos al terminar el roadmap completo, como desafíos de consolidación
+- Cada ejercicio tiene marcador de complejidad: ★ (básico) a ★★★★ (avanzado)
+
+---
+
+## 2. Mapa de Entidades y Relaciones
+
+El Hotel Pokémon maneja las siguientes entidades. Los módulos marcados con 🚧 son los que el roadmap deja
+como stub y este documento propone completar.
+
+### Entidades de Hotelería
+
+| Entidad       | Atributos Clave                                                                   | Estado en Roadmap |
+|---------------|-----------------------------------------------------------------------------------|-------------------|
+| `User`        | `id`, `email`, `password`, `role` (TRAINER/GYM_LEADER/PROFESOR_OAK)               | ✅ Cubierto        |
+| `Hotel`       | `id`, `name`, `address`, `city`, `category` (ECONOMIC/STANDARD/LUXURY)            | ✅ Cubierto        |
+| `Room`        | `id`, `roomNumber`, `type`, `pricePerNight`, `capacity`, `status`, `pokemonTheme` | ✅ Cubierto        |
+| `Reservation` | `id`, `checkInDate`, `checkOutDate`, `status`, `totalPrice`                       | ✅ Cubierto        |
+| `Amenity`     | `id`, `name`, `description`, `category`                                           | 🚧 Stub           |
+| `Tour`        | `id`, `name`, `location`, `price`, `durationMinutes`, `capacity`                  | 🚧 Stub           |
+| `Payment`     | `id`, `amount`, `method`, `status`, `transactionReference`                        | 🚧 Stub           |
+| `Review`      | `id`, `rating` (1-5), `comment`, `date`                                           | 🚧 Stub           |
+
+### Entidades Pokémon
+
+| Entidad       | Atributos Clave                                                                     | Estado en Roadmap |
+|---------------|-------------------------------------------------------------------------------------|-------------------|
+| `Pokemon`     | `id`, `nickname`, `species`, `type`, `level`, `specialNeeds`, `isActive`            | 🚧 Stub           |
+| `TrainerCard` | `id`, `userId`, `trainerSince`, `badgesEarned`, `totalStays`                        | 🚧 Stub           |
+
+### Relaciones Clave
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    API REST (Kotlin)                    │
-├─────────────────────────────────────────────────────────┤
-│  HotelModule │ ReservationModule │ PokemonModule      │
-├─────────────────────────────────────────────────────────┤
-│              Spring Data JPA (Hibernate)                │
-├─────────────────────────────────────────────────────────┤
-│     PostgreSQL / H2    │    JWT Security               │
-└─────────────────────────────────────────────────────────┘
+Hotel ──< Room ──< Reservation >── User
+Hotel >──< Amenity  (via HotelAmenity con costo extra)
+Hotel ──< Tour ──< TourSchedule ──< TourBooking >── User
+User ──< Pokemon
+Reservation ──< Payment
+Reservation >── Review
 ```
 
 ---
 
-## 2. Entidades y Relaciones
+## 3. Fase 1 — Pewter: Módulos de Persistencia Pendientes
 
-### Diagrama Entidad-Relación
-
-```
-
-┌─────────┐ ┌─────────┐ ┌───────────┐ │ User │────<│ Trainer │────<│ Pokemon │ │
-(auth) │ │ (role) │ │ (captura) │ └────┬────┘ └────┬────┘ └───────────┘ │ │ │
-┌─────┴─────┐ │ │ │ ▼ ▼ ▼ ┌─────────┐ ┌──────────┐ ┌───────────┐ │ Payment │
-│Reservation│ │TrainingSession └────┬────┘ └────┬─────┘ └───────────┘ │ │ │ ▼ │
-┌───────────┐ ┌─────────┐ └─────>│ Room │────>│ Hotel │ └───────────┘
-└────┬────┘ │ ┌──────────────┼──────────────┐ ▼ ▼ ▼ ┌─────────┐ ┌─────────┐
-┌─────────┐ │ Review │ │ Service │ │ Amenity │ └─────────┘ └─────────┘
-└─────────┘
-
-```
-
-### Diccionario de Entidades
-
-| Entidad       | Atributos Clave                                                     | Descripción                               |
-| ------------- | ------------------------------------------------------------------- | ----------------------------------------- |
-| `User`        | `id`, `email`, `password`, `role` (ADMIN/TRAINER)                   | Usuario autenticable del sistema          |
-| `Hotel`       | `id`, `name`, `address`, `city`, `category`                         | Establecimiento hotelero                  |
-| `Room`        | `id`, `number`, `type`, `price`, `available`                        | Habitación dentro de un hotel             |
-| `Amenity`     | `id`, `name`, `description`                                         | Servicios del hotel (WiFi, piscina, etc.) |
-| `Reservation` | `id`, `checkIn`, `checkOut`, `status` (PENDING/CONFIRMED/CANCELLED) | Reserva de habitación                     |
-| `Payment`     | `id`, `amount`, `method`, `status`                                  | Transacción de pago                       |
-| `Pokemon`     | `id`, `name`, `type`, `level`, `rarity`                             | Pokémon descubrible en tours              |
-| `Trainer`     | `id`, `userId`, `experience`, `capturedPokemon`[]                   | Perfil de entrenador                      |
-| `Review`      | `id`, `rating` (1-5), `comment`, `date`                             | Reseña de hotel                           |
-| `Tour`        | `id`, `name`, `location`, `price`, `duration`                       | Servicio de exploración                   |
+> Realiza estos ejercicios después de completar los Ejercicios 1.1 a 1.4 del Roadmap.
+> Brock ya te enseñó los fundamentos. Ahora aplica el mismo patrón a módulos que el hotel necesita
+> urgentemente.
 
 ---
 
-## 3. Nivel 1: Fundamentos (CRUD Básico)
+### 3.1 La Biblioteca de Servicios — Módulo de Amenidades ★★
 
-### Ejercicio 1.1: Mapeo JPA de Entidades Core
+**Historia**: El Profesor Oak revisó el sistema y notó que todos los hoteles dicen tener "WiFi y piscina" en
+el campo `description`, en texto libre. El GYM_LEADER no puede buscar hoteles por amenidad específica, ni
+saber cuántos hoteles ofrecen spa. Brock pide que las amenidades sean entidades propias con relación
+Many-to-Many a `Hotel`.
 
-**Complejidad**: ⭐⭐ (Básico)
+**Objetivo Técnico**: Implementar el módulo `Amenity` completo con relación Many-to-Many a `Hotel`,
+incluyendo tabla intermedia explícita y CRUD básico. Usar el patrón Port-Adapter del módulo de habitaciones.
 
-Implementa las entidades base con sus relaciones JPA:
+**Desarrollo Esperado:**
 
-```kotlin
-@Entity
-@Table(name = "hotels")
-data class Hotel(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+1. Entidad `Amenity` (catálogo global):
+   - `name`: String único (ej: "WiFi", "Piscina Olímpica", "Centro Pokémon de Guardia")
+   - `description`: String nullable
+   - Enum `AmenityCategory`: CONNECTIVITY, WELLNESS, POKEMON_SERVICES, FOOD, ENTERTAINMENT
+   - `available`: Boolean (soft-disable sin borrar registros)
+2. Entidad intermedia `HotelAmenity` (relación Many-to-Many con atributos extra):
+   - Campos: `included` (Boolean — si está en el precio base o es cargo extra), `extraCost` (BigDecimal nullable)
+   - No usar `@ManyToMany` directamente; modelar `HotelAmenity` como entidad propia con su PK compuesta
+3. Migración `V5__create_amenities.sql`
+4. Repositorio `AmenityRepository` con:
+   - `findByCategoryAndAvailableTrue(category: AmenityCategory): List<Amenity>`
+   - `findByHotelId(hotelId: Long): List<HotelAmenity>` (con sus costos)
+5. Endpoints REST (GYM_LEADER y PROFESOR_OAK para escritura, público para lectura):
+   - `GET /api/amenities` — catálogo completo paginado
+   - `POST /api/amenities` — crear amenidad en el catálogo
+   - `POST /api/hotels/{id}/amenities` — asignar amenidad a hotel con su costo
+   - `DELETE /api/hotels/{id}/amenities/{amenityId}` — desasignar amenidad del hotel
 
-    @Column(nullable = false)
-    val name: String,
+**Criterios de Aceptación:**
 
-    @Column(nullable = false)
-    val city: String,
+- [ ] La tabla `hotel_amenities` tiene foreign keys a `hotels` y `amenities` con constraint UNIQUE (hotel_id,
+      amenity_id)
+- [ ] `GET /api/hotels/{id}` ahora incluye lista de amenidades con sus costos en la respuesta
+- [ ] No se puede asignar la misma amenidad dos veces al mismo hotel (409 Conflict con mensaje claro)
+- [ ] Soft-delete de amenidad (`available=false`) no borra registros en `hotel_amenities`
+- [ ] Test de integración: crear hotel, crear 3 amenidades, asignar 2 de ellas, verificar que
+      `findByHotelId` devuelve exactamente 2
 
-    @Column(nullable = false)
-    val address: String,
-
-    @Enumerated(EnumType.STRING)
-    val category: HotelCategory = HotelCategory.STANDARD
-) {
-    enum class HotelCategory { ECONOMIC, STANDARD, LUXURY }
-}
-
-@Entity
-@Table(name = "rooms")
-data class Room(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
-
-    @Column(nullable = false)
-    val number: String,
-
-    @Column(nullable = false)
-    val pricePerNight: BigDecimal,
-
-    @Column(nullable = false)
-    val capacity: Int,
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hotel_id")
-    val hotel: Hotel,
-
-    @OneToMany(mappedBy = "room", cascade = [CascadeType.ALL])
-    val reservations: MutableList<Reservation> = mutableListOf()
-)
-```
-
-**Criterios de Aceptación**:
-
-- [ ] Todas las entidades tienen `@Entity` y `@Table`
-- [ ] IDs son auto-generados
-- [ ] Relaciones `@ManyToOne` y `@OneToMany` están correctamente mapeadas
-- [ ] Campos obligatorios tienen `@Column(nullable = false)`
+**Tiempo Estimado:** 5 horas | **Complejidad:** ★★
 
 ---
 
-### Ejercicio 1.2: Repositorios Spring Data
+### 3.2 El Safari Zone — Módulo de Tours Pokémon ★★★
 
-**Complejidad**: ⭐⭐ (Básico)
+**Historia**: Los entrenadores preguntan todos los días si pueden salir a explorar. Brock decide formalizar
+esto: el hotel ofrece "Tours del Safari Zone" con horarios fijos, capacidad limitada y tipos de Pokémon
+visibles en cada recorrido. Un entrenador puede reservar un tour igual que reserva una habitación, pero con
+reglas distintas: la capacidad se gestiona por slots, no por habitaciones.
 
-Crea repositorios con consultas derivadas y personalizadas:
+**Objetivo Técnico**: Implementar el módulo `Tour` con entidades `TourSchedule` (fecha y hora concreta de un
+recorrido) y `TourBooking` (reserva de plaza). Usar `@Version` para optimistic locking en la gestión de
+slots disponibles.
 
-````kotlin
-@Repository
-interface HotelRepository : JpaRepository<Hotel, Long> {
-    // Consulta derivada del nombre
-    fun findByCityIgnoreOrderByName(city: String): List<Hotel>
+**Desarrollo Esperado:**
 
-    // Consulta con JPQL
-    @Query("SELECT h FROM Hotel h WHERE h.category = :category AND SIZE(h.rooms) >= :minRooms")
-    fun findByCategoryWithMinRooms(
-        @Param("category") category: HotelCategory,
-        @Param("minRooms") minRooms: Int
-    ): List<Hotel>
+1. Entidad `Tour` (catálogo de recorridos del hotel):
+   - `name`: "Safari Zone Express", "Tour Nocturno de Gengar", "Expedición al Monte Pelado"
+   - `description`, `location` (zona del hotel)
+   - `basePrice`: BigDecimal
+   - `durationMinutes`: Int
+   - `maxCapacity`: Int (máximo de participantes por horario)
+   - Lista `availablePokemonTypes`: @ElementCollection de PokemonType
+   - Relación Many-to-One con `Hotel`
+2. Entidad `TourSchedule` (ocurrencia concreta del tour):
+   - `scheduledAt`: LocalDateTime
+   - `availableSlots`: Int con `@Version` para optimistic locking
+   - Enum `ScheduleStatus`: OPEN, FULL, CANCELLED, COMPLETED
+   - Relación Many-to-One con `Tour`
+3. Entidad `TourBooking` (el entrenador reserva una plaza):
+   - Relación Many-to-One con `TourSchedule` y con `User`
+   - `numberOfParticipants`: Int (puede ir acompañado)
+   - Enum `BookingStatus`: CONFIRMED, CANCELLED
+4. Migración `V6__create_tours.sql`
+5. Lógica de negocio en `TourService`:
+   - Al crear `TourBooking`, decrementar `availableSlots` y validar que no sea negativo
+   - Al cancelar `TourBooking`, devolver los slots al `TourSchedule`
+   - Cuando `availableSlots == 0`, cambiar `ScheduleStatus` a FULL automáticamente
+6. Endpoints:
+   - `GET /api/hotels/{id}/tours` — catálogo de tours del hotel (público)
+   - `GET /api/tours/{id}/schedules` — próximos horarios disponibles (público)
+   - `POST /api/tours/schedules/{scheduleId}/book` — reservar plaza (TRAINER autenticado)
+   - `DELETE /api/tours/bookings/{bookingId}` — cancelar reserva de tour (dueño o GYM_LEADER)
 
-    // Consulta nativa para búsqueda compleja
-    @Query(
-        value = """
-            SELECT h.* FROM hotels h
-            JOIN rooms r ON h.id = r.hotel_id
-            WHERE r.price_per_night BETWEEN :minPrice AND :maxPrice
-            AND r.available = true
-            GROUP BY h.id
-        """,
-        nativeQuery = true
-  - Crear una entidad `Payment` con información del pago realizado (fecha, hora,
-    monto, método).
-  - Implementar la lógica para registrar pagos.
-  - **Casos de Uso:**
-    1.  `POST /payments`: Crear un nuevo pago.
-    2.  `GET /payments/:id`: Obtener detalles de un pago.
+**Criterios de Aceptación:**
 
-**4. Gestión del Hotel:**
+- [ ] Intentar reservar más plazas de las disponibles devuelve 409 con los slots disponibles actuales
+- [ ] `availableSlots` se actualiza correctamente al reservar y al cancelar (test de integración)
+- [ ] Dos threads intentan reservar los últimos 2 slots simultáneamente: solo uno lo logra
+      (`@Version` garantiza la consistencia)
+- [ ] Tour con `ScheduleStatus=FULL` no aparece en el listado de horarios disponibles
+- [ ] Test: tour con capacidad 5, tres bookings de 2 plazas cada uno — el tercero devuelve 409
 
-- **Ejercicio 8: Agregar y Gestionar Hoteles:**
-  - Crear una entidad `Hotel` con nombre, ubicación, tipo, precio.
-  - Implementar la lógica para agregar, modificar y eliminar hoteles.
-  - **Casos de Uso:**
-    1.  `POST /hotels`: Agregar un nuevo hotel.
-    2.  `GET /hotels/:id`: Obtener detalles de un hotel.
-    3.  `PUT /hotels/:id`: Modificar datos de un hotel.
-
-**5. Funcionalidades Avanzadas (Para futuras iteraciones):**
-
-- **Ejercicio 9: Sistema de Recomendación Pokémon:**
-  - Implementar un sistema simple para recomendar Pokémon a los usuarios en
-    función de sus preferencias y las estadísticas de los Pokémon que ya han
-    visitado el hotel. Esto se podría hacer con algoritmos básicos (por ejemplo,
-    filtrado colaborativo).
-- **Ejercicio 10: Integración con API Externas:**
-  - Integrar con una API externa (por ejemplo, para obtener información sobre
-    eventos deportivos o culturales) y usarla para personalizar la experiencia
-    del usuario.
-
-**Consideraciones Adicionales:**
-
-- **Diseño de la Base de Datos:** Considera el uso de un ORM como Spring Data
-  JPA para facilitar las operaciones de acceso a los datos.
-- **Testing:** Escribe pruebas unitarias, de integración y de unidad para
-  asegurar que tu sistema funcione correctamente.
-- **Seguridad:** Implementa medidas de seguridad para proteger tu sistema contra
-  ataques (por ejemplo, validación de entradas, protección contra inyección
-  SQL).
-
-**Herramientas Recomendadas:**
-
-- **Spring Boot:** Framework para construir aplicaciones Spring.
-- **Kotlin:** Lenguaje de programación moderno para Kotlin.
-- **Spring Data JPA:** Framework para acceder a la base de datos (dependiendo
-  del tipo de base de datos que uses).
-- **Postman/Insomnia:** Herramientas para probar tu API.
+**Tiempo Estimado:** 8 horas | **Complejidad:** ★★★
 
 ---
 
-¡Excelente idea! Tu proyecto combina **hotelería** con el universo **Pokémon**,
-creando una experiencia única donde los _trainers_ (entrenadores) puedan
-explorar, reservar alojamientos y descubrir nuevos Pokémon en la naturaleza.
-Aquí te propongo un **plan estructurado** para desarrollar tu sistema en
-**Spring Boot + Kotlin**, incluyendo:
+### 3.3 La Mochila del Entrenador — Perfil y Equipo Pokémon ★★
 
-- **Entidades clave** (mapping con JPA/Hibernate).
-- **Casos de uso** por módulo.
-- **Ejercicios prácticos** para implementar cada funcionalidad.
+**Historia**: Los entrenadores quieren registrar su equipo. Un entrenador lleva máximo 6 Pokémon activos.
+Cada Pokémon tiene necesidades especiales que el hotel debe conocer (ej: "Charizard necesita habitación con
+ventilación reforzada"). El Pokédex del hotel quiere estadísticas de qué tipos de Pokémon visitan más.
 
----
+**Objetivo Técnico**: Implementar el módulo `Pokemon` con relación al usuario, validación de límite de
+equipo, y endpoint de estadísticas del Pokédex del hotel.
 
-## **1. Entidades y Relaciones del Sistema**
+**Desarrollo Esperado:**
 
-Primero, definamos las entidades principales y sus relaciones:
+1. Entidad `Pokemon`:
+   - `nickname`: String (nombre que le puso el entrenador, 1-50 chars)
+   - `species`: String (ej: "Charizard", "Pikachu", "Mewtwo")
+   - Enum `PokemonType`: FIRE, WATER, GRASS, ELECTRIC, PSYCHIC, GHOST, DRAGON, NORMAL, FIGHTING,
+     POISON, GROUND, FLYING, ROCK, BUG, ICE
+   - `level`: Int (1-100)
+   - `specialNeeds`: String nullable (texto libre para el staff del hotel)
+   - `isActive`: Boolean (activo en el equipo vs. en el PC Box)
+   - Relación Many-to-One con `User`
+2. Migración `V7__create_pokemon.sql`
+3. Lógica de validación en `PokemonService`:
+   - Un `User` no puede tener más de 6 Pokémon con `isActive=true` simultáneamente
+4. Proyección `PokemonSpeciesCount(species: String, count: Long)` para estadísticas
+5. Endpoints:
+   - `GET /api/me/pokemon` — ver mi equipo actual y PC Box (TRAINER autenticado)
+   - `POST /api/me/pokemon` — añadir Pokémon al equipo (falla si ya tiene 6 activos)
+   - `PUT /api/me/pokemon/{id}` — actualizar nickname y specialNeeds
+   - `DELETE /api/me/pokemon/{id}` — retirar al PC Box (`isActive=false`, no borrado físico)
+   - `GET /api/admin/pokemon/stats` — top 10 especies más frecuentes (solo PROFESOR_OAK)
 
-### **Entidades Básicas (Hotelería)**
+**Criterios de Aceptación:**
 
-| Entidad       | Atributos clave                                                                   |
-| ------------- | --------------------------------------------------------------------------------- |
-| `User`        | `id`, `nombre`, `email`, `rol` (`ADMIN`/`TRAINER`), `passwordHash`                |
-| `Hotel`       | `id`, `nombre`, `dirección`, `categoría` (Lujoso, Económico, etc.), `precioNoche` |
-| `Room`        | `id`, `numero`, `tipo` (`Doble`, `Triple`), `hotelId`, `disponible`               |
-| `Amenity`     | `id`, `nombre` (WiFi, Sauna, etc.), `hotelId`                                     |
-| `Reservation` | `id`, `userId`, `hotelId`, `roomId`, `fechaInicio`, `fechaFin`, `totalPago`       |
+- [ ] Añadir el séptimo Pokémon activo devuelve 422 con mensaje "Equipo lleno: máximo 6 Pokémon activos"
+- [ ] `DELETE` pone `isActive=false` pero el registro permanece en la BD
+- [ ] `GET /api/me/pokemon` solo devuelve los Pokémon del usuario autenticado (nunca los de otro)
+- [ ] El endpoint de estadísticas devuelve las 10 especies más frecuentes entre todos los huéspedes actuales
+- [ ] Test unitario: `PokemonService.addPokemon()` falla correctamente cuando el equipo está lleno
+- [ ] Test de integración: endpoint de estadísticas con datos conocidos
 
-### **Entidades Pokémon**
-
-| Entidad   | Atributos clave                                                             |
-| --------- | --------------------------------------------------------------------------- |
-| `Pokemon` | `id`, `nombre`, `tipo`, `nivel`, `habilidad` (ej: "Rascal", "Fuego/Normal") |
-| `Trainer` | Extiende `User`: `pokemonDomesticados` (lista), `experienciaTotal`          |
-
-### **Entidades Adicionales**
-
-| Entidad   | Atributos clave                                                          |
-| --------- | ------------------------------------------------------------------------ |
-| `Payment` | `id`, `userId`, `reservationId`, `monto`, `metodoPago` (Tarjeta, PayPal) |
-| `Review`  | `id`, `hotelId`, `userId`, `calificacion` (1-5), `comentario`, `fecha`   |
-| `Tour`    | `id`, `hotelId`, `nombre`, `descripcion`, `precio`, `duraciónMinutos`    |
-
----
-
-## **2. Casos de Uso por Módulo**
-
-### **Módulo 1: Gestión de Hoteles (Admin)**
-
-#### **Caso de Uso 1: Crear/Editar Hotel**
-
-- **Descripción**: Un admin puede registrar un nuevo hotel con su dirección,
-  categoría y precios.
-- **Ejercicio**:
-  - Implementar el método `HotelService`:
-    ```kotlin
-    @Transactional
-    fun crearHotel(nombre: String, direccion: String, categoria: Categoria, precioNoche: Double): Hotel
-    ```
-  - Validar que el hotel no exista y guardar en la base de datos.
-- **Relación con otras entidades**: Asociar `amenities` (ej: WiFi, piscina) al
-  hotel.
-
-#### **Caso de Uso 2: Reservar una Habitación**
-
-- **Descripción**: Un entrenador reserva una habitación para dormir.
-- **Ejercicio**:
-  - Crear un servicio que:
-    1. Verifica disponibilidad de la habitación.
-    2. Genera una `Reservation` y un `Payment`.
-    3. Marca la habitación como ocupada.
-  ```kotlin
-  @Transactional
-  fun reservarHabitación(
-      userId: Long,
-      hotelId: Long,
-      roomId: Long,
-      fechaInicio: LocalDate,
-      fechaFin: LocalDate
-  ): Reservation
-````
+**Tiempo Estimado:** 5 horas | **Complejidad:** ★★
 
 ---
 
-### **Módulo 2: Gestión de Pokémon (Trainer)**
+### 3.4 La Caja Registradora — Módulo de Pagos ★★★
 
-#### **Caso de Uso 3: Domesticar un Pokémon**
+**Historia**: Actualmente las reservas pasan a CONFIRMED de forma mágica, sin procesar ningún pago real.
+Brock pide que cada reserva tenga un `Payment` asociado con su ciclo de vida propio. El flujo: reserva en
+PENDING → entrenador inicia pago → confirmación del pago → reserva pasa a CONFIRMED. Si el pago falla, la
+reserva vuelve a PENDING.
 
-- **Descripción**: Un entrenador captura un Pokémon en la naturaleza y lo
-  "domestica" para usarlo como compañero.
-- **Ejercicio**:
-  - Modificar el `User` (extendido a `Trainer`) con una lista de Pokémon
-    domesticados:
-    ```kotlin
-    class Trainer @JpaEntity data class(
-        id: Long,
-        user: User,
-        pokemonDomesticados: MutableList<Pokemon> = mutableListOf()
-    )
-    ```
-  - Implementar un método para añadir un Pokémon a la lista del entrenador.
+**Objetivo Técnico**: Implementar el módulo `Payment` con transiciones de estado controladas. El cambio de
+estado del pago y el cambio de estado de la reserva deben ocurrir en la misma transacción `@Transactional`.
 
-#### **Caso de Uso 4: Explorar y Detectar Pokémon**
+**Desarrollo Esperado:**
 
-- **Descripción**: El entrenador visita un hotel/tour para encontrar nuevos
-  Pokémon en la zona.
-- **Ejercicio**:
-  - Crear una relación entre `Hotel`/`Tour` y `Pokemon` (ej: "En este hotel hay
-    Pokémon de tipo Agua").
-  - Implementar un servicio que:
-    - Muestra los Pokémon disponibles en un lugar específico.
-    - Permite al entrenador "capturar" uno (si no está domesticado).
+1. Entidad `Payment`:
+   - Relación One-to-One con `Reservation`
+   - `amount`: BigDecimal (snapshot del precio en el momento del pago)
+   - Enum `PaymentMethod`: CREDIT_CARD, DEBIT_CARD, POKE_WALLET, POKEMON_LEAGUE_POINTS
+   - Enum `PaymentStatus`: PENDING, COMPLETED, FAILED, REFUNDED
+   - `transactionReference`: String (UUID único generado por el sistema)
+   - `processedAt`: LocalDateTime nullable
+   - `failureReason`: String nullable
+2. Migración `V8__create_payments.sql`
+3. `PaymentService` con lógica transaccional:
+   - `initiatePayment(reservationId, method)`: crea Payment en PENDING con transactionReference único
+   - `confirmPayment(paymentId)`: simula éxito → actualiza Payment a COMPLETED + Reservation a CONFIRMED
+   - `failPayment(paymentId, reason)`: actualiza a FAILED + Reservation vuelve a PENDING
+   - `refundPayment(paymentId)`: solo si Reservation está CANCELLED, marca REFUNDED
+4. Endpoints:
+   - `POST /api/reservations/{id}/payment` — iniciar pago (TRAINER dueño de la reserva)
+   - `POST /api/payments/{id}/confirm` — confirmar pago (simula respuesta de pasarela)
+   - `POST /api/payments/{id}/fail` — simular fallo (útil para tests y desarrollo)
+   - `GET /api/payments/{id}` — ver estado del pago (dueño o GYM_LEADER/OAK)
+   - `POST /api/payments/{id}/refund` — solicitar reembolso (solo si reserva CANCELLED)
 
----
+**Criterios de Aceptación:**
 
-### **Módulo 3: Reservas y Pagos**
+- [ ] No se puede confirmar un pago si el Payment ya está COMPLETED o FAILED
+- [ ] Si `confirmPayment` falla al actualizar la Reservation, el Payment no queda en COMPLETED (rollback)
+- [ ] El `transactionReference` es único con constraint en BD (dos pagos nunca tienen el mismo)
+- [ ] Solo el dueño de la Reservation o GYM_LEADER/OAK puede ver el detalle del pago
+- [ ] Test de rollback: simular excepción en el paso de actualización de la Reservation → verificar que
+      Payment sigue en PENDING
 
-#### **Caso de Uso 5: Realizar Pago**
-
-- **Descripción**: El entrenador paga por su reserva usando tarjeta o PayPal.
-- **Ejercicio**:
-  - Usar Spring Security para autenticar el usuario.
-  - Implementar un servicio que:
-    ```kotlin
-    @Transactional
-    fun pagarReserva(
-        reservationId: Long,
-        metodoPago: String, // "tarjeta", "paypal"
-        monto: Double
-    ): Payment
-    ```
-  - Validar que el pago sea exitoso antes de confirmar la reserva.
-
-#### **Caso de Uso 6: Cancelar Reserva**
-
-- **Descripción**: El entrenador puede cancelar su reserva si no llega a tiempo.
-- **Ejercicio**:
-  ```kotlin
-  @Transactional
-  fun cancelarReserva(reservationId: Long): Boolean {
-      val reservation = repository.findById(reservationId).orElseThrow()
-      // Marcar como cancelada y devolver el dinero (si aplica)
-      return true
-  }
-  ```
+**Tiempo Estimado:** 7 horas | **Complejidad:** ★★★
 
 ---
 
-### **Módulo 4: Tours y Reviews**
+## 4. Fase 2 — Vermilion: Seguridad para Módulos Adicionales
 
-#### **Caso de Uso 7: Crear un Tour Pokémon**
-
-- **Descripción**: Un hotel puede ofrecer tours para explorar Pokémon en la
-  zona.
-- **Ejercicio**:
-  - Crear una entidad `Tour` con relación a `Hotel`.
-
-  ```kotlin
-  @Entity
-  data class Tour(
-      @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-      val id: Long,
-      val hotelId: Long,
-      val nombre: String,
-      val descripcion: String,
-      val precio: Double,
-      val duracionMinutos: Int
-  )
-  ```
-
-  - Implementar un servicio para gestionar tours.
-
-#### **Caso de Uso 8: Dar una Review al Hotel**
-
-- **Descripción**: El entrenador deja una calificación y comentario después de
-  su estancia.
-- **Ejercicio**:
-
-  ```kotlin
-  @Transactional
-  fun dejarReview(
-      hotelId: Long,
-      userId: Long,
-      calificacion: Int, // 1-5
-      comentario: String
-  ): Review
-  ```
-
-  - Mostrar las reviews en el dashboard del hotel.
+> Realiza estos ejercicios después de completar los Ejercicios 2.1 a 2.4 del Roadmap.
+> Lt. Surge ya blindó las reservas y habitaciones. Ahora toca asegurar los módulos nuevos.
 
 ---
 
-## **3. Ejercicios Prácticos para Implementar**
+### 4.1 El Carnet de Identidad — Registro y Perfil del Entrenador ★★
 
-### **Ejercicio 1: Entidades y Mappings (JPA/Hibernate)**
+**Historia**: Lt. Surge nota que el sistema solo tiene `POST /api/auth/login` pero no un registro público.
+Los entrenadores llegan al hotel sin carnet. Necesita que cualquiera pueda registrarse como TRAINER, con
+validación de email y contraseña robusta. También faltan endpoints para que el entrenador gestione su perfil
+propio sin que un GYM_LEADER tenga que hacerlo por él.
 
-- Crea los entornos `User`, `Hotel`, `Room`, etc., con relaciones adecuadas.
-- Usa `@ManyToOne` o `@OneToMany` según las necesidades.
-- Ejemplo para `Reservation`:
-  ```kotlin
-  @Entity
-  data class Reservation(
-      @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-      val id: Long,
-      user: User,
-      hotel: Hotel,
-      room: Room,
-      fechaInicio: LocalDate,
-      fechaFin: LocalDate,
-      totalPago: Double
-  )
-  ```
+**Objetivo Técnico**: Implementar endpoint de registro público con validación de contraseña, flujo de
+verificación de email (simulado via log), y endpoints de gestión del perfil autenticado.
 
-### **Ejercicio 2: Service Layer**
+**Desarrollo Esperado:**
 
-- Implementa un servicio para cada caso de uso (ej: `HotelService`,
-  `PokemonService`).
-- Usa `@Transactional` para manejar operaciones que requieran consistencia.
-- Ejemplo:
-  ```kotlin
-  interface HotelService {
-      fun crearHotel(nombre: String, direccion: String): Hotel
-      fun listarHoteles(): List<Hotel>
-  }
-  ```
+1. Endpoint `POST /api/auth/register` (público, sin autenticación):
+   - Acepta: `username`, `email`, `password`, `firstName`, `lastName`
+   - Valida complejidad de contraseña: mínimo 8 caracteres, 1 mayúscula, 1 número
+   - Crea usuario con `role=TRAINER` y `emailVerified=false`
+   - Genera token de verificación (UUID, TTL de 24h) guardado en tabla `email_verifications`
+   - Simula envío: `log.info("Email de verificación enviado a: {}", email)` con el token en el log (nivel
+     DEBUG solo)
+2. Endpoint `POST /api/auth/verify?token={uuid}` (público):
+   - Valida el token y su expiración
+   - Marca `emailVerified=true` en el usuario
+   - Invalida el token (no puede reutilizarse)
+   - Usuarios no verificados pueden registrarse pero no pueden autenticarse
+3. Endpoints de perfil propio (TRAINER autenticado):
+   - `GET /api/me` — ver mi perfil (nunca incluye el hash de contraseña)
+   - `PUT /api/me` — actualizar `firstName`, `lastName`, `phoneNumber` (no email ni password aquí)
+   - `PUT /api/me/password` — cambiar contraseña (requiere `currentPassword` para confirmar identidad)
 
-### **Ejercicio 3: Control de Flujos (Flows)**
+**Criterios de Aceptación:**
 
-- Usa `Flow` para mostrar datos dinámicamente (ej: reservas del entrenador).
-- Ejemplo:
-  ```kotlin
-  fun obtenerReservasDelTrainer(userId: Long): Flow<List<Reservation>> = flow {
-      val trainer = repository.findById(userId).orElseThrow()
-      emit(repository.findAllByUserId(trainer.id))
-  }
-  ```
+- [ ] Usuario no verificado intenta login → 401 con mensaje "Email no verificado, revisa tu bandeja"
+- [ ] Token de verificación expirado (>24h) → 400 con mensaje "Token expirado, solicita uno nuevo"
+- [ ] `GET /api/me` nunca incluye el campo `password` en ninguna respuesta
+- [ ] `PUT /api/me/password` con `currentPassword` incorrecta → 400 (no 401)
+- [ ] Test E2E: registrar → intentar login (falla) → verificar email → login (exitoso)
 
-### **Ejercicio 4: Integración con Base de Datos**
-
-- Usa Spring Data JPA para manejar consultas (ej: `HotelRepository`).
-- Ejemplo:
-  ```kotlin
-  interface HotelRepository : JpaRepository<Hotel, Long> {
-      fun findByNombre(nombre: String): Optional<Hotel>
-  }
-  ```
-
-### **Ejercicio 5: Autenticación y Autorización**
-
-- Usa Spring Security para manejar roles (`ADMIN`/`TRAINER`).
-- Ejemplo de configuración:
-  ```kotlin
-  @Configuration
-  class SecurityConfig : WebMvcConfigurer {
-      @Bean
-      fun securityFilterChain(http: HttpSecurity): SecurityFilterChain = http
-          .authorizeHttpRequests { auth ->
-              auth.anyRequest().authenticated()
-          }
-          .formLogin { form ->
-              form.loginPage("/login")
-          }
-          .build()
-  }
-  ```
+**Tiempo Estimado:** 5 horas | **Complejidad:** ★★
 
 ---
 
-## **4. Ejemplo de Flujo Completo**
+### 4.2 Los Permisos del Safari Zone — Seguridad en el Módulo de Tours ★★
 
-**Caso: Un entrenador reserva un hotel y domesta un Pokémon.**
+**Historia**: Lt. Surge revisa el módulo de Tours y detecta dos problemas: los TRAINER pueden reservar tours
+en hoteles donde no tienen ninguna reserva activa, y los GYM_LEADER pueden editar tours de otros hoteles. El
+acceso a un tour debe estar ligado a una estadía activa, no solo a estar autenticado.
 
-1. **El entrenador se registra** (si no existe) como `Trainer`.
-2. **Selecciona un hotel** y una habitación disponible.
-3. **Reserva la habitación** (crea `Reservation` y `Payment`).
-4. **Explora el lugar** para encontrar un Pokémon (ej: "En este hotel hay un
-   Pikachu").
-5. **Domestica el Pokémon** añadiéndolo a su lista de compañeros.
+**Objetivo Técnico**: Implementar autorización a nivel de recurso para el módulo de Tours usando
+`@PreAuthorize` con SpEL y un componente de seguridad personalizado `TourSecurityService`.
 
----
+**Desarrollo Esperado:**
 
-## **5. Recomendaciones Adicionales**
+1. Crear `TourSecurityService` como `@Service`:
+   - `isHostedByUserHotel(tourId: Long, userId: Long): Boolean` — verifica que el tour pertenece al hotel
+     del GYM_LEADER autenticado
+   - `hasActiveReservationInHotel(hotelId: Long, userId: Long): Boolean` — verifica que el TRAINER tiene
+     reserva en estado CONFIRMED o CHECKED_IN en ese hotel
+2. Aplicar `@PreAuthorize` con SpEL en los endpoints de Tour:
+   - `POST /api/tours/schedules/{scheduleId}/book`:
+     `@PreAuthorize("@tourSecurity.hasActiveReservationInHotel(#scheduleId, principal.id)")`
+   - `PUT /api/tours/{id}` (editar tour):
+     `@PreAuthorize("hasRole('PROFESOR_OAK') or @tourSecurity.isHostedByUserHotel(#id, principal.id)")`
+   - `DELETE /api/tours/schedules/{id}`:
+     `@PreAuthorize("hasRole('PROFESOR_OAK') or @tourSecurity.isHostedByUserHotel(#id, principal.id)")`
+3. Endpoint adicional: `GET /api/me/tours` — ver mis bookings de tours activos (solo los propios)
 
-- **Validaciones**: Usa `@Valid` en los DTOs para validar datos (ej: fechas
-  válidas).
-- **Excepciones**: Crea una capa de excepciones personalizadas (ej:
-  `HotelNotFoundException`).
-- **Testing**: Implementa pruebas unitarias con Mockito y Spring Boot Test.
-- **Documentación**: Usa Swagger/OpenAPI para documentar la API.
+**Criterios de Aceptación:**
 
----
+- [ ] TRAINER sin reserva activa en el hotel intenta reservar tour → 403 con mensaje "Requieres una estadía
+      activa en este hotel para unirte a tours"
+- [ ] GYM_LEADER del Hotel A intenta editar tour del Hotel B → 403
+- [ ] PROFESOR_OAK puede editar cualquier tour sin restricción
+- [ ] `GET /api/me/tours` devuelve solo los bookings del usuario autenticado
+- [ ] Tests de integración con `@WithMockUser` para cada combinación de rol y acción crítica
 
-### **Próximos Pasos**
-
-1. Empieza por implementar las entidades y sus relaciones en JPA.
-2. Crea los servicios básicos (ej: `HotelService`).
-3. Prueba con casos de uso simples antes de complicarlos.
-
----
-
-**Ejercicio 1: Gestión de Hoteles (Administrador de Hoteles)**  
-_Objetivo:_ Crear un hotel con habitaciones y servicios (amenidades).
-
-**Casos de Uso:**
-
-- **Caso De Uso 1.1:** Creación de un nuevo hotel.
-  - _Entradas:_ DTO `CreateHotelRequest` con nombre, ubicación y lista de
-    habitaciones/servicios.
-  - _Salida Esperada:_ Hotel creado en la base de datos con detalles
-    proporcionados.
-
-- **Caso De Uso 1.2:** Actualización de un hotel existente.
-  - _Entradas:_ DTO `UpdateHotelRequest` con identificador del hotel y cambios
-    deseados.
-  - _Salida Esperada:_ Hotel actualizado correctamente sin pérdida de datos
-    existentes (si es necesario).
-
-**Ejercicio 2: Registro de una Reserva (Reservaciones)**  
-_Objetivo:_ Alinear a un entrenador una habitación disponible en un hotel
-mediante reserva.
-
-**Casos de Uso:**
-
-- **Caso De Uso 2.1:** Confirmar disponibilidad y crear una reserva.
-  - _Entradas:_ DTO `CreateReservationRequest` con detalles del huésped, hotel,
-    habitación y pagos (si aplica).
-  - _Salida Esperada:_ Registro de la reserva devuelto un identificador único y
-    confirmación por correo/alerta.
-
-- **Caso De Uso 2.2:** Cancelar una reserva y procesar reembolso o creditos para
-  futuros alojamientos.
-  - _Entradas:_ DTO `CancelReservationRequest` con el identificador de la
-    reserva.
-  - _Salida Esperada:_ Reserva borrada, habitación liberada y servicio de
-    atención al cliente notificado.
-
-**Ejercicio 3: Almacenamiento de Comentarios/Pósters (Revisión)**  
-_Objetivo:_ Permitir que los entrenadores realicen comentarios sobre hoteles o
-experiencias Pokémon después de una visita.
-
-**Casos de Uso:**
-
-- **Caso De Uso 3.1:** Submisión de un comentario/hora para un hotel.
-  - _Entradas:_ DTO `CreateReviewRequest` con identificador del huésped, hotel y
-    texto/ratings.
-  - _Salida Esperada:_ Comentario guardado en la base de datos y retratable por
-    otros usuarios.
-
-- **Caso De Uso 3.2:** Calcular el promedio de calificaciones de un hotel basado
-  en comentarios Pokémon o de servicios.
-  - _Entradas:_ Identificador del hotel deseado.
-  - _Salida Esperada:_ Resultado calculado y devuelto a través de una API
-    `@GetMapping`.
-
-**Ejercicio 4: Interacción con Pokémon (Entrenador)**  
-_Objetivo:_ Simular la captura o "adicción" de un Pokémon en un entorno
-específico (por ejemplo, durante un tour hotel/aire libre).
-
-**Casos de Uso:**
-
-- **Caso De Uso 4.1:** Intentar capturar un Pokémon al utilizar una Amenidad
-  determinada.
-  - _Entradas:_ Identificador del entrenador y detalles del escenario (hotel,
-    tour, ubicación de la Amenidad).
-  - _Salida Esperada:_ Registro de éxito en el sistema con mensaje de “¡Pokémon
-    capturado!” para el entrenador.
-
-- **Caso De Uso 4.2:** Alinear un Pokémon a los entrenadores que lo han
-  encontrado por primera vez mediante una operación virtual (por ejemplo,
-  interacción digital).
-  - _Entradas:_ Identificador del trainer y detalles del Pokémon hallado.
-  - _Salida Esperada:_ Pokémon añadido al perfil del entrenador con atributos de
-    dificultad y disponibilidad para otros usuarios.
-
-**Ejercicio 5: Gestión de Pago (Pago)**  
-_Objetivo:_ Procesar transacciones financieras durante reservas o alquiler de
-servicios adicionales.
-
-**Casos de Uso:**
-
-- **Caso De Uso 5.1:** Procesar un pago por una reserva de hotel incluyendo
-  habitaciones y actividades extra.
-  - _Entradas:_ DTO `CreatePaymentRequest` con detalles de la cuenta, monto y
-    referencia (si aplica).
-  - _Salida Esperada:_ Pago validado y credited al equilibrio de la cuenta del
-    huésped o servicio prestado en la reserva.
-
-- **Caso De Uso 5.2:** Manejar una devolución parcial debido a cancelación
-  tardía de un tour Pokémon.
-  - _Entradas:_ Identificador de la reserva y solicitud de refundo por parte del
-    usuario.
-  - _Salida Esperada:_ Pago revertido, habitación liberada y mensaje de servicio
-    al cliente.
-
-**Consideraciones Técnicas:**
-
-- **Entidades en Kotlin con Spring Data JPA:** Utiliza `@Entity`, `@Repository`
-  para modelos Hotel, Room, Amenity, Reservation, Trainer, Pokémon etc., con
-  relaciones muchas-contadas (ej., hotel-a-habitación, reserva-alocación).
-- **Servicios y Controladores:** Implementa métodos de servicio que manejen
-  Lógica Estructural (por ejemplo, verificar disponibilidad de habitaciones
-  antes de crear una reserva).
-- **Casos de Error:** Maneja errores comunes como reservas duplicadas, pagos
-  rechazados o intentos repetidos de captura del mismo Pokémon.
-
-**Ejemplo de Código para Ejercicio 1 (Crear Hotel):**
-
-```kotlin
-package com.example.pokemon.hotel
-
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
-
-@Repository
-interface HotelRepository : JpaRepository<Hotel, String> // Usamos el nombre del hotel como clave primaria.
-
-@Entity
-data class Hotel(
-    @Id
-    val name: String,
-    val location: String,
-    @Embedded
-    val rooms: List<Room>,
-    @Embedded
-    val amenities: List<String>
-)
-
-@Controller
-@PostMapping("/hotels")
-@Operation(description = "Crear un nuevo hotel con habitaciones y servicios.")
-fun createHotel(@RequestBody createHotelRequest: CreateHotelRequest): ResponseEntity<Hotel> {
-    // Lógica de servicio para crear el Hotel.
-}
-```
-
-**Conclusión:**  
-Estos ejercicios cubren desde la base de datos/mantenimiento hasta las
-interacciones avanzadas con Pokémon, integrando temas de hotel/servicios y
-negocios relacionados. La complejidad adicional se incrementa mediante manejo de
-errores, transacciones y autenticación basada en roles (administradores vs.
-entrenadores).
+**Tiempo Estimado:** 4 horas | **Complejidad:** ★★
 
 ---
 
-¡Excelente idea! Un sistema Pokémon en Spring Boot con Kotlin e integración
-hotelera tiene mucho potencial. Aquí te presento una propuesta detallada de
-ejercicios y casos de uso, estructurados para cubrir la temática y los roles que
-mencionaste (administradores de hoteles y entrenadores).
+## 5. Fase 3 — Cerulean: Validaciones en Módulos Pendientes
 
-**Estructura General del Proyecto:**
-
-- **Modelo de Datos (Entidades):**
-  - `Hotel`: Información general del hotel (nombre, ubicación, tipo, etc.).
-  - `Room`: Habitación específica dentro de un hotel (tipo, capacidad, precio).
-  - `Amenities`: Comodidades que ofrece el hotel (piscina, gimnasio, wifi,
-    etc.).
-  - `Reservation`: Reserva realizada por un entrenador.
-  - `Trainer`: Entrenador Pokémon (nombre, información personal, lista de
-    Pokémon).
-  - `Pokemon`: Información del Pokémon (nombre, tipo, nivel, habilidad).
-  - `User`: Usuario del sistema (administrador de hotel o entrenador).
-  - `Payment`: Registro de pagos realizados.
-  - `Review`: Reseña escrita por un entrenador sobre un hotel.
-  - `Service`: Servicios ofrecidos por el hotel (tour de Pokémon, spa, etc.).
-
-- **Casos de Uso Principales:**
-  1.  **Administración del Hotel:**
-      - Crear/Editar/Eliminar Hoteles.
-      - Crear/Editar/Eliminar Habitaciones.
-      - Agregar/Eliminar Amenities a un hotel.
-      - Gestionar Reservas (ver, modificar, cancelar).
-      - Gestionar Servicios adicionales del Hotel
-
-  2.  **Entrenador Pokémon:**
-      - Registrarse/Iniciar Sesión.
-      - Crear/Editar su perfil de Entrenador.
-      - Agregar Pokémon a su equipo.
-      - Buscar Hoteles.
-      - Ver Detalles del Hotel (habitaciones disponibles, precios, amenities).
-      - Realizar Reservas.
-      - Gestionar sus Reservas (ver, cancelar).
-      - Hacer Tours de Pokémon (descubrir nuevos Pokémon).
-      - Escribir Reviews sobre Hoteles.
-
-**Ejercicios y Casos de Uso Detallados:**
-
-Voy a dividir los ejercicios por funcionalidad y proporcionar detalles sobre la
-implementación en Spring Boot con Kotlin. Incluiré ejemplos de APIs REST.
-
-**1. Administración del Hotel:**
-
-- **Ejercicio 1: Creación de un Hotel.**
-  - **Casos de Uso:** Administrador crea un nuevo hotel.
-  - **Entidad:** `Hotel` (nombre, dirección, tipo, descripción).
-  - **API REST:**
-    - `POST /hotels`: Crea un nuevo hotel. Requiere datos del hotel en el cuerpo
-      de la solicitud (JSON).
-      ```json
-      {
-        "name": "Hotel Pokémon Paradise",
-        "address": "Calle Principal 123, Ciudad Pokémon",
-        "type": "Hotel Temático",
-        "description": "Un hotel para amantes de los Pokémon."
-      }
-      ```
-    - **Implementación:** Crear un servicio `HotelService` con métodos como
-      `createHotel(hotelData: HotelData)` y una repositorio `HotelRepository`.
-
-- **Ejercicio 2: Gestión de Habitaciones.**
-  - **Casos de Uso:** Administrador crea, edita y elimina habitaciones en un
-    hotel.
-  - **Entidades:** `Room` (tipo, capacidad, precio, disponibilidad).
-  - **API REST:**
-    - `GET /hotels/{hotelId}/rooms`: Obtener todas las habitaciones de un hotel.
-    - `POST /hotels/{hotelId}/rooms`: Crear una nueva habitación en un hotel.
-    - `PUT /hotels/{hotelId}/rooms/{roomId}`: Editar una habitación existente.
-    - `DELETE /hotels/{hotelId}/rooms/{roomId}`: Eliminar una habitación.
-
-- **Ejercicio 3: Gestión de Amenities.**
-  - **Casos de Uso:** Administrador agrega, edita y elimina comodidades en un
-    hotel.
-  - **Entidad:** `Amenities` (nombre, descripción).
-  - **API REST:**
-    - `GET /hotels/{hotelId}/amenities`: Obtener todas las amenities de un
-      hotel.
-    - `POST /hotels/{hotelId}/amenities`: Agregar una nueva amenity a un hotel.
-    - `PUT /hotels/{hotelId}/amenities/{amenityId}`: Editar una amenity
-      existente.
-    - `DELETE /hotels/{hotelId}/amenities/{amenityId}`: Eliminar una amenity.
-
-**2. Entrenador Pokémon:**
-
-- **Ejercicio 4: Registro e Inicio de Sesión.**
-  - **Casos de Uso:** Entrenador se registra y accede al sistema.
-  - **Entidades:** `Trainer` (nombre, email, contraseña).
-  - **API REST:**
-    - `POST /register`: Registrar un nuevo entrenador.
-      ```json
-      {
-        "name": "Ash Ketchum",
-        "email": "ash@example.com",
-        "password": "password123"
-      }
-      ```
-    - `POST /login`: Iniciar sesión.
-      ```json
-      {
-        "email": "ash@example.com",
-        "password": "password123"
-      }
-      ```
-    - **Implementación:** Servicio `UserService`, repositorio `UserRepository`.
-
-- **Ejercicio 5: Búsqueda de Hoteles.**
-  - **Casos de Uso:** Entrenador busca hoteles por nombre, ubicación o tipo.
-  - **API REST:**
-    - `GET /hotels?name=Pokémon&location=Ciudad%20Pokémon`: Buscar hoteles con
-      nombre "Pokémon" y en la ciudad Pokémon.
-    - `GET /hotels/type/themed`: Buscar hoteles de tipo temático.
-
-- **Ejercicio 6: Realización de Reservas.**
-  - **Casos de Uso:** Entrenador reserva una habitación en un hotel.
-  - **Entidades:** `Reservation` (trainerId, roomId, checkInDate, checkOutDate,
-    status).
-  - **API REST:**
-    - `POST /reservations`: Crear una nueva reserva. Requiere información del
-      entrenador, la habitación y las fechas.
-      ```json
-      {
-        "trainerId": "123",
-        "roomId": "456",
-        "checkInDate": "2024-03-15",
-        "checkOutDate": "2024-03-20"
-      }
-      ```
-
-**3. Tours de Pokémon y Descubrimiento:**
-
-- **Ejercicio 7: Tours de Pokemon.**
-  - **Casos de Uso**: El entrenador inicia un tour para detectar pokemones en
-    una ubicación específica.
-  - **Entidades:** `Tour` (trainerId, location, date, pokemonDetected).
-  - **API REST:**
-    - `POST /tours`: Iniciar un nuevo tour.
-
-**4. Reviews de Hoteles.**
-
-- **Ejercicio 8: Escribir Reviews.**
-  - **Casos de Uso:** Entrenador escribe una reseña sobre un hotel que visitó.
-  - **Entidades:** `Review` (trainerId, hotelId, rating, comment).
-  - **API REST:**
-    - `POST /hotels/{hotelId}/reviews`: Crear una nueva reseña para un hotel
-      específico.
-      ```json
-      {
-        "rating": 4,
-        "comment": "Excelente hotel con muy buena ubicación y personal amable."
-      }
-      ```
-
-**Consideraciones Adicionales:**
-
-- **Autenticación y Autorización:** Implementa JWT (JSON Web Tokens) para la
-  seguridad. Los administradores de hoteles tendrán permisos para acceder a
-  endpoints que los entrenadores no pueden ver.
-- **Validación de Datos:** Asegúrate de validar todos los datos ingresados por
-  el usuario, tanto en el frontend como en el backend.
-- **Manejo de Errores:** Implementa un manejo robusto de errores con códigos de
-  estado HTTP apropiados (400 Bad Request, 401 Unauthorized, 404 Not Found,
-  etc.).
-- **Testing:** Escribe pruebas unitarias e integración para asegurar la calidad
-  del código.
-
-**Tecnologías Recomendadas:**
-
-- **Spring Boot:** Para el framework principal.
-- **Kotlin:** Lenguaje de programación.
-- **Spring Data JPA:** Para acceso a la base de datos.
-- **Spring Security:** Para autenticación y autorización.
-- **PostgreSQL o MySQL:** Base de datos relacional.
-- **REST Assured/Spring Web Testing:** Para pruebas de API.
-
-**Recursos Útiles:**
-
-- Documentación de Spring Boot: [https://spring.io/](https://spring.io/)
-- Documentación de Kotlin:
-  [https://kotlinlang.org/docs/](https://kotlinlang.org/docs/)
-- Tutoriales de Spring Boot y Kotlin en YouTube, Udemy, etc.
+> Realiza estos ejercicios después de completar los Ejercicios 3.1 a 3.4 del Roadmap.
+> Misty ya validó las reservas y los usuarios. Ahora aplica la misma precisión a los módulos pendientes.
 
 ---
 
-Bienvenido a tu proyecto combinado de SpringBoot y Kotlin centrado en Pokémon y
-hotelería! A continuación, te presentaremos algunos casos de uso y ejercicios
-para cada una de tus entidades:
+### 5.1 El Guardián del PC Box — Validaciones del Equipo Pokémon ★★
 
-1. Hotel:
-   - Crear un usuario hotelero con sus datos personales y detalles del hotel
-     (nombre, dirección, teléfono, correo electrónico, descripción, imagen,
-     categoría, tarifa por noche, número de habitaciones disponibles).
-   - Registrar un nuevo hotel en el sistema.
-   - Buscar hoteles por categoría, ubicación, nombre o tarifa.
-   - Actualizar los datos personales y detalles del hotel.
-   - Eliminar un hotel del sistema.
+**Historia**: Misty descubre que los entrenadores pueden registrar Pokémon de nivel 0 o de nivel 200 por
+error. También encontró que alguien registró un "Charmander" de tipo WATER sin ningún aviso del sistema. El
+registro de Pokémon necesita validaciones estrictas tanto en los datos básicos como en la compatibilidad
+entre especie y tipo.
 
-2. Room:
-   - Registrar una habitación en el hotel (tipo de habitación, número de
-     habitación, precio por noche, disponibilidad).
-   - Actualizar la disponibilidad de una habitación.
-   - Eliminar una habitación del sistema.
+**Objetivo Técnico**: Implementar Bean Validation en el módulo Pokémon, incluyendo un `ConstraintValidator`
+personalizado que verifique la compatibilidad especie-tipo usando un servicio de dominio.
 
-3. Amenities:
-   - Agregar y eliminar servicios de entretenimiento en los hoteles (spa,
-     piscina, fitness center, restaurante, etc.).
-   - Mostrar todos los servicios disponibles en un hotel específico.
+**Desarrollo Esperado:**
 
-4. Reservation:
-   - Registrar una reservación de una habitación para un entrenador con sus
-     datos personales y detalles de la reserva (fecha de entrada, fecha de
-     salida, número de personas, nombre del pokémon, cantidad de pokémon).
-   - Cancelar una reservación.
+1. Validaciones estándar en `CreatePokemonRequest`:
+   - `@Size(min=1, max=50)` en `nickname`
+   - `@Min(1) @Max(100)` en `level`
+   - `@NotBlank` en `species`
+   - `@NotNull` en `type`
+2. Validador personalizado `@ValidPokemonSpeciesAndType`:
+   - Verifica que la especie declarada es compatible con el tipo declarado
+   - Ejemplo: Charmander solo puede ser FIRE, Squirtle solo WATER, Pikachu solo ELECTRIC
+   - Implementar con `ConstraintValidator<ValidPokemonSpeciesAndType, CreatePokemonRequest>` que inyecta
+     `PokemonDexService` (componente con el mapa de compatibilidades de las 151 especies de Kanto)
+   - El mensaje de error incluye el tipo correcto: "Pikachu no puede ser de tipo WATER (tipo esperado:
+     ELECTRIC)"
+3. Regla de negocio en servicio (no en validador): si el tipo del Pokémon es incompatible con el
+   `pokemonTheme` de la habitación reservada, añadir texto automático a `specialNeeds`: "Requiere adaptador
+   de ambiente: tipo {pokemonType} en habitación tema {roomTheme}"
 
-5. Trainer:
-   - Registrar un entrenador con sus datos personales y detalles sobre sus
-     pokemones (nombre de usuario, contraseña, nombre real, correo electrónico,
-     pokémons capturados).
-   - Buscar entrenadores por nombre de usuario o nombre real.
+**Criterios de Aceptación:**
 
-6. Pokemon:
-   - Registrar un nuevo pokémon capturado (nombre, tipo, nivel, habilidades,
-     evolución posible).
-   - Mostrar los pokemones capturados por un entrenador específico.
+- [ ] Registrar Charmander con tipo WATER → 400 con mensaje que indica el tipo esperado (FIRE)
+- [ ] Especie desconocida (ej: "MegaMewthree") → 400 con mensaje "Especie no registrada en el Pokédex de
+      Kanto"
+- [ ] Nivel 0 o nivel 101 → 400 con el nombre del campo y el valor rechazado
+- [ ] Pikachu tipo ELECTRIC en habitación tema WATER → `specialNeeds` actualizado automáticamente
+- [ ] Test unitario para `PokemonDexService.isCompatible()` cubriendo los 151 casos de Kanto
 
-7. User:
-   - Registrar un usuario sin relación con hoteles o pokémons (nombre de
-     usuario, contraseña, nombre real, correo electrónico).
-   - Buscar usuarios por nombre de usuario o nombre real.
-
-8. Payment:
-   - Realizar una reserva y pagar por ella mediante varios métodos de pago
-     (tarjeta de crédito, PayPal, transferencia bancaria).
-
-9. Review:
-   - Publicar una reseña sobre un hotel basada en su calidad, servicio, limpieza
-     y ubicación.
-
-10. Service:
-    - Agendar un tour para que los entrenadores puedan descubrir nuevos
-      pokemones en el área del hotel.
+**Tiempo Estimado:** 5 horas | **Complejidad:** ★★
 
 ---
 
-Claro, puedo ayudarte a diseñar algunos ejercicios y casos de uso para tu curso
-de Spring Boot y Kotlin con la temática de Pokémon y hotelería. Aquí te presento
-algunas ideas:
+### 5.2 El Mapa de Tours Válidos — Validaciones del Módulo Tours ★★★
 
-1. Creación de entidades:
-   - Crea las entidades `Hotel`, `Room`, `Amenity`, `Reservation`, `Trainer`,
-     `Pokemon`, `User`, `Payment`, `Review` y `Service`. Para cada entidad,
-     asegúrate de incluir los atributos relevantes y las relaciones con otras
-     entidades.
-2. Gestión de hoteles y habitaciones:
-   - Crea un caso de uso para que los administradores de hoteles puedan agregar,
-     editar y eliminar hoteles y habitaciones. Incluye la gestión de amenities
-     para cada habitación.
-   - Implementa la lógica necesaria para reservar una habitación por parte de un
-     entrenador. Asegúrate de incluir la verificación de disponibilidad y la
-     gestión de pagos.
-3. Gestión de entrenadores y Pokémon:
-   - Crea un caso de uso para que los entrenadores puedan registrarse y crear
-     sus perfiles. Incluye la posibilidad de agregar y gestionar sus Pokémon
-     capturados.
-   - Implementa la lógica necesaria para que los entrenadores puedan domesticar
-     nuevos Pokémon durante su estancia en un hotel o durante un tour de
-     detección de Pokémon.
-4. Gestión de tours y servicios:
-   - Crea un caso de uso para que los administradores de hoteles puedan agregar,
-     editar y eliminar tours y servicios ofrecidos por el hotel. Incluye la
-     posibilidad de asignar un costo a cada servicio.
-   - Implementa la lógica necesaria para que los entrenadores puedan reservar y
-     disfrutar de estos tours y servicios durante su estancia en el hotel.
-     Asegúrate de incluir la gestión de pagos correspondientes.
-5. Gestión de reviews:
-   - Crea un caso de uso para que los entrenadores puedan dejar reseñas y
-     valoraciones sobre los hoteles en los que se han alojado. Incluye la
-     posibilidad de agregar comentarios y puntuar el servicio recibido.
-   - Implementa la lógica necesaria para que los administradores de hoteles
-     puedan gestionar y responder a estas reseñas, así como para que los
-     entrenadores puedan ver las opiniones de otros usuarios sobre un hotel
-     antes de reservar.
-6. Búsqueda y filtrado:
-   - Crea un caso de uso para que los entrenadores puedan buscar y filtrar
-     hoteles según sus necesidades. Incluye filtros por ubicación, precio,
-     amenities disponibles, servicios ofrecidos, etc.
-   - Implementa la lógica necesaria para mostrar a los entrenadores una lista de
-     hoteles que se ajustan a sus criterios de búsqueda y permitirles reservar
-     habitaciones en los que estén interesados.
+**Historia**: Misty descubre que los GYM_LEADER pueden crear horarios de tours en fechas pasadas, con
+capacidad de 0 personas, o con horarios que se solapan entre sí. También pueden cancelar un horario aunque
+haya entrenadores con booking confirmado, dejándolos sin alternativa. Necesita validaciones que cubran DTOs
+y reglas de negocio de solapamiento.
+
+**Objetivo Técnico**: Implementar validaciones de DTO y de negocio para el módulo Tours, incluyendo un
+validador de solapamiento de horarios y excepción de dominio con detalles del conflicto.
+
+**Desarrollo Esperado:**
+
+1. Validaciones en `CreateTourScheduleRequest`:
+   - `@Future` en `scheduledAt`
+   - `@Min(1) @Max(50)` en `availableSlots`
+   - `@PositiveOrZero` en `basePrice` (tours gratuitos son válidos)
+2. Validador personalizado `@NonOverlappingSchedule` a nivel de clase:
+   - Verifica que el nuevo horario no solapa con un existente del mismo tour
+   - Solapamiento: un tour de 120 min que empieza a las 10:00 ocupa hasta las 12:00; el siguiente
+     horario válido empieza a las 12:00 o después
+   - Usa `TourScheduleRepository.findOverlappingSchedules()` query nativa con operador OVERLAPS
+3. Excepción de dominio `TourScheduleConflictException` con campos: `conflictingScheduleId`,
+   `conflictStart`, `conflictEnd`
+4. Regla de negocio en servicio: no se puede cancelar un `TourSchedule` con bookings CONFIRMED activos;
+   la excepción incluye la lista de entrenadores afectados para notificarlos
+
+**Criterios de Aceptación:**
+
+- [ ] Horario para ayer → 400 con mensaje "La fecha del tour debe ser en el futuro"
+- [ ] Horario que solapa con uno existente → 409 con los datos del horario conflictivo en el body
+- [ ] Cancelar horario con bookings confirmados → 409 con la lista de usernames afectados
+- [ ] Tour con `availableSlots=0` → 400 (antes de llegar al servicio)
+- [ ] Test de integración: tour de 60 min a las 10:00; crear otro a las 10:30 → 409; a las 11:00 → 409;
+      a las 11:00:00 exactas → 409; a las 11:00:01 → 201
+
+**Tiempo Estimado:** 5 horas | **Complejidad:** ★★★
 
 ---
 
-### **Sistema de Reservación de Hoteles con Pokémons y Servicios**
+### 5.3 La Opinión del Entrenador — Módulo de Reseñas ★★★
 
-El sistema integra **hotelera**, **entrenadores**, **pokémon** y **servicios**
-para ofrecer una experiencia de usuario multiusos. Los usuarios principales son:
+**Historia**: Misty quiere que los entrenadores puedan dejar reseñas, pero con reglas claras: solo quien
+tuvo una estadía completada puede opinar, una sola reseña por estadía, y el comentario debe ser
+significativo (mínimo 20 caracteres). Las reseñas son públicas y cualquiera puede leerlas.
 
-- **Administradores de hoteles**: gestionan reservas, servicios, reviews y
-  cuentas de entrenadores.
-- **Entrenadores**: reservan hoteles, doméstican pokémon, hacen tours y revisan
-  hoteles.
+**Objetivo Técnico**: Implementar el módulo `Review` completo con sus reglas de validación y negocio.
+Este módulo también es el núcleo del proyecto final de la Liga Pokémon; aquí se construye con énfasis en
+las validaciones y el flujo de datos.
 
----
+**Desarrollo Esperado:**
 
-### **Ejercicios y Casos de Uso**
+1. Entidad `Review`:
+   - `rating`: Int (1-5)
+   - `comment`: String (20-500 caracteres)
+   - `createdAt`: LocalDateTime
+   - Relación Many-to-One con `User` (el autor)
+   - Relación Many-to-One con `Reservation` (la estadía que se reseña)
+   - Relación Many-to-One con `Hotel` (para facilitar listados por hotel)
+   - Constraint UNIQUE en `(userId, reservationId)` — una sola reseña por estadía
+2. Migración `V9__create_reviews.sql`
+3. Validaciones de negocio en `ReviewService`:
+   - La `Reservation` debe estar en estado CHECKED_OUT para poder reseñar
+   - La `Reservation` debe pertenecer al usuario autenticado
+4. Proyección `ReviewSummary` para el endpoint de resumen (promedio y distribución)
+5. Endpoints:
+   - `POST /api/reservations/{id}/review` — crear reseña (solo TRAINER, post-checkout)
+   - `GET /api/hotels/{id}/reviews` — listar reseñas del hotel (público, paginado)
+   - `GET /api/hotels/{id}/reviews/summary` — promedio de calificación y distribución de estrellas
 
-#### **1. Entidad: Hotel**
+**Criterios de Aceptación:**
 
-**Objetivo**: Modelar los detalles básicos de un hotel (nombre, ubicación,
-servicios, habitaciones).
+- [ ] Rating 0 o 6 → 400 (validación de Bean Validation)
+- [ ] Comentario de menos de 20 caracteres → 400 con mensaje que indica el mínimo
+- [ ] Reseñar reserva que no está CHECKED_OUT → 409 con el estado actual de la reserva
+- [ ] Segunda reseña a la misma reserva → 409 "Ya existe una reseña para esta estadía"
+- [ ] `GET /api/hotels/{id}/reviews/summary` devuelve: `avgRating`, `totalReviews`, y `distribution`
+      (mapa de estrellas a cantidad: `{5: 10, 4: 5, 3: 2, 2: 1, 1: 0}`)
+- [ ] Test E2E: crear reserva → check-in → check-out → crear reseña → verificar en listado del hotel
 
-- **Casos de Uso**:
-  - **Crear un hotel**: Registrar nombre, dirección, servicios (ej.: piscina,
-    gimnasio), y listado de habitaciones.
-  - **Modificar datos del hotel**: Cambiar nombre, servicios, etc.
-  - **Eliminar un hotel**: Eliminar todas sus habitaciones y servicios.
-
----
-
-#### **2. Entidad: Habitación**
-
-**Objetivo**: Modelar las habitaciones disponibles en un hotel (número, tipo,
-precio, disponibilidad).
-
-- **Casos de Uso**:
-  - **Buscar habitaciones**: Listar habitaciones por precio, tipo o
-    disponibilidad.
-  - **Reservar una habitación**: Asignar una habitación a un entrenador con
-    fecha y hora.
-  - **Cancelar una reserva**: Liberar la habitación tras el plazo de pago.
-
----
-
-#### **3. Entidad: Amenidades**
-
-**Objetivo**: Representar servicios adicionales en un hotel (ej.: spa, cine,
-wifi).
-
-- **Casos de Uso**:
-  - **Ver amenidades del hotel**: Listar todas las amenities disponibles.
-  - **Asignar amenities a un hotel**: Añadir o eliminar servicios.
+**Tiempo Estimado:** 6 horas | **Complejidad:** ★★★
 
 ---
 
-#### **4. Entidad: Reservación**
+## 6. Fase 4 — Celadon: Testing por Capa
 
-**Objetivo**: Registrar y gestionar reservas de habitaciones.
-
-- **Casos de Uso**:
-  - **Realizar una reserva**: Crear una reserva con detalles del entrenador,
-    habitación, fechas.
-  - **Ver historial de reservas**: Mostrar todas las reservas realizadas por un
-    entrenador o hotel.
-  - **Actualizar una reserva**: Cambiar fechas o cancelar si el pago no se ha
-    realizado.
+> Realiza estos ejercicios después de completar los Ejercicios 4.1 a 4.5 del Roadmap.
+> Erika ya te enseñó la pirámide de tests. Ahora aplícala a los módulos que completaste.
 
 ---
 
-#### **5. Entidad: Trainer (Entrenador)**
+### 6.1 El Dojo de Controladores — WebMvcTest Exhaustivo ★★
 
-**Objetivo**: Representar a los entrenadores con sus permisos, cuentas y
-acciones.
+**Historia**: Erika revisa los tests del equipo y nota que todos los `@WebMvcTest` solo prueban el happy
+path. Para ella, un test que solo verifica que 200 es 200 no es un test, es teatro. Quiere cobertura
+completa de la capa web para los nuevos módulos: 401 sin token, 403 con rol incorrecto, 400 con DTO
+inválido, 409 con conflicto de negocio.
 
-- **Casos de Uso**:
-  - **Crear una cuenta de entrenador**: Registrar nombre, email, contraseña, y
-    perfil.
-  - **Ver historial de reservas**: Mostrar todas las reservas realizadas.
-  - **Hacer un tour para detectar pokémon**: Recorrer un hotel, ver pokémon,
-    tomar fotos y registrar en reviews.
+**Objetivo Técnico**: Escribir tests de controlador exhaustivos usando `@WebMvcTest` + `MockMvc` para cada
+controlador de los módulos nuevos. Cada controlador debe tener mínimo 5 tests cubriendo happy path y 4
+casos de error distintos.
 
----
+**Desarrollo Esperado:**
 
-#### **6. Entidad: Pokemon**
+Para cada uno de estos controladores, implementar su clase de test con `@WebMvcTest`:
 
-**Objetivo**: Representar los pokémon que se encuentran en los hoteles o en las
-zonas de descubrimiento.
+1. `TourControllerTest`:
+   - `GET /api/hotels/{id}/tours` sin autenticación → 401
+   - `POST /api/tours` sin rol GYM_LEADER → 403
+   - `POST /api/tours` con body inválido (capacity negativa) → 400 con estructura de error correcta
+   - `POST /api/tours` con datos válidos → 201 con `Location` header apuntando al recurso creado
+   - `POST /api/tours/schedules/{id}/book` cuando el servicio lanza `TourScheduleConflictException` → 409
+2. `ReviewControllerTest`:
+   - `POST /api/reservations/{id}/review` sin autenticación → 401
+   - `POST` con rating inválido (ej: 7) → 400 con el campo `rating` en el array de errores
+   - `POST` cuando el servicio lanza `ReservationNotCheckedOutException` → 409
+   - `GET /api/hotels/{id}/reviews` → 200 con estructura de paginación correcta
+   - `GET /api/hotels/{id}/reviews/summary` → 200 con campos `avgRating` y `distribution`
+3. `PokemonControllerTest`:
+   - `POST /api/me/pokemon` con nivel 0 → 400 con mensaje del validador
+   - `POST /api/me/pokemon` cuando servicio lanza `PokemonTeamFullException` → 422
+   - `DELETE /api/me/pokemon/{id}` de un Pokémon de otro usuario → 403
 
-- **Casos de Uso**:
-  - **Crear un pokemon**: Añadir nombre, tipo (ej.: agua, fuego), nivel y
-    imagen.
-  - **Domesticar un pokemon**: Enviar un entrenador a un hotel para que el
-    pokemon se domine.
-  - **Mostrar pokémon en un hotel**: Listar todos los pokémon disponibles en un
-    hotel.
+**Criterios de Aceptación:**
 
----
+- [ ] Cada controlador tiene mínimo 5 tests
+- [ ] Todos los tests usan `andExpect(jsonPath("$.field", is(...)))` para verificar contenido del body, no
+      solo el status code
+- [ ] Los tests de autenticación usan `@WithMockUser(roles=["TRAINER"])` con roles específicos
+- [ ] Ningún test hace llamadas reales al repositorio (todos los servicios están mockeados con
+      `@MockBean`)
+- [ ] Cada test ejecuta en menos de 500ms (sin contexto completo de Spring)
 
-#### **7. Entidad: User (Usuario General)**
-
-**Objetivo**: Representar usuarios no autorizados (ej.: visitantes, usuarios de
-prueba).
-
-- **Casos de Uso**:
-  - **Ver listado de hoteles**: Listar todos los hoteles disponibles.
-  - **Hacer una reserva sin cuenta**: Reservar una habitación usando un token o
-    código.
-
----
-
-#### **8. Entidad: Payment (Pago)**
-
-**Objetivo**: Registrar pagos realizados por reservas.
-
-- **Casos de Uso**:
-  - **Realizar pago**: Pagar por una reserva con método seleccionado.
-  - **Ver historial de pagos**: Mostrar todas las transacciones.
+**Tiempo Estimado:** 6 horas | **Complejidad:** ★★
 
 ---
 
-#### **9. Entidad: Review**
+### 6.2 El Laboratorio del Repositorio — DataJpaTest en Queries Críticas ★★★
 
-**Objetivo**: Registrar opiniones y comentarios sobre hoteles o pokémon.
+**Historia**: Erika encontró que los tests de repositorio del proyecto solo verifican `save()` y
+`findById()`. Las queries JPQL y nativas que detectan solapamientos, calculan agregaciones, o filtran por
+estado compuesto nunca se prueban aisladas. Esas queries son donde los bugs realmente se esconden.
 
-- **Casos de Uso**:
-  - **Hacer una review de un hotel**: Entrar a un hotel, ver pokémon, tomar
-    fotos, y escribir una review.
-  - **Ver reviews de un hotel**: Ver todas las opiniones de un hotel.
+**Objetivo Técnico**: Escribir tests de repositorio con `@DataJpaTest` para todas las queries personalizadas
+de los módulos nuevos. Incluir casos de borde que los tests de controlador no pueden cubrir.
 
----
+**Desarrollo Esperado:**
 
-### **Casos de Uso Ejemplos**
+1. `TourScheduleRepositoryTest`:
+   - Test: `findOverlappingSchedules` — tour de 60 min a las 10:00; consultar solapamiento a las 10:59
+     → devuelve conflicto; a las 11:00 → no devuelve conflicto (caso borde de exclusividad de extremo)
+   - Test: `findAvailableSchedules` no incluye schedules con `status=FULL` ni `status=CANCELLED`
+   - Test: conteo de `availableSlots` es correcto después de un booking parcial
+2. `ReviewRepositoryTest`:
+   - Test: `findAverageRatingByHotelId` con 0 reseñas devuelve `Optional.empty()`, no lanza excepción
+   - Test: promedio correcto con 3 reseñas de ratings 5, 3, 4 → average = 4.0
+   - Test: intentar insertar segunda reseña para misma combinación (userId, reservationId) →
+     `DataIntegrityViolationException`
+3. `PokemonRepositoryTest`:
+   - Test: `findTop10SpeciesByCount()` con 3 especies (5 Pikachu, 3 Charizard, 2 Mewtwo) devuelve en orden
+     correcto
+   - Test: cuando hay empate, el resultado es determinístico (hay un `ORDER BY` secundario en la query)
 
-#### **Casos de Uso para el Entrenador**
+**Criterios de Aceptación:**
 
-1. **Reservar una habitación**:
-   - El entrenador selecciona un hotel, ingresa fechas, y realiza la reserva.
-2. **Hacer un tour y capturar pokémon**:
-   - El entrenador visita un hotel, detecta un pokemon, toma fotos, y registra
-     en su cuenta.
-3. **Dar una review de un hotel**:
-   - El entrenador pide una revisión de un hotel, describe el entorno y la
-     experiencia.
+- [ ] Tests usan `@DataJpaTest` con Flyway aplicando las migraciones completas (no solo las entidades del
+      test)
+- [ ] Cada test popula sus propios datos en `@BeforeEach` (no dependencia de datos de otros tests)
+- [ ] Los casos de borde tienen un comentario que documenta la decisión de negocio que están verificando
+- [ ] Mínimo 3 tests por repositorio, con al menos uno de caso borde explícito
+- [ ] Tests de queries nativas usan `@DataJpaTest` con H2 (y documentan si la query es específica de
+      PostgreSQL)
 
-#### **Casos de Uso para el Administrador**
-
-1. **Gestionar reservas**:
-   - Ver todas las reservas, cancelar si no se ha realizado el pago.
-2. **Ver amenidades de un hotel**:
-   - Listar todos los servicios disponibles en un hotel.
-3. **Actualizar datos del hotel**:
-   - Cambiar nombre, direcciones o servicios.
-
----
-
-### **Relaciones entre Entidades**
-
-- **Hotel ↔ Reservación**: Un hotel puede tener múltiples reservas.
-- **Trainer ↔ Reservación**: Un entrenador realiza múltiples reservas en
-  hoteles.
-- **Hotel ↔ Pokemon**: Un hotel puede tener varios pokémon disponibles (en un
-  tour).
-- **Reservación ↔ Payment**: Una reserva tiene un pago asociado.
+**Tiempo Estimado:** 6 horas | **Complejidad:** ★★★
 
 ---
 
-### **Ejercicio de Implementación (Simplificado)**
+### 6.3 El Gran Torneo — Test E2E de Flujos Completos ★★★★
 
-1. **Crear entidades**:
-   - Hotel, Habitación, Amenidad, Reservación, Trainer, Pokemon, User, Payment,
-     Review.
-2. **Crear vistas para consultas**:
-   - Listar todas las reservas por hotel.
-   - Mostrar reviews de un hotel con calificación.
-3. **Implementar casos de uso**:
-   - Un entrenador reserva una habitación, visita un hotel, doméstica un
-     pokemon, y deja una review.
+**Historia**: Erika quiere un test que simule exactamente lo que haría un entrenador real durante su estadía
+completa: desde registrarse hasta dejar su reseña, pasando por añadir su Pokémon, reservar, pagar, hacer
+check-in, unirse a un tour y hacer check-out. No basta con probar endpoints aislados; el flujo completo debe
+pasar sin errores usando autenticación JWT real.
+
+**Objetivo Técnico**: Implementar tests E2E que cubran flujos completos de negocio usando
+`@SpringBootTest(webEnvironment = RANDOM_PORT)` con `TestRestTemplate`, autenticación JWT real y base de
+datos real (H2 o Testcontainers según disponibilidad).
+
+**Desarrollo Esperado:**
+
+1. Flujo "El Entrenador Completo" (happy path end-to-end):
+   - `POST /api/auth/register` → usuario creado
+   - `POST /api/auth/verify?token=...` → email verificado
+   - `POST /api/auth/login` → JWT obtenido
+   - `POST /api/me/pokemon` → Pikachu añadido al equipo
+   - `GET /api/hotels/{id}/rooms/search` → habitación disponible seleccionada
+   - `POST /api/reservations` → reserva en PENDING
+   - `POST /api/reservations/{id}/payment` → pago iniciado
+   - `POST /api/payments/{id}/confirm` → reserva pasa a CONFIRMED
+   - `PATCH /api/reservations/{id}/check-in` → CHECKED_IN
+   - `POST /api/tours/schedules/{id}/book` → plaza en tour reservada
+   - `PATCH /api/reservations/{id}/check-out` → CHECKED_OUT + PokéCoins acreditados
+   - `POST /api/reservations/{id}/review` → reseña creada
+   - `GET /api/hotels/{id}/reviews` → reseña visible públicamente
+2. Flujo "El Team Rocket Fallido" (casos de error):
+   - Intentar acceder a `GET /api/me` sin token → 401
+   - TRAINER intenta ver reserva de otro TRAINER → 403
+   - Crear reseña sin haber hecho checkout → 409 con estado actual de la reserva
+3. Flujo "El GYM_LEADER Eficiente":
+   - Login como GYM_LEADER
+   - Crear tour con horario para mañana → 201
+   - Cambiar estado de habitación a CLEANING → 200
+   - `GET /api/admin/dashboard` → estadísticas del hotel
+
+**Criterios de Aceptación:**
+
+- [ ] El flujo del Entrenador Completo termina exitosamente: PokéCoins son los correctos al final (noches ×
+      multiplicador de tipo de habitación)
+- [ ] El JWT obtenido en login funciona para todas las peticiones subsecuentes sin re-autenticar
+- [ ] Cada test empieza con BD limpia (usar `@Transactional` con rollback o `@Sql` para reset)
+- [ ] El flujo del Team Rocket verifica exactamente el mensaje de error de cada respuesta 4xx
+- [ ] Tiempo total del flujo del Entrenador Completo < 15 segundos incluyendo arranque del contexto
+
+**Tiempo Estimado:** 8 horas | **Complejidad:** ★★★★
+
+---
+
+## 7. Fase 5 — Cinnabar: Estadísticas y Automatización
+
+> Realiza estos ejercicios después de completar los Ejercicios 5.1 a 5.5 del Roadmap.
+> Blaine ya instrumentó el sistema con logs y métricas. Ahora añade semántica de negocio.
 
 ---
 
-### **Caso de Uso Integrado**
+### 7.1 El Panel del Profesor Oak — Dashboard de Estadísticas ★★★
 
-1. **Escena 1**: Entrenador A reserva una habitación en Hotel X.
-2. **Escena 2**: El entrenador visita el hotel, encuentra un pokémon, lo
-   domestica, y registra la experiencia en su cuenta.
-3. **Escena 3**: El entrenador da una review de Hotel X con calificación alta.
-4. **Escena 4**: El administrador revisa la reserva, confirma el pago, y
-   actualiza los datos del hotel.
+**Historia**: Blaine entrega al Profesor Oak un endpoint de dashboard. Oak quiere ver en una sola llamada:
+tasa de ocupación, ingresos de la semana, tours más populares, promedio de calificación y top de Pokémon
+visitantes. Toda esta información debe ser eficiente: máximo 5 queries SQL, y el resultado debe cachearse
+por 5 minutos.
+
+**Objetivo Técnico**: Implementar un endpoint de estadísticas agregadas usando proyecciones JPA y queries
+nativas. Cachear con TTL configurable. Verificar eficiencia con conteo de queries SQL.
+
+**Desarrollo Esperado:**
+
+1. DTO `HotelDashboardResponse` con secciones:
+   - `occupancy`: `totalRooms`, `occupiedRooms`, `availableRooms`, `occupancyRate` (%)
+   - `revenue`: `weeklyTotal`, `monthlyTotal`, `avgReservationValue` (todos como BigDecimal)
+   - `popularTours`: List de `{tourName, bookingsThisWeek}` (top 5)
+   - `pokemonStats`: `topSpecies` (top 3), `totalPokemonCurrentlyHosted`
+   - `reviewStats`: `avgRating`, `totalReviews`, `recentReviews` (últimas 3, solo rating y snippet)
+2. `DashboardService` con queries optimizadas:
+   - Una query SQL para `occupancy` (GROUP BY status)
+   - Una query para `revenue` con filtro de fechas (SUM y AVG)
+   - Una query para `popularTours` con COUNT y GROUP BY esta semana
+3. Cachear con `@Cacheable("hotel-dashboard")` y TTL de 5 minutos
+4. Invalidar caché cuando se produce check-out (usando `@CacheEvict`)
+5. Endpoint: `GET /api/admin/dashboard` (solo PROFESOR_OAK y GYM_LEADER del hotel)
+
+**Criterios de Aceptación:**
+
+- [ ] El endpoint ejecuta máximo 5 queries SQL (verificable con Hibernate SQL logging en nivel DEBUG)
+- [ ] `occupancyRate` correcto: 3 habitaciones ocupadas de 10 = 30.0%
+- [ ] Segunda llamada con caché activo responde en <10ms
+- [ ] Después de un check-out, la siguiente llamada al dashboard actualiza `occupancy` (caché invalidado)
+- [ ] Test de integración: insertar datos conocidos, llamar dashboard, verificar exactitud de cada sección
+
+**Tiempo Estimado:** 7 horas | **Complejidad:** ★★★
+
+---
+
+### 7.2 El Radar del Hotel — Health Checks con Semántica de Negocio ★★
+
+**Historia**: Blaine configura el monitoreo. `GET /actuator/health` solo dice "UP/DOWN" para la BD. Él
+quiere health checks con semántica hotelera: ¿hay habitaciones disponibles? ¿el sistema de pagos responde?
+¿hay tours programados para hoy? Un hotel sin habitaciones disponibles está "degradado" aunque la BD
+funcione perfectamente.
+
+**Objetivo Técnico**: Implementar `HealthIndicator` personalizados con semántica de negocio. Los detalles
+numéricos solo son visibles para usuarios autenticados con rol administrativo.
+
+**Desarrollo Esperado:**
+
+1. `RoomAvailabilityHealthIndicator`:
+   - UP: ≥20% habitaciones disponibles
+   - DOWN: <5% disponibles
+   - Incluir en detalles: `availableRooms`, `totalRooms`, `availabilityRate`
+2. `TourScheduleHealthIndicator`:
+   - UP: hay al menos un `TourSchedule` con `status=OPEN` en las próximas 24 horas
+   - UNKNOWN: no hay tours programados para hoy (estado informativo, no crítico)
+3. Configurar exposición en `application.yml`:
+   - `management.endpoint.health.show-details: when-authorized`
+   - Solo usuarios con rol `PROFESOR_OAK` o `GYM_LEADER` ven los detalles numéricos
+4. Agregar ambos indicadores al health check principal (aparecen bajo sus nombres de bean)
+
+**Criterios de Aceptación:**
+
+- [ ] `GET /actuator/health` sin autenticar muestra el status global pero sin detalles
+- [ ] `GET /actuator/health` con token de PROFESOR_OAK muestra los 2 indicadores con sus métricas
+- [ ] Con 0 habitaciones disponibles: `roomAvailability` muestra status DOWN con `availableRooms: 0`
+- [ ] Si un indicador lanza excepción inesperada, el health global pasa a DOWN pero el otro indicador sigue
+      mostrándose correctamente
+- [ ] Test unitario: mockear el repositorio devolviendo 0 habitaciones → verificar status DOWN
+
+**Tiempo Estimado:** 4 horas | **Complejidad:** ★★
 
 ---
 
-Claro, puedo ayudarte a estructurar los ejercicios y casos de uso para el
-desarrollo de tu sistema con Spring Boot y Kotlin. A continuación, te propongo
-un esquema general para cada uno de ellos.
+### 7.3 El Sistema de Notificaciones del Hotel — Desacoplamiento con Eventos ★★★
 
-### Ejercicio 1: Diseño del Modelo
+**Historia**: Blaine nota que `checkout()` en `ReservationService` llama directamente a 3 servicios
+distintos: `PokeCoinService.award()`, `ReviewReminderService.schedule()` y `TourService.releaseSlotsForUser()`.
+Cuando se añade un cuarto efecto (enviar webhook), hay que modificar `ReservationService` de nuevo. Blaine
+pide desacoplamiento: el servicio de reservas no debe saber qué ocurre después del checkout.
 
-**Objetivo:** Definir las entidades (hotel, room, amenities, reservations,
-trainer, pokemon, user, payment, review, service) y sus relaciones utilizando
-UML o diagramas entidad-relación.
+**Objetivo Técnico**: Refactorizar el flujo de checkout para publicar un evento de dominio
+`TrainerCheckedOutEvent` con `ApplicationEventPublisher`. Los efectos secundarios se implementan como
+listeners independientes que no se conocen entre sí.
 
-- **Entidades:**
-  - Hotel
-  - Room
-  - Amenities
-  - Reservation
-  - Trainer
-  - Pokemon
-  - User (Administrador, Entrenador)
-  - Payment
-  - Review
-  - Service
+**Desarrollo Esperado:**
 
-### Ejercicio 2: Configuración de Spring Boot y Kotlin
+1. Data class `TrainerCheckedOutEvent(reservationId: Long, userId: Long, roomType: RoomType, nights: Int,
+   checkOutDate: LocalDate)`
+2. En `ReservationService.checkOut()`: publicar el evento en lugar de llamar directamente a los servicios
+3. Tres listeners independientes, cada uno en su propio `@Component`:
+   - `PokeCoinCheckoutListener`: llama a `PokeCoinService.awardCoins()`
+   - `ReviewReminderListener`: crea una `ReviewReminder` en BD (entidad nueva con `userId`, `reservationId`,
+     `remindAt = checkOutDate + 1 día`, `sent = false`)
+   - `TourSlotReleaseListener`: cancela `TourBookings` activos del usuario si ya hizo checkout
+4. Todos los listeners usan `@TransactionalEventListener(phase = AFTER_COMMIT)` — si fallan, el checkout
+   ya ocurrió y no hace rollback
 
-**Objetivo:** Crear una aplicación básica con Spring Boot configurada para
-manejar las entidades definidas.
+**Criterios de Aceptación:**
 
-- **Pasos:**
-  - Configurar el proyecto en Spring Initializr.
-  - Definir los repositorios (Repository) para cada entidad.
-  - Establecer las relaciones entre las entidades utilizando anotaciones
-    (@ManyToMany, @OneToMany, etc.)
+- [ ] `ReservationService` no contiene ningún import de `PokeCoinService`, `ReviewReminderService` ni
+      `TourService` (el desacoplamiento es real y verificable)
+- [ ] Si `PokeCoinCheckoutListener` lanza excepción, la reserva sigue en CHECKED_OUT (AFTER_COMMIT lo
+      garantiza)
+- [ ] Test: publicar `TrainerCheckedOutEvent` directamente desde el test → verificar que los 3 listeners
+      reaccionan sin necesidad de crear una reserva real
+- [ ] `ReviewReminder` creada contiene el `reservationId` correcto para enviar el link exacto al entrenador
+- [ ] Los logs de cada listener incluyen `reservationId` como campo estructurado para correlación
 
-### Ejercicio 3: Implementación de Entidades y Repositorios
-
-**Objetivo:** Desarrollar el código para las clases de entidades y sus
-respectivos repositorios.
-
-- **Pasos:**
-  - Crear las clases de cada entidad con los atributos necesarios.
-  - Implementar los repositorios (Repository) que incluyen métodos CRUD básicos
-    y otros específicos según sea necesario.
-
-### Ejercicio 4: Criterio de Usuario y Autenticación
-
-**Objetivo:** Implementar la gestión de usuarios y autenticación para
-administradores y entrenadores.
-
-- **Pasos:**
-  - Crear un modelo de usuario con roles (Administrador, Entrenador).
-  - Configurar Spring Security para manejar la autenticación y autorización.
-  - Desarrollar endpoints para registro y login de usuarios.
-
-### Ejercicio 5: Reservas y Servicios
-
-**Objetivo:** Implementar la funcionalidad para reservas de hoteles, servicios
-adicionales en los hoteles (como tours de pokémon) y pagos asociados.
-
-- **Pasos:**
-  - Definir las entidades y relaciones necesarias para reservas.
-  - Implementar el proceso de reserva, incluyendo la confirmación y cancelación.
-  - Integrar un sistema de pago, posiblemente utilizando una API externa para
-    transacciones en línea.
-
-### Ejercicio 6: Descubrimiento de Pokemones y Tours
-
-**Objetivo:** Permitir a los entrenadores visitar hoteles (usando reservas) y
-detectar pokemones, además de realizar tours y hacer reviews de los hoteles.
-
-- **Pasos:**
-  - Crear funcionalidades para que los entrenadores puedan marcar visitas a
-    hoteles.
-  - Implementar la lógica para el descubrimiento de pokemones en diferentes
-    ubicaciones (hoteles).
-  - Desarrollar métodos para hacer y revisar tours, y generar reviews.
-
-### Ejercicio 7: Casos de Uso y Pruebas
-
-**Objetivo:** Definir casos de uso específicos para cada funcionalidad
-implementada y realizar pruebas unitarias/básicas.
-
-- **Pasos:**
-  - Identificar los flujos de trabajo principales (registro usuario, reserva
-    hotel, detección pokemon, etc.)
-  - Desarrollar una serie de casos de uso que cubran todas las funcionalidades.
-  - Realizar pruebas para asegurar la correcta operación de cada componente.
-
-### Ejercicio 8: Integración y Pruebas Finales
-
-**Objetivo:** Integrar todos los componentes, realizar pruebas exhaustivas del
-sistema completo y preparar el sistema para su despliegue.
-
-- **Pasos:**
-  - Realizar la integración final de todas las partes del sistema.
-  - Probar el funcionamiento en diferentes escenarios y casos extremos.
-  - Preparar el sistema para el entorno de producción, incluyendo optimización
-    de rendimiento y seguridad.
+**Tiempo Estimado:** 5 horas | **Complejidad:** ★★★
 
 ---
+
+## 8. Fase 6 — Viridian: Configuración Avanzada de Producción
+
+> Realiza estos ejercicios después de completar los Ejercicios 6.1 a 6.3 del Roadmap.
+> Giovanni ya containerizó y tiene CI/CD. Ahora refina la configuración para operar en producción real.
+
+---
+
+### 8.1 El Mapa de la Región — Configuración Multi-Entorno ★★
+
+**Historia**: Giovanni prepara el Hotel Pokémon para operar en múltiples regiones: Kanto (producción),
+Johto (staging) y Sinnoh (desarrollo). Actualmente todo está hardcodeado en `application.yml` y hay
+`@Value("${...}")` dispersos por clases de servicio. Giovanni quiere configuración tipada, validada y
+organizada por perfiles.
+
+**Objetivo Técnico**: Estructurar la configuración usando `@ConfigurationProperties` tipadas por dominio,
+perfiles de Spring por entorno, y eliminar todos los `@Value` de las clases de servicio.
+
+**Desarrollo Esperado:**
+
+1. Archivos de configuración por entorno:
+   - `application.yml` — configuración base sin valores específicos de entorno
+   - `application-dev.yml` — H2, logging DEBUG, Sentry desactivado
+   - `application-staging.yml` — PostgreSQL staging, logging INFO, Sentry en modo staging
+   - `application-prod.yml` — PostgreSQL prod, logging WARN, Redis habilitado, Sentry prod
+2. `@ConfigurationProperties` por grupos lógicos (`@Validated` en cada una):
+   - `HotelProperties`: `maxPokemonPerTrainer: Int`, `maxReservationDays: Int`,
+     `defaultCurrency: String`
+   - `SecurityProperties`: `jwtSecret: String`, `jwtExpirationHours: Long`,
+     `refreshTokenDays: Long`
+   - `CacheProperties`: `roomAvailabilityTtl: Duration`, `dashboardTtl: Duration`
+3. Eliminar todos los `@Value("${...}")` de clases de servicio y reemplazar por inyección de
+   `@ConfigurationProperties`
+4. Actualizar `.env.example` documentando todas las variables de entorno requeridas por entorno
+
+**Criterios de Aceptación:**
+
+- [ ] `./gradlew bootRun --args='--spring.profiles.active=dev'` arranca sin PostgreSQL ni Redis
+- [ ] `./gradlew bootRun --args='--spring.profiles.active=prod'` falla claramente si `DB_URL` no está
+      definida (con mensaje de qué falta, no con NPE)
+- [ ] No hay ningún `@Value` en clases de servicio (solo permitido en `@Configuration` si es estrictamente
+      necesario)
+- [ ] `HotelProperties` tiene validación: `@Min(1) @Max(6)` en `maxPokemonPerTrainer`
+- [ ] Test: en perfil `dev`, verificar que `cacheProperties.dashboardTtl` tiene el valor configurado en
+      `application-dev.yml`
+
+**Tiempo Estimado:** 4 horas | **Complejidad:** ★★
+
+---
+
+### 8.2 La Muralla de Giovanni — Migraciones Zero-Downtime ★★★
+
+**Historia**: Giovanni exige que cualquier migración de base de datos pueda ejecutarse con el servicio en
+producción, sin tiempos de inactividad. El equipo planea renombrar la columna `hotels.city` a
+`hotels.city_name`. En una tabla con miles de registros activos, un `ALTER TABLE` naive puede bloquear la
+tabla durante minutos.
+
+**Objetivo Técnico**: Implementar el patrón expand-contract para una migración zero-downtime. Documentar
+qué operaciones de Flyway son seguras en PostgreSQL y cuáles requieren mantenimiento programado.
+
+**Desarrollo Esperado:**
+
+1. Implementar la migración de `city` → `city_name` en 3 migraciones Flyway separadas:
+   - `V10__expand_add_city_name.sql`: añadir columna `city_name` nullable (operación segura)
+   - `V11__migrate_city_data.sql`: copiar datos de `city` a `city_name` en batches de 1000 registros
+     (sin bloquear la tabla)
+   - `V12__contract_remove_city.sql`: eliminar columna `city` (solo ejecutar cuando el código no la use)
+2. Implementar en `V11` la migración en batches con un `DO $$ BEGIN ... END $$` block:
+   ```sql
+   -- Migrar en lotes de 1000 para no bloquear la tabla
+   UPDATE hotels SET city_name = city WHERE id IN (
+       SELECT id FROM hotels WHERE city_name IS NULL LIMIT 1000
+   );
+   ```
+3. Crear al menos un índice usando `CREATE INDEX CONCURRENTLY` para no bloquear inserts durante su creación
+4. Añadir en los comentarios SQL por qué cada operación es segura (o cuándo no lo sería)
+
+**Criterios de Aceptación:**
+
+- [ ] Las 3 migraciones de Flyway se aplican en orden sin errores (`./gradlew flywayMigrate`)
+- [ ] Los datos en `city` quedan correctamente copiados en `city_name` tras `V11`
+- [ ] El índice creado con `CONCURRENTLY` está presente en la BD sin haber bloqueado inserts
+- [ ] `./gradlew flywayInfo` muestra las 3 migraciones en estado "Success"
+- [ ] Cada migración tiene comentario SQL explicando la estrategia y por qué es segura
+
+**Tiempo Estimado:** 5 horas | **Complejidad:** ★★★
+
+---
+
+### 8.3 La Inspección de la Liga — Hardening de Seguridad en Producción ★★★
+
+**Historia**: Giovanni prepara el Hotel Pokémon para una auditoría de seguridad de la Liga. El auditor
+buscará headers faltantes, dependencias con CVEs conocidos, endpoints que filtren stacktraces en producción,
+y la imagen Docker que corra como root. Giovanni quiere cero hallazgos críticos.
+
+**Objetivo Técnico**: Implementar una checklist de hardening de seguridad: security headers HTTP,
+sanitización de respuestas de error en producción, escaneo de dependencias con OWASP, y configuración
+segura del contenedor Docker.
+
+**Desarrollo Esperado:**
+
+1. Security headers en todas las respuestas (en `SecurityFilterChain`):
+   - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
+   - `X-Content-Type-Options: nosniff`
+   - `X-Frame-Options: DENY`
+   - `Content-Security-Policy: default-src 'self'`
+   - `Referrer-Policy: no-referrer`
+2. Sanitización de respuestas de error por perfil:
+   - En `dev`: stacktraces incluidos (útil para desarrollo)
+   - En `prod`: errores 5xx devuelven solo `{"title": "Internal Server Error", "status": 500}` sin traza
+   - Los errores de BD (constraint violations) nunca revelan nombres de tabla ni columnas internas
+3. Escaneo de dependencias:
+   - Configurar OWASP Dependency Check: `./gradlew dependencyCheckAnalyze`
+   - Generar reporte HTML en `build/reports/`
+   - El build falla si hay vulnerabilidades con CVSS ≥ 7.0
+4. Seguridad del contenedor Docker:
+   - Crear usuario no-root en el Dockerfile: `RUN adduser --disabled-password appuser && USER appuser`
+   - Añadir flags JVM de producción: `-XX:+ExitOnOutOfMemoryError`, `-Djava.security.egd=file:/dev/./urandom`
+
+**Criterios de Aceptación:**
+
+- [ ] `curl -I http://localhost:8080/api/hotels` muestra todos los security headers definidos
+- [ ] En perfil `prod`, error 500 devuelve solo `{"title":"Internal Server Error","status":500}` sin
+      stacktrace ni nombres de clase
+- [ ] Reporte OWASP disponible en `build/reports/dependency-check-report.html`
+- [ ] 0 vulnerabilidades con CVSS ≥ 7.0 en dependencias directas del proyecto
+- [ ] `docker inspect hotel-pokemon:latest` confirma que el proceso no corre como `root` (UID != 0)
+
+**Tiempo Estimado:** 6 horas | **Complejidad:** ★★★
+
+---
+
+## 9. Módulos Integradores para la Liga Pokémon
+
+Estos ejercicios integran múltiples módulos del sistema. Se realizan después de completar el roadmap
+completo y los ejercicios complementarios anteriores. Son los desafíos finales antes de la Liga.
+
+---
+
+### 9.1 El Gran Torneo — Módulo de Gamificación ★★★★
+
+**Historia**: El Profesor Oak quiere celebrar el primer aniversario del Hotel Pokémon con un gran torneo.
+Los entrenadores con más estadías completas reciben insignias digitales y aparecen en el ranking mensual.
+El sistema debe calcular un ranking semanal, otorgar badges automáticamente al alcanzar hitos, y notificar
+internamente a los ganadores. No existe nada de esto en el sistema actual.
+
+**Objetivo Técnico**: Implementar el módulo de gamificación desde cero integrando: reservas (para contar
+estadías), PokéCoins (para el ranking), reviews (para el score de reputación), tareas programadas (para el
+cálculo semanal), y el sistema de eventos (para otorgar badges al hacer checkout).
+
+**Desarrollo Esperado:**
+
+1. Entidad `Badge`:
+   - `name`: "Entrenador Regular", "Turista de Temporada", "Maestro del Hotel"
+   - `description`, `criteria`, `iconUrl`
+   - Relación Many-to-Many con `User` via tabla `user_badges` con `awardedAt: LocalDateTime`
+   - Constraint UNIQUE en `(userId, badgeId)` — no se puede otorgar el mismo badge dos veces
+2. Entidad `Notification`:
+   - `userId`, `title`, `message`, `read: Boolean`, `createdAt`
+   - Relación Many-to-One con `User`
+3. `GamificationService` con reglas:
+   - Al llegar a 5 estadías CHECKED_OUT: otorgar "Entrenador Regular" + notificación
+   - Al llegar a 10 estadías: otorgar "Turista de Temporada"
+   - Primer puesto del ranking mensual: otorgar "Maestro del Hotel"
+4. Listener `GamificationCheckoutListener` (escucha `TrainerCheckedOutEvent`) que verifica y otorga badges
+5. `RankingService` con tarea `@Scheduled(cron = "0 0 0 * * MON")`:
+   - Calcula top 10 entrenadores: (noches totales del mes × 1) + (PokéCoins × 0.5) + (avgReviews × 10)
+   - Guarda el ranking en tabla `weekly_ranking`
+6. Endpoints:
+   - `GET /api/me/badges` — mis insignias con fecha de obtención
+   - `GET /api/me/notifications` — mis notificaciones (paginado, no leídas primero)
+   - `POST /api/me/notifications/{id}/read` — marcar como leída
+   - `GET /api/admin/ranking` — top 10 con puntuación desglosada (solo OAK)
+
+**Criterios de Aceptación:**
+
+- [ ] Al hacer checkout de la 5ª estadía, se crea la `Notification` y se otorga el badge en la misma
+      transacción
+- [ ] El ranking se recalcula cada lunes a las 00:00 automáticamente
+- [ ] Intentar otorgar badge duplicado → silencioso (no excepción), simplemente no crea registro
+- [ ] `GET /api/admin/ranking` muestra la puntuación desglosada por componente (noches, coins, reviews)
+- [ ] Test E2E: simular 5 checkouts para un usuario → verificar badge "Entrenador Regular" y notificación
+      en BD
+
+**Tiempo Estimado:** 12 horas | **Complejidad:** ★★★★
+
+---
+
+### 9.2 La Opinión Moderada — Sistema de Reseñas con Moderación ★★★★
+
+**Historia**: El módulo de Reviews del ejercicio 5.3 funciona, pero las reseñas se publican sin revisión.
+Un entrenador molesto dejó texto inapropiado y estuvo visible horas antes de ser detectado. La Liga Pokémon
+exige que las reseñas pasen por un flujo de moderación antes de ser públicas. Además, los GYM_LEADER pueden
+responder oficialmente a las reseñas publicadas.
+
+**Objetivo Técnico**: Extender el módulo `Review` con un flujo de moderación (`PENDING_MODERATION` →
+`PUBLISHED` / `REJECTED`), respuestas oficiales del hotel, y un análisis de sentimiento basado en palabras
+clave (sin ML, usando un diccionario curado).
+
+**Desarrollo Esperado:**
+
+1. Añadir campo `status` a `Review`: Enum `PENDING_MODERATION`, `PUBLISHED`, `REJECTED`
+   - Las reseñas nuevas empiezan en `PENDING_MODERATION`
+   - Solo las `PUBLISHED` son visibles en `GET /api/hotels/{id}/reviews`
+2. Entidad `ReviewResponse` (respuesta oficial):
+   - Relación One-to-One con `Review`
+   - `respondedBy`: Long (userId del GYM_LEADER que responde)
+   - `responseText`: String (20-1000 chars)
+   - `respondedAt`: LocalDateTime
+3. Campo `sentimentScore: Double` calculado al crear la reseña:
+   - Lista curada de 50 palabras positivas en español: "excelente", "increíble", "limpio",
+     "amable", etc.
+   - Lista curada de 50 palabras negativas: "terrible", "sucio", "lento", "horrible", etc.
+   - Score = (positivas - negativas) / totalPalabras → normalizado a [-1.0, 1.0]
+   - Enum `Sentiment`: POSITIVE (>0.15), NEUTRAL (-0.15 to 0.15), NEGATIVE (<-0.15)
+4. Endpoints adicionales:
+   - `GET /api/admin/reviews/pending` — cola de moderación (GYM_LEADER y OAK)
+   - `PUT /api/admin/reviews/{id}/approve` — aprobar reseña
+   - `PUT /api/admin/reviews/{id}/reject` — rechazar con `rejectionReason: String`
+   - `POST /api/hotels/{id}/reviews/{reviewId}/response` — respuesta oficial (GYM_LEADER del hotel)
+
+**Criterios de Aceptación:**
+
+- [ ] Reseña recién creada no aparece en `GET /api/hotels/{id}/reviews` hasta ser `PUBLISHED`
+- [ ] Solo una respuesta oficial por reseña (constraint UNIQUE en `review_id` de `review_responses`)
+- [ ] "Excelente servicio, habitación increíble y muy limpia" → sentimentScore positivo (>0.15)
+- [ ] "Terrible experiencia, habitación sucia, staff horrible" → sentimentScore negativo (<-0.15)
+- [ ] Test: crear reseña → verificar estado `PENDING_MODERATION` → aprobar → verificar `PUBLISHED` y
+      visible en listado público
+- [ ] Rechazar reseña → el autor sigue viendo su reseña pero con estado `REJECTED`, no desaparece de
+      `GET /api/me/reviews`
+
+**Tiempo Estimado:** 10 horas | **Complejidad:** ★★★★
+
+---
+
+## 10. Tabla Resumen
+
+| #   | Ejercicio                               | Fase          | Módulo          | Complejidad | Horas     |
+|-----|-----------------------------------------|---------------|-----------------|-------------|-----------|
+| 3.1 | Módulo de Amenidades                    | 1 — Pewter    | Amenity         | ★★          | 5h        |
+| 3.2 | Módulo de Tours Pokémon                 | 1 — Pewter    | Tour            | ★★★         | 8h        |
+| 3.3 | Perfil y Equipo Pokémon                 | 1 — Pewter    | Pokemon         | ★★          | 5h        |
+| 3.4 | Módulo de Pagos                         | 1 — Pewter    | Payment         | ★★★         | 7h        |
+| 4.1 | Registro y Perfil del Entrenador        | 2 — Vermilion | Auth/User       | ★★          | 5h        |
+| 4.2 | Seguridad en el Módulo Tours            | 2 — Vermilion | Tour/Security   | ★★          | 4h        |
+| 5.1 | Validaciones del Equipo Pokémon         | 3 — Cerulean  | Pokemon         | ★★          | 5h        |
+| 5.2 | Validaciones del Módulo Tours           | 3 — Cerulean  | Tour            | ★★★         | 5h        |
+| 5.3 | Módulo de Reseñas                       | 3 — Cerulean  | Review          | ★★★         | 6h        |
+| 6.1 | WebMvcTest Exhaustivo                   | 4 — Celadon   | Testing         | ★★          | 6h        |
+| 6.2 | DataJpaTest en Queries Críticas         | 4 — Celadon   | Testing         | ★★★         | 6h        |
+| 6.3 | Test E2E de Flujos Completos            | 4 — Celadon   | Testing         | ★★★★        | 8h        |
+| 7.1 | Dashboard de Estadísticas               | 5 — Cinnabar  | Admin           | ★★★         | 7h        |
+| 7.2 | Health Checks con Semántica de Negocio  | 5 — Cinnabar  | Actuator        | ★★          | 4h        |
+| 7.3 | Desacoplamiento con Eventos en Checkout | 5 — Cinnabar  | Events          | ★★★         | 5h        |
+| 8.1 | Configuración Multi-Entorno             | 6 — Viridian  | Config          | ★★          | 4h        |
+| 8.2 | Migraciones Zero-Downtime               | 6 — Viridian  | Flyway/DB       | ★★★         | 5h        |
+| 8.3 | Hardening de Seguridad en Producción    | 6 — Viridian  | Security/Docker | ★★★         | 6h        |
+| 9.1 | Módulo de Gamificación                  | Liga Pokémon  | Gamification    | ★★★★        | 12h       |
+| 9.2 | Sistema de Reseñas con Moderación       | Liga Pokémon  | Review          | ★★★★        | 10h       |
+|     | **TOTAL**                               |               |                 |             | **~123h** |
+
+**Producto al completar todos los ejercicios:** Un sistema de gestión hotelera completo con todos los
+módulos del Hotel Pokémon implementados, testeados y listos para producción — no solo las reservas y
+habitaciones del roadmap, sino el ecosistema completo: amenidades, tours, Pokémon, pagos, reseñas,
+gamificación y observabilidad con semántica de negocio.
