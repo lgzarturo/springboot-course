@@ -208,7 +208,7 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 ### Principios de la Estructura
 
 | Principio                    | Descripción                                                                |
-|------------------------------|----------------------------------------------------------------------------|
+| ---------------------------- | -------------------------------------------------------------------------- |
 | **Un paquete = una feature** | Todo lo relacionado con una feature vive junto                             |
 | **Máximo 2 niveles**         | `hotels/dto/` es el máximo de anidación                                    |
 | **Sin ports artificiales**   | El service es la capa de negocio, el repository es la interfaz             |
@@ -221,7 +221,7 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 ## Variables de Entorno
 
 | Variable                 | Descripción                 | Valor por Defecto |
-|--------------------------|-----------------------------|-------------------|
+| ------------------------ | --------------------------- | ----------------- |
 | `SPRING_PROFILES_ACTIVE` | Perfil de Spring activo     | `dev`             |
 | `DB_NAME`                | Nombre de la base de datos  | `springboot_db`   |
 | `DB_USERNAME`            | Usuario de BD               | `postgres`        |
@@ -263,30 +263,34 @@ gimnasios. Cada gimnasio representa un dominio técnico esencial.
 
 ### 🗺️ Ruta de Aprendizaje
 
-| #  | Gimnasio         | Líder     | Insignia         | Dominio Técnico                             | Duración |
-|----|------------------|-----------|------------------|---------------------------------------------|----------|
-| 1  | 🏔️ **Pewter**   | Brock     | Boulder Badge 💎 | JPA, Entidades, Flyway, Repositorios        | 24h      |
-| 2  | ⚡ **Vermilion**  | Lt. Surge | Thunder Badge ⚡  | JWT, Spring Security, OAuth2, RBAC          | 20h      |
-| 3  | 🌊 **Cerulean**  | Misty     | Cascade Badge 🌊 | Bean Validation, Excepciones, Transacciones | 16h      |
-| 4  | 🌱 **Celadon**   | Erika     | Rainbow Badge 🌈 | Unit Tests, Integration, E2E, Performance   | 24h      |
-| 5  | 🧪 **Cinnabar**  | Blaine    | Volcano Badge 🌋 | Logging, Métricas, Distributed Tracing      | 16h      |
-| 6  | 🐉 **Viridian**  | Giovanni  | Earth Badge 🌍   | Docker, CI/CD, Análisis Estático            | 20h      |
-| 🏆 | **Liga Pokémon** | —         | Maestro 🎖️      | Proyecto integrador completo                | 8h       |
+| #   | Gimnasio         | Líder     | Insignia         | Dominio Técnico                             | Duración |
+| --- | ---------------- | --------- | ---------------- | ------------------------------------------- | -------- |
+| 1   | 🏔️ **Pewter**    | Brock     | Boulder Badge 💎 | JPA, Entidades, Flyway, Repositorios        | 24h      |
+| 2   | ⚡ **Vermilion** | Lt. Surge | Thunder Badge ⚡ | JWT, Spring Security, OAuth2, RBAC          | 20h      |
+| 3   | 🌊 **Cerulean**  | Misty     | Cascade Badge 🌊 | Bean Validation, Excepciones, Transacciones | 16h      |
+| 4   | 🌱 **Celadon**   | Erika     | Rainbow Badge 🌈 | Unit Tests, Integration, E2E, Performance   | 24h      |
+| 5   | 🧪 **Cinnabar**  | Blaine    | Volcano Badge 🌋 | Logging, Métricas, Distributed Tracing      | 16h      |
+| 6   | 🐉 **Viridian**  | Giovanni  | Earth Badge 🌍   | Docker, CI/CD, Análisis Estático            | 20h      |
+| 🏆  | **Liga Pokémon** | —         | Maestro 🎖️       | Proyecto integrador completo                | 8h       |
 
 > **Total estimado:** ~128 horas (~3 semanas full-time)
 
 ### 📚 Documentación Detallada
 
-| Recurso                                                                     | Contenido                                                      |
-|-----------------------------------------------------------------------------|----------------------------------------------------------------|
-| [📖 Guía Narrativa](docs/learning-path/narrative-guide.md)                  | Historia completa de Kai (visión general, motivación)          |
+| Recurso                                                                    | Contenido                                                      |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| [📖 Guía Narrativa](docs/learning-path/narrative-guide.md)                 | Historia completa de Kai (visión general, motivación)          |
 | [🗺️ Itinerario de Desarrollo](docs/learning-path/development-itinerary.md) | Fases con código de ejemplo (entidades, seguridad, testing...) |
 | [🏋️ Roadmap de Ejercicios](docs/learning-path/exercises-roadmap.md)        | Ejercicios paso a paso con criterios de aceptación             |
 | [🏗️ Plan de Migración MVC](docs/architecture/mvc-migration-plan.md)        | Migración de Hexagonal a MVC por features                      |
 
 ### 🚀 ¿Por dónde empezar?
 
-Esta es una historia de Kai, un desarrollador que busca mejorar sus habilidades en el desarrollo de aplicaciones web con Spring Boot y Kotlin. A través de un camino de aprendizaje estructurado, Kai se desempeñará en varios gimnasios, cada uno con un líder y una insignia que representará su dominio técnico. [Leer más sobre como avanzar de novato a maestro en Spring Boot](https://www.arthurolg.com/article/springboot-course_de-novato-a-maestro-springboot-guia-narrativa-pokemon).
+Esta es una historia de Kai, un desarrollador que busca mejorar sus habilidades
+en el desarrollo de aplicaciones web con Spring Boot y Kotlin. A través de un
+camino de aprendizaje estructurado, Kai se desempeñará en varios gimnasios, cada
+uno con un líder y una insignia que representará su dominio técnico.
+[Leer más sobre como avanzar de novato a maestro en Spring Boot](https://www.arthurolg.com/article/springboot-course_de-novato-a-maestro-springboot-guia-narrativa-pokemon).
 
 1. **Si eres nuevo:** Lee la
    [Guía Narrativa](docs/learning-path/narrative-guide.md) para entender el
@@ -298,8 +302,12 @@ Esta es una historia de Kai, un desarrollador que busca mejorar sus habilidades 
    ver los ejemplos de código.
 3. **Si quieres entender la arquitectura:** Revisa el
    [Plan de Migración MVC](docs/architecture/mvc-migration-plan.md).
-4. **Guía de inicio rápido con Spring Boot y Kotlin:** Aprende los conceptos 
-5. básicos de [MVC con Spring Boot y Kotlin](docs/course/lectures/quickstart-springboot-kotlin.md).
+4. **Guía de inicio rápido con Spring Boot y Kotlin:** Aprende los conceptos
+5. básicos de
+   [MVC con Spring Boot y Kotlin](docs/course/lectures/quickstart-springboot-kotlin.md).
+6. Ideas de ejercicios complementarios para el sistema por niveles. Son
+   prácticas adicionales que puedes realizar para reforzar lo aprendido.
+   [Leer más](docs/learning-path/ideas-ejercicios.md).
 
 ---
 
