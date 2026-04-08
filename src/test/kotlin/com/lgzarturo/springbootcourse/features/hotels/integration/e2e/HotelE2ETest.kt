@@ -74,7 +74,7 @@ class HotelE2ETest {
             val createdHotel = createHotel(createRequest)
 
             Assertions.assertEquals(
-                HttpStatus.OK,
+                HttpStatus.CREATED,
                 testRestTemplate.postForEntity(baseUrl, createRequest, String::class.java).statusCode,
             )
             Assertions.assertNotNull(createdHotel.id, "El ID del hotel creado no debería ser nulo")
