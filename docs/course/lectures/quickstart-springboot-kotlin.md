@@ -112,6 +112,16 @@ capas son los DTOs (objetos de transferencia de datos).
 Para este ejemplo, vamos a usar un dominio concreto para los ejemplos: Pokemon,
 KindPokemon, Trainer y TrainerProfile.
 
+## Conceptos clave
+
+- **Entidades (Model)**: Representan las tablas de la base de datos. Usa anotaciones JPA como `@Entity`, `@Table`, etc. Mantén las entidades simples, sin lógica de negocio.
+- **Repositorios (Repository)**: Interfaces que extienden `JpaRepository` para operaciones CRUD básicas. Define consultas personalizadas con `@Query` o métodos de nombres (query methods).
+- **Servicios (Service)**: Contienen la lógica de negocio. Inyecta repositorios aquí para acceder a datos. Usa transacciones con `@Transactional`.
+- **Controladores (Controller)**: Manejan las solicitudes HTTP. Usa anotaciones como `@RestController`, `@GetMappin`g, etc. Válida entradas con `@Valid` y maneja excepciones globalmente con `@ControllerAdvice`.
+- **Configuración con Gradle**: En `build.gradle.kts`, incluye dependencias como `spring-boot-starter-data-jpa`, `spring-boot-starter-web`, `kotlin-reflect`, y el driver de BD (e.g., postgresql o h2 para pruebas).
+- **Patrones de Diseño**: Aplica Dependency Injection (usa `@Autowired` o constructor injection), DTOs para transferir datos (evita exponer entidades directamente), y mapeo para convertir entidades a DTOs.
+- **Evolución del Código**: Usa interfaces para servicios y repositorios para facilitar mocking en tests. Implementa logging con `SLF4J` y maneja errores con excepciones personalizadas.
+
 ## La entidad base es la Trainer.
 
 ```kotlin
@@ -708,6 +718,19 @@ y usa `mappedBy = "trainer"`, por lo que **no** tiene ninguna columna FK para es
 relación. La columna `trainer_id` también está en `pokemons` porque `@ManyToOne`
 siempre pone la FK en el lado "muchos".
 
+### Explicación
+
+En JPA con Hibernate, las relaciones modelan asociaciones entre entidades. Es por eso que se usan las anotaciones como `@OneToMany`, `@ManyToOne` y `@OneToOne` para definir cardinalidad. Una de las mejores recomendaciones y prácticas es usar `FetchType.LAZY` por defecto para rendimiento, `@JoinColumn` para controlar claves foráneas, y evita cascadas excesivas para mantener integridad. Implementa DTOs y servicios para manejar operaciones complejas.
+
+- `@OneToMany`: En la entidad Trainer, se utiliza `@OneToMany` para establecer una relación con Pokemon, indicando que un entrenador puede tener muchos pokemones. El atributo mappedBy se refiere al campo en la entidad Pokemon que establece la relación inversa.
+- `@ManyToOne`: En la entidad Pokemon, se utiliza `@ManyToOne` para establecer una relación con Trainer, indicando que un pokemon pertenece a un trainer. La anotación `@JoinColumn` especifica la columna en la tabla Pokemon que se utiliza para almacenar el ID del trainer.
+- `@OneToOne`: Entre Trainer y TrainerProfile, se establece una relación uno a uno. Un entrenador tiene un perfil, y un perfil pertenece a un entrenador. La anotación `@JoinColumn` en TrainerProfile indica la columna que se utiliza para almacenar el ID del trainer.
+- Usa bidireccionalidad controlada (Owner side), lazy loading por default (evita N+1), CascadeType selectivo, `@JsonIgnore` o DTOs para serialización, y `mappedBy` para evitar tablas extras.
+- `FetchType.LAZY`: Evita carga innecesaria (usa `@EntityGraph` o `projections` para eager si necesitas).
+- `CascadeType.ALL`: Propaga operaciones (save/delete) del padre a hijos, pero selectivo para evitar cascades no deseados.
+- Usa `orphanRemoval = true` para eliminar datos huérfanos. En servicios, válida consistencia. Para rendimiento, usa `@JsonIgnore` en el lado inverso para evitar bucles en serialización JSON. (Se usa cuando la vida del hijo dependa del padre)
+- En DTOs, mapea selectivamente para evitar carga lazy innecesaria. Implementa validaciones en servicios para asegurar unicidad.
+
 ## Manejando errores
 
 Para cerrar el círculo del controlador, es recomendable manejar los errores. Una
@@ -780,12 +803,16 @@ class GlobalExceptionHandler {
    referencia inversa. El dueño es quien dice "yo soy responsable de guardar
    esta relación", y el otro lado dice "yo solo consulto, la relación la maneja
    el otro".
+5. **Problema N+1 y cómo evitarlo**: El problema N+1 ocurre cuando cargas una lista de entidades y luego accedes a sus relaciones lazy, generando una query por cada elemento, la forma de evitarlo es usar `fetch join` o `batch size` en las consultas JPA/Hibernate.
+6. **¿Para qué se usa @PatchMapping?** La anotación `@PatchMapping` se utiliza para actualizaciones parciales de recursos. A diferencia de `@PutMapping` (que requiere enviar todos los campos), `@PatchMapping` permite enviar solo los campos que se desean modificar
 
 ## Factos interesantes
 
 - Todas las relaciones deben ser LAZY por defecto, especialmente si son
   colecciones.
 - Usa siempre DTOs en lugar de exponer entidades.
+- Usa DTOs separados para `create`, `update`, `patch` y response.
+- Usa endpoints de acción explícita para reglas de negocio
 - El lado @ManyToOne es el que tiene la FK en la base de datos. (por lo tanto
   define al dueño de la relación)
 - Para relaciones bidireccionales, siempre usa los helpers.
@@ -801,3 +828,17 @@ class GlobalExceptionHandler {
   prefieren las relaciones unidireccionales, porque es fácil olvidarse de
   mantenerlas sincronizadas. Pero las unidireccionales tienden a dejar datos
   inconsistentes en la base de datos.
+- `@EntityGraph` para casos simples/medios, `fetch join` explícito para consultas críticas o complejas
+
+## Reglas recomendadas
+
+1. El controller no usa repository: Esto mantiene el diseño limpio.
+2. El service controla la transacción: Con @Transactional.
+3. Los DTOs aíslan el contrato HTTP: La API no depende de cómo esté modelada la base de datos.
+4. Las consultas complejas deben vivir en repository: Y no repartidas en services o controllers.
+5. No pongas lógica de negocio en controllers: Toda regla debe vivir en services o en el dominio.
+6. Usa transacciones en services, no en controllers: @Transactional debe estar donde ocurre la operación de negocio.
+7. Usa relaciones bidireccionales solo si realmente las necesitas: Muchas veces basta con una relación unidireccional.
+8. Cuidado con `CascadeType.ALL`: Úsalo solo cuando entiendas perfectamente el ciclo de vida. No lo pongas por costumbre. Sé intencional con cascade y orphanRemoval
+9. Evita data class en entidades JPA: Prefiere POJOs para mayor control y flexibilidad.
+10. Usa `@JoinColumn` en el lado propietario: Define la FK en la entidad que contiene la referencia.
