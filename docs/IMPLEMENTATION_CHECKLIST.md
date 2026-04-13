@@ -1,5 +1,9 @@
 # ✅ Checklist de Implementación - Estructura del Proyecto
 
+> **⚠️ DEPRECATED:** Este checklist referencia la arquitectura hexagonal.
+> El proyecto ha migrado a **MVC por Features (Screaming Architecture)**.
+> Ver: [Plan de Migración](architecture/mvc-migration-plan.md)
+
 ## 📋 Estructura Implementada
 
 ### ✅ Capa de Dominio (Domain Layer)

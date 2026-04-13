@@ -1,5 +1,9 @@
 # Diagrama de Arquitectura - Spring Boot Course
 
+> **⚠️ DEPRECATED:** Este documento describe la arquitectura hexagonal original.
+> El proyecto ha migrado a **MVC por Features (Screaming Architecture)**.
+> Ver: [Plan de Migración: Hexagonal → MVC por Features](architecture/mvc-migration-plan.md)
+
 ## 🏗️ Vista General de la Arquitectura
 
 ![Diagrama de Arquitectura](resources/images/08-architecture-springboot-course.webp)
@@ -16,52 +20,61 @@
 
 ![Patrones, puertos y adaptadores](resources/images/11-patron-adapters-springboot-course.webp)
 
-## 📦 Organización de Paquetes
+## 📦 Organización de Paquetes (Actual - MVC por Features)
 
 ```
 com.lgzarturo.springbootcourse
 │
 ├── 📱 SpringbootCourseApplication.kt
 │
-├── ⚙️ config/
+├── ⚙️ config/                          ← Infraestructura transversal
 │   ├── WebConfig.kt
 │   └── OpenApiConfig.kt
 │
-├── 🎯 domain/                          ← CORE (Sin dependencias externas)
-│   ├── model/
-│   │   └── Ping.kt
-│   ├── port/
-│   │   ├── input/
-│   │   │   └── PingUseCase.kt
-│   │   └── output/
-│   │       └── (Future repositories)
-│   └── service/
-│       └── PingService.kt
+├── 🔧 common/                          ← Componentes reutilizables
+│   ├── exception/
+│   │   ├── ErrorResponse.kt
+│   │   └── GlobalExceptionHandler.kt
+│   ├── pagination/
+│   │   ├── PageRequest.kt
+│   │   └── PageResult.kt
+│   ├── constants/
+│   │   └── AppConstants.kt
+│   └── extensions/
+│       └── DateTimeExtensions.kt
 │
-├── 🔌 infrastructure/                  ← ADAPTERS (Depende del dominio)
-│   ├── rest/
-│   │   ├── controller/
-│   │   │   └── PingController.kt
-│   │   ├── dto/
-│   │   │   ├── request/
-│   │   │   └── response/
-│   │   │       └── PingResponse.kt
-│   │   └── mapper/
-│   │       └── PingMapper.kt
-│   ├── persistence/
-│   │   ├── entity/
-│   │   ├── repository/
-│   │   └── mapper/
-│   └── exception/
-│       ├── ErrorResponse.kt
-│       └── GlobalExceptionHandler.kt
-│
-└── 🔧 shared/                          ← UTILITIES (Usado por todos)
-    ├── constant/
-    │   └── AppConstants.kt
-    ├── util/
-    └── extension/
-        └── DateTimeExtensions.kt
+└── 🎯 features/                       ← Features autocontenidas
+    ├── hotels/
+    │   ├── HotelController.kt         ← @RestController
+    │   ├── HotelService.kt           ← @Service
+    │   ├── HotelRepository.kt        ← @Repository
+    │   ├── HotelJpaRepository.kt     ← Spring Data JPA
+    │   ├── HotelEntity.kt            ← @Entity
+    │   ├── Hotel.kt                 ← Dominio puro
+    │   └── dto/
+    │       ├── CreateHotelRequest.kt
+    │       └── HotelResponse.kt
+    │
+    ├── ping/
+    │   ├── PingController.kt
+    │   ├── PingService.kt
+    │   ├── Ping.kt
+    │   └── dto/
+    │       └── PingResponse.kt
+    │
+    ├── users/
+    │   ├── UserController.kt
+    │   ├── UserService.kt
+    │   ├── UserRepository.kt
+    │   ├── User.kt
+    │   ├── valueobjects/
+    │   │   ├── Email.kt
+    │   │   └── UserId.kt
+    │   └── dto/
+    │       └── UserResponse.kt
+    │
+    └── examples/                     ← Feature de referencia
+        └── (...)
 ```
 
 ## 🧪 Estrategia de Testing

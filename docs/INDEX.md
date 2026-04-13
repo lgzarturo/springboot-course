@@ -1,5 +1,8 @@
 # 📚 Índice de Documentación del Proyecto
 
+> **⚠️ IMPORTANTE:** El proyecto migró de Arquitectura Hexagonal a **MVC por Features**.
+> El documento de referencia actual es [Plan de Migración](architecture/mvc-migration-plan.md).
+
 Bienvenido a la documentación completa del proyecto Spring Boot Course. Esta
 guía te ayudará a navegar por toda la documentación disponible.
 
@@ -10,12 +13,9 @@ guía te ayudará a navegar por toda la documentación disponible.
 Si eres nuevo en el proyecto, te recomendamos seguir este orden:
 
 1. **[README.md](../README.md)** - Comienza aquí para entender el proyecto
-2. **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Resumen ejecutivo de la
-   implementación
-3. **[ARCHITECTURE.md](ARCHITECTURE.md)** - Entiende la arquitectura del
-   proyecto
-4. **[DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)** - Aprende a desarrollar en
-   el proyecto
+2. **[Plan de Migración: Hexagonal → MVC por Features](architecture/mvc-migration-plan.md)** - Arquitectura actual **(PRIMARY)**
+3. **[CLAUDE.md](../CLAUDE.md)** - Guía técnica detallada
+4. **[AGENTS.md](../AGENTS.md)** - Comandos y referencia rápida
 
 ---
 
@@ -57,17 +57,15 @@ general de la implementación **Contenido**:
 
 ### 3. 🏗️ Arquitectura del Proyecto
 
-**Archivo**: [ARCHITECTURE.md](ARCHITECTURE.md) **Propósito**: Documentación
-detallada de la arquitectura **Contenido**:
+**Archivo**: [architecture/mvc-migration-plan.md](architecture/mvc-migration-plan.md) **(PRIMARY)**
+**Propósito**: Documentación detallada de la arquitectura actual **Contenido**:
 
-- Arquitectura hexagonal explicada
-- Separación de capas
-- Principios de arquitectura
-- Flujo de una petición
-- Mejores prácticas implementadas
-- Referencias y recursos
+- Migración de Hexagonal a MVC por Features
+- Principios de Screaming Architecture
+- Reglas de organización
+- Comparación Antes/Después
 
-**Cuándo leerlo**: Para entender en profundidad la arquitectura y sus decisiones
+**Cuándo leerlo**: Para entender la arquitectura actual del proyecto
 
 ---
 
@@ -287,8 +285,9 @@ Si tienes preguntas sobre la documentación o encuentras algo que no está claro
 
 ### Arquitectura
 
+- [Plan de Migración: Hexagonal → MVC por Features](architecture/mvc-migration-plan.md) **(PRIMARY)**
 - [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Hexagonal Architecture - Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
+- [Screaming Architecture](https://blog.cleancoder.com/uncle-bob/2011/09/30/ ScreamingArchitecture)
 - [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
 
 ### Testing
@@ -301,10 +300,15 @@ Si tienes preguntas sobre la documentación o encuentras algo que no está claro
 
 ## 📝 Notas Finales
 
+> **⚠️ NOTA:** El proyecto migró de Arquitectura Hexagonal a MVC por Features.
+> Los documentos `ARCHITECTURE.md`, `ARCHITECTURE_DIAGRAM.md`, `EXECUTIVE_SUMMARY.md`,
+> e `IMPLEMENTATION_CHECKLIST.md` en este directorio están **deprecados**.
+> Referencia actual: [mvc-migration-plan.md](architecture/mvc-migration-plan.md)
+
 Esta documentación es un **recurso vivo** que evoluciona con el proyecto. Si
 encuentras algo que falta o que podría mejorarse, ¡contribuye!
 
-**Última actualización**: 2025-10-26
+**Última actualización**: 2026-04-12
 
 ---
 

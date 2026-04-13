@@ -1,10 +1,16 @@
 # Estructura del Proyecto - Spring Boot Course
 
+> **⚠️ DEPRECATED:** Esta documentación describe la arquitectura hexagonal original.
+> El proyecto ha migrado a **MVC por Features (Screaming Architecture)**.
+> 
+> Ver: [Plan de Migración: Hexagonal → MVC por Features](architecture/mvc-migration-plan.md)
+> 
+> Esta documentación se mantiene solo como referencia histórica.
+
 ## 📁 Arquitectura del Proyecto
 
-Este proyecto sigue una **arquitectura hexagonal (Ports & Adapters)**
-simplificada con separación por capas, implementando las mejores prácticas de
-desarrollo con Spring Boot y Kotlin.
+Este proyecto implementa **MVC por Features (Screaming Architecture)**,
+no arquitectura hexagonal. Ver [Plan de Migración](architecture/mvc-migration-plan.md).
 
 ```
 src/main/kotlin/com/lgzarturo/springbootcourse/
@@ -265,8 +271,9 @@ class GlobalExceptionHandler {
 
 ## 📖 Referencias
 
+- [Plan de Migración: Hexagonal → MVC por Features](architecture/mvc-migration-plan.md) **(ACTUAL)**
 - [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Hexagonal Architecture - Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
+- [MVC por Features (Screaming Architecture)](https://blog.cleancoder.com/uncle-bob/2011/09/30/ ScreamingArchitecture)
 - [Spring Boot Best Practices](https://spring.io/guides)
 - [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
 
