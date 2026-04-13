@@ -23,6 +23,8 @@ make run-prod       # perfil prod
 # Tests
 make test                              # todos los tests
 make test-class CLASS=HotelServiceTest # una clase específica
+# Para un método específico, usar Gradle directamente:
+# gradlew test --tests "com.lgzarturo.springbootcourse.features.hotels.HotelServiceTest.methodName"
 make coverage                          # tests + reporte JaCoCo (build/reports/jacoco/)
 make coverage-check                    # verifica umbral del 85%
 
@@ -115,7 +117,7 @@ Si se necesitan más niveles, la feature es demasiado grande y debe dividirse.
 
 Three test layers:
 
-1. **Unit tests** — domain services tested without Spring context (fast). Use MockK for mocks.
+1. **Unit tests** — domain services tested without Spring context (fast). Use MockK for mocks and Kotest assertions (`shouldBe`, `shouldNotBe`).
 2. **Integration tests** — controller tests with `@WebMvcTest` + `MockMvc`, repository tests with `@DataJpaTest`. Extend `BaseIntegrationTest` for full-context tests with Testcontainers (requires Docker; falls back to H2 if Docker unavailable via `DockerAvailableCondition`).
 3. **E2E tests** — `HotelE2ETest` uses `TestRestTemplate` with `@SpringBootTest(webEnvironment = RANDOM_PORT)` against H2.
 
@@ -123,6 +125,20 @@ Test infrastructure:
 - `BaseIntegrationTest` — activates `test` profile, imports `TestcontainersConfiguration`
 - `TestcontainersConfiguration` — conditionally starts `postgres:17-alpine` only if Docker is available
 - `SecurityTestConfig` + `WithMockUser` — custom annotation for controller tests requiring auth context
+
+## Error Handling
+
+All unhandled exceptions are caught by `common/exception/GlobalExceptionHandler.kt` (`@RestControllerAdvice`). Domain services should throw standard exceptions — the handler maps them to HTTP status codes:
+
+| Exception                         | HTTP Status |
+|-----------------------------------|-------------|
+| `NoSuchElementException`          | 404         |
+| `IllegalStateException`           | 409         |
+| `MethodArgumentNotValidException` | 400         |
+| `ConstraintViolationException`    | 400         |
+| `Exception` (fallback)            | 500         |
+
+Prefer these standard exceptions over creating custom ones unless the distinction matters for the API consumer.
 
 ## Environment Variables
 
