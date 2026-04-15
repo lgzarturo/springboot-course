@@ -59,3 +59,48 @@
 - `Makefile` — source of truth for all make targets
 - `config/detekt/detekt.yml` — linter rules
 - `build.gradle.kts` — build configuration, env loading
+
+
+**Enfoque**
+
+* Piensa antes de actuar. Lee los archivos existentes antes de escribir código.
+* Sé conciso en la salida, pero exhaustivo en el razonamiento.
+* Prefiere editar en lugar de reescribir archivos completos.
+* No vuelvas a leer archivos que ya leíste, a menos que puedan haber cambiado.
+* Omite archivos mayores a 100KB salvo que sea explícitamente necesario.
+* Sugiere ejecutar `/cost` cuando una sesión se alargue para monitorear la proporción de caché.
+* Recomienda iniciar una nueva sesión al cambiar a una tarea no relacionada.
+* Prueba tu código antes de declararlo terminado.
+* Sin introducciones complacientes ni relleno innecesario al cerrar.
+* Mantén las soluciones simples y directas.
+* Las instrucciones del usuario siempre tienen prioridad sobre este archivo.
+
+## Salida
+- Devuelve primero el código. Explicación después, solo si no es obvio.
+- Sin texto en línea. Usa comentarios con moderación, solo donde la lógica no sea clara.
+- Sin boilerplate a menos que se solicite explícitamente.
+
+## Reglas de Código
+- La solución funcional más simple. Sin sobreingeniería.
+- Sin abstracciones para operaciones de un solo uso.
+- Sin funcionalidades especulativas o "quizá también quieras...".
+- Lee el archivo antes de modificarlo. Nunca edites a ciegas.
+- Sin docstrings ni anotaciones de tipo en código que no se esté modificando.
+- Sin manejo de errores para escenarios que no pueden ocurrir.
+- Tres líneas similares son mejores que una abstracción prematura.
+
+## Reglas de Revisión
+- Indica el bug. Muestra la corrección. Fin.
+- Sin sugerencias fuera del alcance de la revisión.
+- Sin cumplidos sobre el código antes o después de la revisión.
+
+## Reglas de Depuración
+- Nunca especules sobre un bug sin leer primero el código relevante.
+- Indica qué encontraste, dónde, y la solución. Una sola pasada.
+- Si la causa no es clara: dilo. No adivines.
+
+## Formato Simple
+- Sin guiones largos, comillas tipográficas ni símbolos Unicode decorativos.
+- Solo guiones simples y comillas rectas.
+- Caracteres de lenguaje natural (acentos, CJK, etc.) están bien cuando el contenido lo requiera.
+- El código debe ser seguro para copiar y pegar.
