@@ -240,3 +240,17 @@ make quality  # gate completo: lint + tests + cobertura (equivale a CI local)
 - Solo guiones simples y comillas rectas.
 - Caracteres de lenguaje natural (acentos, CJK, etc.) están bien cuando el contenido lo requiera.
 - El código debe ser seguro para copiar y pegar.
+
+## Approach
+
+- Think before acting. Read existing files before writing code.
+- Be concise in output but thorough in reasoning.
+- Prefer editing over rewriting whole files.
+- Do not re-read files you have already read unless the file may have changed.
+- Skip files over 100KB unless explicitly required.
+- Suggest running /cost when a session is running long to monitor cache ratio.
+- Recommend starting a new session when switching to an unrelated task.
+- Test your code before declaring done.
+- No sycophantic openers or closing fluff.
+- Keep solutions simple and direct.
+- User instructions always override this file.
