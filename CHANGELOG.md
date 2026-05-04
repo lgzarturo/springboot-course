@@ -6,7 +6,52 @@ El formato está basado en
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), y este proyecto se
 basa en [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 0.0.4
+## [Unreleased]
+
+## [1.0.0-beta.2] - 2026-04-19
+
+Milestone 4: Integración de herramientas de IA, mejoras en documentación y
+automatización — Se integró `code-review-graph` en los hooks de agentes AI,
+se amplió la documentación del curso con ejercicios complementarios y mejores
+prácticas de JPA, y se establecieron configuraciones de estilo y auditoría de
+código.
+
+### Added
+
+- **Integración de code-review-graph en agentes AI**:
+  - Configuración de hooks para Claude utilizando `uvx` para invocar code-review-graph
+  - Integración en todos los agentes AI del proyecto
+- **Skills y agentes de automatización para Claude**:
+  - Nuevos skills en `.claude/skills/` para automatización de tareas
+  - Comandos personalizados para operaciones comunes de desarrollo
+- **Configuración de estilo y formato**:
+  - Reglas de estilo documentadas para mantener consistencia en el código
+  - Configuración para formateo automático de archivos
+- **Documentación de auditoría de código**:
+  - Guía completa sobre procesos de auditoría de código
+  - Documentación para AGENTS.md y QWEN.md
+
+### Changed
+
+- **Documentación de comandos**:
+  - Mejora en las instrucciones de conventional-commit
+  - Actualización de guías de estilo y convenciones
+- **Arquitectura documentada**:
+  - Documentación actualizada para reflejar la migración a MVC por features
+  - README y guías narrativas mejoradas
+
+### Fixed
+
+- **Hooks de Claude**: Corrección en la invocación de code-review-graph mediante `uvx`
+- **Seguridad en Sentry**: Sanitización de mensajes enviados a Sentry para prevenir XSS
+- **Documentos**: Corrección de errores en documentos de guía
+
+### Configuration
+
+- **Carpetas ignoradas**: Configuración para ignorar borradores de documentación
+- **Carpeta pending-wip**: Organización de trabajo en progreso
+
+## [1.0.0-beta.1] - 2025-11-14
 
 Milestone 3: Refactorización a Screaming Architecture completa, mejoras de
 seguridad, soporte para migraciones automáticas y herramientas de desarrollo
@@ -313,7 +358,9 @@ entidad `Example`.
 - CORS configurado
 - Manejo global de excepciones
 
-[Unreleased]: https://github.com/lgzarturo/springboot-course/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/lgzarturo/springboot-course/compare/v1.0.0-beta.2...HEAD
 [0.0.1]: https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.1
 [0.0.2]: https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.2
 [0.0.3]: https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.3
+[1.0.0-beta.1]: https://github.com/lgzarturo/springboot-course/releases/tag/v1.0.0-beta.1
+[1.0.0-beta.2]: https://github.com/lgzarturo/springboot-course/releases/tag/v1.0.0-beta.2
