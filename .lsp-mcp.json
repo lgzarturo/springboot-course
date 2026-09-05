@@ -1,0 +1,21 @@
+{
+  "servers": [
+    {
+      "id": "kotlin",
+      "extensions": [".kt", ".kts"],
+      "languageIds": ["kotlin"],
+      "command": "kotlin-lsp",
+      "args": [],
+      "rootPatterns": [
+        "build.gradle.kts",
+        "settings.gradle.kts",
+        "build.gradle",
+        "settings.gradle",
+        "pom.xml"
+      ]
+    }
+  ],
+  "requestTimeout": 60000,
+  "autoStart": true,
+  "logLevel": "info"
+}
