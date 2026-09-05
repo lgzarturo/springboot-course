@@ -140,3 +140,43 @@ Breaking changes: add `BREAKING CHANGE:` footer or `!` after type (`feat!:`).
 - **Detekt 1.23.8** — static analysis; config at `config/detekt/detekt.yml`; `autoCorrect = true` is enabled
 - **JaCoCo** — 85% coverage minimum enforced by `jacocoTestCoverageVerification`
 - Lint reports: `build/reports/ktlint/` and `build/reports/detekt/`
+
+## MCP Servers & Code Intelligence (LSP)
+
+The same five MCP servers are defined for every supported AI tool. Each tool reads its own config file:
+
+| Tool | Config file |
+|------|-------------|
+| Opencode | `opencode.json` (root) |
+| Cursor | `.cursor/mcp.json` |
+| Agy (Antigravity) | `.agents/mcp_config.json` |
+| Claude Code / other | `.mcp.json` (root) |
+
+Notes:
+- Sentry is a **remote** MCP endpoint and requires OAuth auth on first use: `opencode mcp auth sentry` (Opencode), `cursor-agent mcp login sentry` (Cursor), `/mcp auth sentry` (Agy).
+- The `postgres` server points at the local dev database `postgresql://postgres:postgres@localhost:5432/springboot_db` (same defaults as `.env`; started by `docker-compose.yml`).
+- Agy does not expand `${VAR}` in `mcp_config.json`, so that file uses literal values (no env interpolation).
+
+### 1. Context7 (`context7`)
+- **Package**: `@upstash/context7-mcp`
+- **Purpose**: Real-time, up-to-date documentation and code patterns for Spring Boot 4.x, Kotlin 2.x, Testcontainers, and ecosystem libraries.
+- **Usage**: Query official documentation directly when dealing with newer APIs or breaking changes.
+
+### 2. PostgreSQL (`postgres`)
+- **Package**: `@modelcontextprotocol/server-postgres`
+- **Connection**: `postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}` via `.env`
+- **Permissions**: Read and inspection of schemas, tables, indexes, and queries.
+- **Policy**: Do NOT execute manual DDL statements directly through MCP; all schema changes must follow Flyway migrations (`./gradlew createMigration` or `generate-migration.sh`).
+
+### 3. Docker (`docker`)
+- **Package**: `@hypnosis/docker-mcp-server`
+- **Purpose**: Manage and monitor local Docker services (specifically `springboot-postgres` and compose stacks), inspect container status, healthchecks, and query logs safely without destructive operations.
+
+### 4. Sentry (`sentry`)
+- **Endpoint**: `https://mcp.sentry.dev/mcp/arthurolg-to/springboot-course`
+- **Purpose**: Search events, inspect errors, and analyze stack traces from Sentry.
+
+### 5. Language Server Protocol (LSP)
+- **Editor (VS Code)**: `.vscode/extensions.json` and `.vscode/settings.json` configure Kotlin Language Server (`fwcd.kotlin` / `jetbrains.kotlin`), Spring Boot Tools (`vmware.vscode-spring-boot`), Red Hat Java (`redhat.java`), and Gradle.
+- **AI Agent LSP Bridge**: Configured via `lsp-mcp-server` using `.lsp-mcp.json` for semantic code navigation (definitions, references, diagnostics, symbols).
+- **Prerequisite**: the Kotlin language server binary must be on `PATH`. Install with `brew install JetBrains/utils/kotlin-lsp` (macOS) or download `kotlin-lsp` from https://github.com/Kotlin/kotlin-lsp/releases and symlink it into `~/.local/bin`.

@@ -3,6 +3,30 @@
     "sentry": {
       "disabled": false,
       "serverUrl": "https://mcp.sentry.dev/mcp/arthurolg-to/springboot-course"
+    },
+    "context7": {
+      "disabled": false,
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "postgres": {
+      "disabled": false,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://postgres:postgres@localhost:5432/springboot_db"
+      ]
+    },
+    "docker": {
+      "disabled": false,
+      "command": "npx",
+      "args": ["-y", "@hypnosis/docker-mcp-server"]
+    },
+    "lsp": {
+      "disabled": false,
+      "command": "npx",
+      "args": ["-y", "lsp-mcp-server"]
     }
   }
 }

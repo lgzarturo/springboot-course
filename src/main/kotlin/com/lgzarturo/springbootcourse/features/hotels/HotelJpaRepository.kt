@@ -23,9 +23,8 @@ interface HotelJpaRepository :
         @Param("id") id: String,
     ): Optional<HotelEntity>
 
-    @Query("SELECT DISTINCT h FROM HotelEntity h LEFT JOIN FETCH h.rooms")
     @EntityGraph(attributePaths = ["rooms"])
-    fun findAllWithRooms(
+    override fun findAll(
         spec: Specification<HotelEntity>,
         pageable: Pageable,
     ): Page<HotelEntity>

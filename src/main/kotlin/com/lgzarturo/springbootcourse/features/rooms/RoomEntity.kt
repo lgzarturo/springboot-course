@@ -15,7 +15,7 @@ import jakarta.persistence.Table
 data class RoomEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    val id: String,
+    val id: String? = null,
     val number: String,
     val type: String,
     val price: Double,

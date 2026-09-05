@@ -7,7 +7,7 @@ plugins {
     val kotlinVersion = "2.2.20"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
-    id("org.springframework.boot") version "4.0.8"
+    id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version kotlinVersion
     kotlin("kapt") version kotlinVersion
@@ -117,8 +117,6 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.apache.httpcomponents.client5:httpclient5")
-    implementation("org.springframework.boot:spring-boot-http-client:4.0.8")
-    implementation("org.springframework.boot:spring-boot-restclient:4.0.8")
     // Annotation Processing
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Testing
