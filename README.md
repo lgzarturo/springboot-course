@@ -1,9 +1,9 @@
 # 🚀 Spring Boot Course — API REST Real
 
 [![Release](https://img.shields.io/github/v/release/lgzarturo/springboot-course?label=Latest%20Release)](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.3)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.8-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.20-blue.svg)](https://kotlinlang.org/)
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
 [![License](https://img.shields.io/badge/License-CC--BY--4.0-yellow.svg)](LICENSE)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/lgzarturo/springboot-course/ci.yml?branch=main)](https://github.com/lgzarturo/springboot-course/actions)
 
@@ -79,7 +79,7 @@ técnicos avanzados.
 
 ## Requisitos
 
-- **Java 21** (JDK 21)
+- **Java 25** (JDK 25)
 - **Docker** y **Docker Compose** (para base de datos y Testcontainers)
 - **Git**
 - **IDE:** IntelliJ IDEA (Recomendado)

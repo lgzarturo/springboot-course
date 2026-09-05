@@ -7,7 +7,7 @@ plugins {
     val kotlinVersion = "2.2.20"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
-    id("org.springframework.boot") version "4.0.3"
+    id("org.springframework.boot") version "4.0.8"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version kotlinVersion
     kotlin("kapt") version kotlinVersion
@@ -27,7 +27,7 @@ description = "springboot-course"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -117,8 +117,8 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.apache.httpcomponents.client5:httpclient5")
-    implementation("org.springframework.boot:spring-boot-http-client:4.0.3")
-    implementation("org.springframework.boot:spring-boot-restclient:4.0.3")
+    implementation("org.springframework.boot:spring-boot-http-client:4.0.8")
+    implementation("org.springframework.boot:spring-boot-restclient:4.0.8")
     // Annotation Processing
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Testing
@@ -154,8 +154,13 @@ kapt {
 
 kotlin {
     compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
         freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
     }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(21)
 }
 
 allOpen {
@@ -201,7 +206,7 @@ tasks.withType<Detekt>().configureEach {
 
 // --- JaCoCo ---
 jacoco {
-    toolVersion = "0.8.13"
+    toolVersion = "0.8.15"
 }
 
 tasks.test {
