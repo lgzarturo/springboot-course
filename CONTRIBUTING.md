@@ -35,7 +35,7 @@ Usaremos los recursos de GitHub para coordinar el trabajo:
 
 ## Requisitos y puesta en marcha local (resumen)
 
-- JDK 21 o superior
+- JDK 25 o superior
 - Git
 - IntelliJ IDEA (_Community o Ultimate_) recomendado
 - Gradle Wrapper incluido (_no necesitas instalar Gradle_)

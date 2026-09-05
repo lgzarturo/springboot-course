@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A Spring Boot + Kotlin REST API course project simulating a hotel management platform. Built with Hexagonal Architecture (Ports & Adapters) following Clean Architecture and DDD principles. Java 21, Kotlin, Spring Boot 4.x, PostgreSQL (prod) / H2 (dev/test).
+A Spring Boot + Kotlin REST API course project simulating a hotel management platform. Built with Hexagonal Architecture (Ports & Adapters) following Clean Architecture and DDD principles. Java 25, Kotlin, Spring Boot 4.x, PostgreSQL (prod) / H2 (dev/test).
 
 ## Common Commands
 
