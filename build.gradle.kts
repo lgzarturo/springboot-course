@@ -82,7 +82,7 @@ sentry {
     projectName = "springboot-course"
 
     // Prefer OS environment variable, then .env fallback for local dev
-    sentryAuthToken?.let { token ->
+    sentryAuthToken?.takeIf { it.isNotBlank() && !it.startsWith("{") }?.let { token ->
         authToken = token
     }
 }
