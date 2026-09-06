@@ -10,14 +10,14 @@
   "detekt.configurationPath": "config/detekt/detekt.yml",
   "sqltools.connections": [
     {
-      "name": "springboot-postgres",
-      "driver": "PostgreSQL",
+      "ssh": "Disabled",
+      "previewLimit": 50,
       "server": "localhost",
       "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "springboot-coruse",
       "database": "springboot_db",
-      "username": "postgres",
-      "askForPassword": false,
-      "password": "postgres"
+      "username": "postgres"
     }
   ]
 }
