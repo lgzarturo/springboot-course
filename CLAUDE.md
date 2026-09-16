@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A Spring Boot + Kotlin REST API course project simulating a hotel management platform. Built with **MVC organized by feature** (Screaming Architecture), migrating away from Hexagonal Architecture. Java 21, Kotlin, Spring Boot 4.x, PostgreSQL (prod) / H2 (dev/test).
+A Spring Boot + Kotlin REST API course project simulating a hotel management platform. Built with Hexagonal Architecture (Ports & Adapters) following Clean Architecture and DDD principles. Java 25, Kotlin, Spring Boot 4.x, PostgreSQL (prod) / H2 (dev/test).
 
 ## Common Commands
 
@@ -180,116 +180,47 @@ Breaking changes: add `BREAKING CHANGE:` footer or `!` after type (`feat!:`).
 
 ## Code Quality
 
-| Herramienta | Versión                       | Propósito                      | Comando               |
-|-------------|-------------------------------|--------------------------------|-----------------------|
-| **KTLint**  | 1.7.1 (plugin Gradle: 14.1.0) | Formateo consistente de Kotlin | `make format`         |
-| **Detekt**  | 2.0.0-alpha.1 (`dev.detekt`)  | Análisis estático, code smells | `make lint`           |
-| **JaCoCo**  | (managed by Spring Boot BOM)  | Cobertura de código ≥ 85%      | `make coverage-check` |
+- **KTLint 1.7.1** — enforces formatting; run `./gradlew ktlintFormat` to auto-fix
+- **Detekt 1.23.8** — static analysis; config at `config/detekt/detekt.yml`; `autoCorrect = true` is enabled
+- **JaCoCo** — 85% coverage minimum enforced by `jacocoTestCoverageVerification`
+- Lint reports: `build/reports/ktlint/` and `build/reports/detekt/`
 
-- Configuración de Detekt: `config/detekt/detekt.yml` con `autoCorrect = true`
-- Reportes de KTLint: `build/reports/ktlint/`
-- Reportes de Detekt: `build/reports/detekt/` (HTML + SARIF)
-- Reporte de JaCoCo: `build/reports/jacoco/test/html/index.html`
+## MCP Servers & Code Intelligence (LSP)
 
-```bash
-make lint     # solo verifica — no modifica archivos
-make format   # aplica correcciones automáticas de KTLint y Detekt
-make quality  # gate completo: lint + tests + cobertura (equivale a CI local)
-```
+The same five MCP servers are defined for every supported AI tool. Each tool reads its own config file:
 
-**Enfoque**
+| Tool | Config file |
+|------|-------------|
+| Opencode | `opencode.json` (root) |
+| Cursor | `.cursor/mcp.json` |
+| Agy (Antigravity) | `.agents/mcp_config.json` |
+| Claude Code / other | `.mcp.json` (root) |
 
-* Piensa antes de actuar. Lee los archivos existentes antes de escribir código.
-* Sé conciso en la salida, pero exhaustivo en el razonamiento.
-* Prefiere editar en lugar de reescribir archivos completos.
-* No vuelvas a leer archivos que ya leíste, a menos que puedan haber cambiado.
-* Omite archivos mayores a 100KB salvo que sea explícitamente necesario.
-* Sugiere ejecutar `/cost` cuando una sesión se alargue para monitorear la proporción de caché.
-* Recomienda iniciar una nueva sesión al cambiar a una tarea no relacionada.
-* Prueba tu código antes de declararlo terminado.
-* Sin introducciones complacientes ni relleno innecesario al cerrar.
-* Mantén las soluciones simples y directas.
-* Las instrucciones del usuario siempre tienen prioridad sobre este archivo.
+Notes:
+- Sentry is a **remote** MCP endpoint and requires OAuth auth on first use: `opencode mcp auth sentry` (Opencode), `cursor-agent mcp login sentry` (Cursor), `/mcp auth sentry` (Agy).
+- The `postgres` server points at the local dev database `postgresql://postgres:postgres@localhost:5432/springboot_db` (same defaults as `.env`; started by `docker-compose.yml`).
+- Agy does not expand `${VAR}` in `mcp_config.json`, so that file uses literal values (no env interpolation).
 
-## Salida
-- Devuelve primero el código. Explicación después, solo si no es obvio.
-- Sin texto en línea. Usa comentarios con moderación, solo donde la lógica no sea clara.
-- Sin boilerplate a menos que se solicite explícitamente.
+### 1. Context7 (`context7`)
+- **Package**: `@upstash/context7-mcp`
+- **Purpose**: Real-time, up-to-date documentation and code patterns for Spring Boot 4.x, Kotlin 2.x, Testcontainers, and ecosystem libraries.
+- **Usage**: Query official documentation directly when dealing with newer APIs or breaking changes.
 
-## Reglas de Código
-- La solución funcional más simple. Sin sobreingeniería.
-- Sin abstracciones para operaciones de un solo uso.
-- Sin funcionalidades especulativas o "quizá también quieras...".
-- Lee el archivo antes de modificarlo. Nunca edites a ciegas.
-- Sin docstrings ni anotaciones de tipo en código que no se esté modificando.
-- Sin manejo de errores para escenarios que no pueden ocurrir.
-- Tres líneas similares son mejores que una abstracción prematura.
+### 2. PostgreSQL (`postgres`)
+- **Package**: `@modelcontextprotocol/server-postgres`
+- **Connection**: `postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}` via `.env`
+- **Permissions**: Read and inspection of schemas, tables, indexes, and queries.
+- **Policy**: Do NOT execute manual DDL statements directly through MCP; all schema changes must follow Flyway migrations (`./gradlew createMigration` or `generate-migration.sh`).
 
-## Reglas de Revisión
-- Indica el bug. Muestra la corrección. Fin.
-- Sin sugerencias fuera del alcance de la revisión.
-- Sin cumplidos sobre el código antes o después de la revisión.
+### 3. Docker (`docker`)
+- **Package**: `@hypnosis/docker-mcp-server`
+- **Purpose**: Manage and monitor local Docker services (specifically `springboot-postgres` and compose stacks), inspect container status, healthchecks, and query logs safely without destructive operations.
 
-## Reglas de Depuración
-- Nunca especules sobre un bug sin leer primero el código relevante.
-- Indica qué encontraste, dónde, y la solución. Una sola pasada.
-- Si la causa no es clara: dilo. No adivines.
+### 4. Sentry (`sentry`)
+- **Endpoint**: `https://mcp.sentry.dev/mcp/arthurolg-to/springboot-course`
+- **Purpose**: Search events, inspect errors, and analyze stack traces from Sentry.
 
-## Formato Simple
-- Sin guiones largos, comillas tipográficas ni símbolos Unicode decorativos.
-- Solo guiones simples y comillas rectas.
-- Caracteres de lenguaje natural (acentos, CJK, etc.) están bien cuando el contenido lo requiera.
-- El código debe ser seguro para copiar y pegar.
-
-## Approach
-
-- Think before acting. Read existing files before writing code.
-- Be concise in output but thorough in reasoning.
-- Prefer editing over rewriting whole files.
-- Do not re-read files you have already read unless the file may have changed.
-- Skip files over 100KB unless explicitly required.
-- Suggest running /cost when a session is running long to monitor cache ratio.
-- Recommend starting a new session when switching to an unrelated task.
-- Test your code before declaring done.
-- No sycophantic openers or closing fluff.
-- Keep solutions simple and direct.
-- User instructions always override this file.
-
-<!-- code-review-graph MCP tools -->
-## MCP Tools: code-review-graph
-
-**IMPORTANT: This project has a knowledge graph. ALWAYS use the
-code-review-graph MCP tools BEFORE using Grep/Glob/Read to explore
-the codebase.** The graph is faster, cheaper (fewer tokens), and gives
-you structural context (callers, dependents, test coverage) that file
-scanning cannot.
-
-### When to use graph tools FIRST
-
-- **Exploring code**: `semantic_search_nodes` or `query_graph` instead of Grep
-- **Understanding impact**: `get_impact_radius` instead of manually tracing imports
-- **Code review**: `detect_changes` + `get_review_context` instead of reading entire files
-- **Finding relationships**: `query_graph` with callers_of/callees_of/imports_of/tests_for
-- **Architecture questions**: `get_architecture_overview` + `list_communities`
-
-Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
-
-### Key Tools
-
-| Tool | Use when |
-|------|----------|
-| `detect_changes` | Reviewing code changes — gives risk-scored analysis |
-| `get_review_context` | Need source snippets for review — token-efficient |
-| `get_impact_radius` | Understanding blast radius of a change |
-| `get_affected_flows` | Finding which execution paths are impacted |
-| `query_graph` | Tracing callers, callees, imports, tests, dependencies |
-| `semantic_search_nodes` | Finding functions/classes by name or keyword |
-| `get_architecture_overview` | Understanding high-level codebase structure |
-| `refactor_tool` | Planning renames, finding dead code |
-
-### Workflow
-
-1. The graph auto-updates on file changes (via hooks).
-2. Use `detect_changes` for code review.
-3. Use `get_affected_flows` to understand impact.
-4. Use `query_graph` pattern="tests_for" to check coverage.
+### 5. Language Server Protocol (LSP)
+- **Editor (VS Code)**: `.vscode/extensions.json` and `.vscode/settings.json` configure Kotlin Language Server (`fwcd.kotlin` / `jetbrains.kotlin`), Spring Boot Tools (`vmware.vscode-spring-boot`), Red Hat Java (`redhat.java`), and Gradle.
+- **AI Agent LSP Bridge**: Configured via `lsp-mcp-server` using `.lsp-mcp.json` for semantic code navigation (definitions, references, diagnostics, symbols).
+- **Prerequisite**: the Kotlin language server binary must be on `PATH`. Install with `brew install JetBrains/utils/kotlin-lsp` (macOS) or download `kotlin-lsp` from https://github.com/Kotlin/kotlin-lsp/releases and symlink it into `~/.local/bin`.

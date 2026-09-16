@@ -71,3 +71,13 @@ The project enforces code style using **ktlint** and **detekt**.
 
 ### Architecture Note
 The project follows an hexagonal-like architecture (Adapters, Domain, etc.). Ensure that domain logic remains decoupled from infrastructure details.
+
+## 4. MCP Servers and Code Intelligence (LSP)
+
+The repository provides MCP servers configured in `.mcp.json` and `.agents/mcp_config.json`:
+
+- **Context7 (`context7`)**: Live documentation assistant for Spring Boot 4 and Kotlin 2 APIs. Use to ground recommendations and verify modern framework idioms.
+- **PostgreSQL (`postgres`)**: Database schema introspection and read query execution (`${DB_NAME}` on localhost). Schema modifications must always be scripted via Flyway migrations.
+- **Docker (`docker`)**: Non-destructive container and compose stack inspection (`springboot-postgres`, logs, container lifecycle).
+- **Sentry (`sentry`)**: Production and development issue analysis, event lookup, and error tracking.
+- **LSP Bridge (`lsp`)**: Integrates with Kotlin Language Server via `lsp-mcp-server` (`.lsp-mcp.json`) for semantic diagnostics, go-to-definition, and symbol search.

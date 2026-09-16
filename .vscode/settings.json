@@ -1,0 +1,23 @@
+{
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "makefile.configureOnOpen": false,
+  "java.compile.nullAnalysis.mode": "automatic",
+  "kotlin.languageServer.enabled": true,
+  "kotlin.debugAdapter.enabled": true,
+  "boot-java.rewrite.reconcile": true,
+  "boot-java.symbols.include-empty": true,
+  "boot-java.live-information.automatic-process-tracking": true,
+  "detekt.configurationPath": "config/detekt/detekt.yml",
+  "sqltools.connections": [
+    {
+      "name": "springboot-postgres",
+      "driver": "PostgreSQL",
+      "server": "localhost",
+      "port": 5432,
+      "database": "springboot_db",
+      "username": "postgres",
+      "askForPassword": false,
+      "password": "postgres"
+    }
+  ]
+}

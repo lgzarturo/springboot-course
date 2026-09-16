@@ -5,21 +5,40 @@
 # Ejemplo: make migrate DESC="add_users_table"
 # =============================================================================
 
-GRADLEW := gradlew
-
-# Detección de sistema operativo
-UNAME := $(shell uname 2>/dev/null || echo Windows)
-ifeq ($(UNAME),Windows)
-    MIGRATION_SCRIPT = powershell -ExecutionPolicy Bypass -File generate-migration.ps1 -Description
+# Detección de sistema operativo y entorno
+ifeq ($(OS),Windows_NT)
+    # Windows
+    ifneq ($(findstring sh,$(SHELL)),)
+        # Shell POSIX en Windows (Git Bash, MSYS2, MinGW, Cygwin)
+        GRADLEW := ./gradlew
+        MIGRATION_SCRIPT := ./generate-migration.sh
+        COPY_ENV := if [ ! -f .env ]; then cp .env.example .env && echo "$(GREEN).env creado desde .env.example$(RESET)"; fi
+    else
+        # CMD.EXE o PowerShell nativo
+        GRADLEW := gradlew.bat
+        MIGRATION_SCRIPT := powershell -ExecutionPolicy Bypass -File generate-migration.ps1 -Description
+        COPY_ENV := if not exist .env (copy .env.example .env >nul && echo $(GREEN).env creado desde .env.example$(RESET))
+    endif
 else
-    MIGRATION_SCRIPT = ./generate-migration.sh
+    # Linux / macOS / Unix
+    GRADLEW := ./gradlew
+    MIGRATION_SCRIPT := ./generate-migration.sh
+    COPY_ENV := if [ ! -f .env ]; then cp .env.example .env && echo "$(GREEN).env creado desde .env.example$(RESET)"; fi
 endif
 
-# Colores
-CYAN  := \033[0;36m
-GREEN := \033[0;32m
-YELLOW := \033[0;33m
-RESET := \033[0m
+# Colores (compatibles con Linux, macOS y Windows)
+ESC := $(shell printf '\033' 2>/dev/null)
+ifneq ($(ESC),)
+    CYAN   := $(ESC)[0;36m
+    GREEN  := $(ESC)[0;32m
+    YELLOW := $(ESC)[0;33m
+    RESET  := $(ESC)[0m
+else
+    CYAN   :=
+    GREEN  :=
+    YELLOW :=
+    RESET  :=
+endif
 
 .DEFAULT_GOAL := help
 
@@ -166,7 +185,7 @@ ci: ## Simula el pipeline de CI completo (build + quality)
 
 .PHONY: setup
 setup: ## Configura el entorno local (copia .env y levanta Docker)
-	@if [ ! -f .env ]; then cp .env.example .env && echo "$(GREEN).env creado desde .env.example$(RESET)"; fi
+	@$(COPY_ENV)
 	$(MAKE) docker-up
 
 .PHONY: reset

@@ -1,9 +1,9 @@
 # 🚀 Spring Boot Course — API REST Real
 
 [![Release](https://img.shields.io/github/v/release/lgzarturo/springboot-course?label=Latest%20Release)](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.3)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.8-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.20-blue.svg)](https://kotlinlang.org/)
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
 [![License](https://img.shields.io/badge/License-CC--BY--4.0-yellow.svg)](LICENSE)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/lgzarturo/springboot-course/ci.yml?branch=main)](https://github.com/lgzarturo/springboot-course/actions)
 
@@ -79,7 +79,7 @@ técnicos avanzados.
 
 ## Requisitos
 
-- **Java 21** (JDK 21)
+- **Java 25** (JDK 25)
 - **Docker** y **Docker Compose** (para base de datos y Testcontainers)
 - **Git**
 - **IDE:** IntelliJ IDEA (Recomendado)
@@ -95,16 +95,15 @@ técnicos avanzados.
    cd springboot-course
    ```
 
-2. **Variables de Entorno:** Crea un archivo `.env` en la raíz del proyecto
-   (puedes basarte en `.env.example` si existe):
+2. **Variables de Entorno:** Copia el archivo `.env.example` a `.env` en la raíz del proyecto y ajusta los valores necesarios:
 
-   ```env
-   DB_NAME=springboot_db
-   DB_USERNAME=postgres
-   DB_PASSWORD=postgres
-   DB_PORT=5432
-   SENTRY_DSN=tu_dsn (opcional)
+   ```bash
+   cp .env.example .env
+   # o usando el atajo de make:
+   make setup
    ```
+
+   El archivo `.env` contiene la configuración de PostgreSQL, Sentry y parámetros de autenticación.
 
 3. **Infraestructura (Opcional):** Si deseas usar PostgreSQL local mediante
    Docker:
@@ -220,13 +219,67 @@ src/main/kotlin/com/lgzarturo/springbootcourse/
 
 ## Variables de Entorno
 
-| Variable                 | Descripción                 | Valor por Defecto |
-| ------------------------ | --------------------------- | ----------------- |
-| `SPRING_PROFILES_ACTIVE` | Perfil de Spring activo     | `dev`             |
-| `DB_NAME`                | Nombre de la base de datos  | `springboot_db`   |
-| `DB_USERNAME`            | Usuario de BD               | `postgres`        |
-| `DB_PASSWORD`            | Contraseña de BD            | `postgres`        |
-| `SENTRY_DSN`             | DSN de Sentry para tracking | -                 |
+La aplicación carga automáticamente las variables definidas en el archivo `.env` en la raíz del proyecto (mediante `spring.config.import=optional:file:.env[.properties]`).
+
+### Configuración General y Base de Datos
+
+| Variable                 | Descripción                                                   | Valor por Defecto                               |
+| ------------------------ | ------------------------------------------------------------- | ----------------------------------------------- |
+| `SPRING_PROFILES_ACTIVE` | Perfil de Spring activo (`dev`, `prod`, `test`)               | `dev`                                           |
+| `DB_HOST`                | Host del servidor PostgreSQL                                  | `localhost`                                     |
+| `DB_PORT`                | Puerto del servidor PostgreSQL                                | `5432`                                          |
+| `DB_NAME`                | Nombre de la base de datos                                    | `springboot_db`                                 |
+| `DB_USERNAME`            | Usuario de la base de datos                                   | `postgres`                                      |
+| `DB_PASSWORD`            | Contraseña del usuario de la base de datos                    | `postgres`                                      |
+| `DB_URL`                 | URL JDBC completa de conexión a PostgreSQL                    | `jdbc:postgresql://localhost:5432/springboot_db` |
+
+### Configuración de Sentry (Error Tracking & Observabilidad)
+
+| Variable                    | Descripción                                                                          | Valor por Defecto                     |
+| --------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------- |
+| `SENTRY_DSN`                | DSN del proyecto en Sentry para envío de eventos y errores                            | *(Verificado en Sentry del proyecto)* |
+| `SENTRY_ORG`                | Slug de la organización en Sentry                                                    | `arthurolg-to`                        |
+| `SENTRY_PROJECT`            | Slug del proyecto en Sentry                                                          | `springboot-course`                   |
+| `SENTRY_AUTH_TOKEN`         | Token de autenticación para subir bundles de código fuente y sourcemaps en el build | -                                     |
+| `SENTRY_ENVIRONMENT`        | Entorno reportado a Sentry (`development`, `staging`, `production`)                  | `development`                         |
+| `SENTRY_DEBUG`              | Habilita logs detallados de depuración del SDK de Sentry                             | `false`                               |
+| `SENTRY_ENABLED`            | Activa o desactiva el reporte de incidencias a Sentry                                | `true`                                |
+| `SENTRY_LOGGING_ENABLED`    | Habilita la captura de eventos a nivel de logging                                    | `true`                                |
+| `SENTRY_TRACES_SAMPLE_RATE` | Tasa de muestreo de trazas de rendimiento (`0.0` a `1.0`)                             | `1.0`                                 |
+
+### Autenticación y OAuth2 / Auth0 (Opcional)
+
+Si se habilita la seguridad con un proveedor de identidad (IdP) OAuth2 / JWT Resource Server:
+
+| Variable              | Descripción                                                 | Ejemplo                             |
+| --------------------- | ----------------------------------------------------------- | ----------------------------------- |
+| `AUTH0_DOMAIN`        | Dominio del tenant de Auth0 (`<tenant>.auth0.com` o custom) | `your-tenant.auth0.com`             |
+| `AUTH0_AUDIENCE`      | Identificador de la API (Audience) registrado en Auth0       | `https://api.springboot-course.com` |
+| `AUTH0_CLIENT_ID`     | Client ID de la aplicación en Auth0 (si aplica)             | -                                   |
+| `AUTH0_CLIENT_SECRET` | Client Secret de la aplicación en Auth0 (si aplica)         | -                                   |
+
+---
+
+### Configuración de Sentry y MCP
+
+El proyecto está vinculado al servicio de observabilidad de Sentry bajo la organización `arthurolg-to` y el proyecto `springboot-course`:
+
+1. **Obtención del `SENTRY_AUTH_TOKEN`**:
+   - Ingresa a [Sentry > User Settings > API > Auth Tokens](https://sentry.io/settings/account/api/auth-tokens/) o en la configuración de la organización > Developer Settings.
+   - Genera un token con los permisos necesarios: `project:releases` y `org:read`.
+   - Agrega el token a tu archivo `.env`:
+     ```env
+     SENTRY_AUTH_TOKEN=sntrys_...
+     ```
+   *(El plugin de Gradle subirá automáticamente el bundle de código fuente para stack traces legibles en cada compilación).*
+
+2. **Servidor MCP de Sentry (Model Context Protocol)**:
+   - Endpoint: `https://mcp.sentry.dev/mcp/arthurolg-to/springboot-course`
+   - Configurado en el archivo del proyecto [`.mcp.json`](.mcp.json) y en Antigravity CLI (`agy`):
+     ```bash
+     agy mcp add sentry https://mcp.sentry.dev/mcp/arthurolg-to/springboot-course
+     ```
+   - Permite consultar incidencias, trazas, logs y detalles del proyecto mediante IA directamente desde el asistente.
 
 ---
 

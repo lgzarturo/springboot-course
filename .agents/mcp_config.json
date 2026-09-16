@@ -1,33 +1,30 @@
 {
   "mcpServers": {
     "sentry": {
-      "type": "http",
-      "url": "https://mcp.sentry.dev/mcp/arthurolg-to/springboot-course"
+      "disabled": false,
+      "serverUrl": "https://mcp.sentry.dev/mcp/arthurolg-to/springboot-course"
     },
     "context7": {
+      "disabled": false,
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"]
     },
     "postgres": {
+      "disabled": false,
       "command": "npx",
       "args": [
         "-y",
         "@modelcontextprotocol/server-postgres",
-        "postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
-      ],
-      "env": {
-        "DB_HOST": "${DB_HOST:-localhost}",
-        "DB_PORT": "${DB_PORT:-5432}",
-        "DB_NAME": "${DB_NAME:-springboot_db}",
-        "DB_USERNAME": "${DB_USERNAME:-postgres}",
-        "DB_PASSWORD": "${DB_PASSWORD:-postgres}"
-      }
+        "postgresql://postgres:postgres@localhost:5432/springboot_db"
+      ]
     },
     "docker": {
+      "disabled": false,
       "command": "npx",
       "args": ["-y", "@hypnosis/docker-mcp-server"]
     },
     "lsp": {
+      "disabled": false,
       "command": "npx",
       "args": ["-y", "lsp-mcp-server"]
     }

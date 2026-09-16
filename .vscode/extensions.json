@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "fwcd.kotlin",
+    "jetbrains.kotlin",
+    "redhat.java",
+    "vscjava.vscode-java-pack",
+    "vmware.vscode-spring-boot",
+    "vmware.vscode-boot-dev-dash",
+    "vscjava.vscode-gradle",
+    "mathematict.vscode-detekt",
+    "ms-azuretools.vscode-docker",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg",
+    "getsentry.sentry"
+  ]
+}
