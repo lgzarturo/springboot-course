@@ -42,3 +42,6 @@ out/
 ### Kotlin ###
 .kotlin
 .env
+docs/pending-wip/*.md
+# Added by code-review-graph
+.code-review-graph/

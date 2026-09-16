@@ -34,3 +34,11 @@ object Messages {
     const val SERVICE_UNAVAILABLE = "El servicio no está disponible en este momento"
     const val VALIDATION_ERROR = "Error de validación en los datos proporcionados"
 }
+
+/**
+ * Constantes de los campos de los hoteles
+ */
+object HotelConstants {
+    const val NAME_FIELD_LENGTH = 255
+    const val ADDRESS_FIELD_LENGTH = 500
+}

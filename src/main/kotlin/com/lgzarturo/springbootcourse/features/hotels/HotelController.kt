@@ -4,6 +4,7 @@ import com.lgzarturo.springbootcourse.features.hotels.dto.CreateHotelRequest
 import com.lgzarturo.springbootcourse.features.hotels.dto.HotelResponse
 import com.lgzarturo.springbootcourse.features.hotels.dto.PageResponse
 import com.lgzarturo.springbootcourse.features.hotels.dto.UpdateHotelRequest
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -24,11 +25,11 @@ class HotelController(
 ) {
     @PostMapping
     fun create(
-        @RequestBody request: CreateHotelRequest,
+        @Valid @RequestBody request: CreateHotelRequest,
     ): ResponseEntity<HotelResponse> {
         val hotel = Hotel(id = "", name = request.name, address = request.address)
         val savedHotel = hotelService.createHotel(hotel)
-        return ResponseEntity.status(HttpStatus.OK).body(HotelResponse.fromDomain(savedHotel))
+        return ResponseEntity.status(HttpStatus.CREATED).body(HotelResponse.fromDomain(savedHotel))
     }
 
     @GetMapping("/{id}")
@@ -57,7 +58,7 @@ class HotelController(
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: String,
-        @RequestBody request: UpdateHotelRequest,
+        @Valid @RequestBody request: UpdateHotelRequest,
     ): ResponseEntity<HotelResponse> {
         val hotel = Hotel(id = id, name = request.name, address = request.address)
         val updatedHotel = hotelService.updateHotel(id, hotel)
