@@ -55,8 +55,8 @@ class HotelControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/hotels debe crear un nuevo hotel y devolver 200")
-    fun `should create hotel and return 200`() {
+    @DisplayName("POST /api/v1/hotels debe crear un nuevo hotel y devolver 201 Created")
+    fun `should create hotel and return 201`() {
         // Given
         val request = CreateHotelRequest("New Hotel", "New Address")
         val savedHotel = Hotel("1", "New Hotel", "New Address", emptyList())
@@ -70,7 +70,7 @@ class HotelControllerTest {
                 post("/api/v1/hotels")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)),
-            ).andExpect(status().isOk)
+            ).andExpect(status().isCreated)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", `is`("1")))
             .andExpect(jsonPath("$.name", `is`("New Hotel")))
@@ -212,5 +212,73 @@ class HotelControllerTest {
         mockMvc
             .perform(delete("/api/v1/hotels/$hotelId"))
             .andExpect(status().isNotFound)
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/hotels debe devolver 201 Created al crear hotel exitosamente")
+    fun `should return 201 when hotel is created`() {
+        // Given
+        val request = CreateHotelRequest("New Hotel", "New Address")
+        val savedHotel = Hotel("1", "New Hotel", "New Address", emptyList())
+
+        // When
+        every { hotelService.createHotel(any()) } returns savedHotel
+
+        // Then
+        mockMvc
+            .perform(
+                post("/api/v1/hotels")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)),
+            ).andExpect(status().isCreated)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id", `is`("1")))
+            .andExpect(jsonPath("$.name", `is`("New Hotel")))
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/hotels debe devolver 400 si el nombre está vacío")
+    fun `should return 400 when name is blank`() {
+        // Given
+        val invalidRequest = CreateHotelRequest("", "Valid Address")
+
+        // Then
+        mockMvc
+            .perform(
+                post("/api/v1/hotels")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest)),
+            ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/hotels debe devolver 400 si la dirección está vacío")
+    fun `should return 400 when address is blank`() {
+        // Given
+        val invalidRequest = CreateHotelRequest("Valid Name", "")
+
+        // Then
+        mockMvc
+            .perform(
+                post("/api/v1/hotels")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest)),
+            ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/hotels debe devolver 400 si name excede el límite")
+    fun `should return 400 when name exceeds max length`() {
+        // Given
+        val longName = "A".repeat(256)
+        val invalidRequest = CreateHotelRequest(longName, "Valid Address")
+
+        // Then
+        mockMvc
+            .perform(
+                post("/api/v1/hotels")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest)),
+            ).andExpect(status().isBadRequest)
     }
 }
