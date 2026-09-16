@@ -6,11 +6,14 @@ Se ha implementado una **estructura óptima para el proyecto Spring Boot con
 Kotlin**, siguiendo las mejores prácticas de la industria y aplicando principios
 de arquitectura limpia.
 
+> **⚠️ NOTA:** El proyecto migró de Arquitectura Hexagonal a **MVC por Features**.
+> Ver: [Plan de Migración](architecture/mvc-migration-plan.md)
+
 ---
 
 ## 🏗️ Arquitectura Implementada
 
-### **Arquitectura Hexagonal (Ports & Adapters)**
+### **MVC por Features (Screaming Architecture)**
 
 La arquitectura elegida es una de las más recomendadas en la industria por las
 siguientes razones:
@@ -55,7 +58,7 @@ siguientes razones:
 ### 1. SOLID Principles ✅
 
 | Principio                 | Implementación                                                      |
-| ------------------------- | ------------------------------------------------------------------- |
+|---------------------------|---------------------------------------------------------------------|
 | **S**ingle Responsibility | Cada clase tiene una única responsabilidad clara                    |
 | **O**pen/Closed           | Abierto para extensión (nuevos adapters), cerrado para modificación |
 | **L**iskov Substitution   | Las interfaces pueden ser sustituidas por sus implementaciones      |
@@ -79,8 +82,41 @@ siguientes razones:
 
 ---
 
-## 📂 Estructura de Directorios Implementada
+## 📂 Estructura de Directorios Implementada (MVC por Features)
 
+```
+src/main/kotlin/com/lgzarturo/springbootcourse/
+│
+├── 📱 SpringbootCourseApplication.kt
+│
+├── ⚙️ config/                        # Infraestructura transversal
+│   ├── WebConfig.kt
+│   └── OpenApiConfig.kt
+│
+├── 🔧 common/                        # Componentes reutilizables
+│   ├── exception/
+│   │   ├── ErrorResponse.kt
+│   │   └── GlobalExceptionHandler.kt
+│   ├── pagination/
+│   ├── constants/
+│   └── extensions/
+│
+└── 🎯 features/                      # Features autocontenidas
+    ├── hotels/
+    │   ├── HotelController.kt       # @RestController
+    │   ├── HotelService.kt          # @Service
+    │   ├── HotelRepository.kt       # @Repository
+    │   ├── HotelEntity.kt          # @Entity
+    │   ├── Hotel.kt               # Dominio puro
+    │   └── dto/
+    ├── ping/
+    │   ├── PingController.kt
+    │   ├── PingService.kt
+    │   └── dto/
+    └── users/
+        ├── UserController.kt
+        ├── UserService.kt
+        └── valueobjects/
 ```
 src/main/kotlin/com/lgzarturo/springbootcourse/
 │
@@ -283,26 +319,26 @@ testImplementation("com.ninja-squad:springmockk:4.0.2")
 ### API REST
 
 | Método | Endpoint                 | Descripción        | Estado |
-| ------ | ------------------------ | ------------------ | ------ |
-| GET    | `/api/v1/ping`           | Ping simple        | ✅     |
-| GET    | `/api/v1/ping/{message}` | Ping personalizado | ✅     |
-| GET    | `/api/v1/ping/health`    | Health check       | ✅     |
+|--------|--------------------------|--------------------|--------|
+| GET    | `/api/v1/ping`           | Ping simple        | ✅      |
+| GET    | `/api/v1/ping/{message}` | Ping personalizado | ✅      |
+| GET    | `/api/v1/ping/health`    | Health check       | ✅      |
 
 ### Documentación
 
 | Endpoint           | Descripción            | Estado |
-| ------------------ | ---------------------- | ------ |
-| `/swagger-ui.html` | Interfaz Swagger UI    | ✅     |
-| `/api-docs`        | Especificación OpenAPI | ✅     |
-| `/h2-console`      | Consola H2 Database    | ✅     |
+|--------------------|------------------------|--------|
+| `/swagger-ui.html` | Interfaz Swagger UI    | ✅      |
+| `/api-docs`        | Especificación OpenAPI | ✅      |
+| `/h2-console`      | Consola H2 Database    | ✅      |
 
 ### Actuator
 
 | Endpoint            | Descripción           | Estado |
-| ------------------- | --------------------- | ------ |
-| `/actuator/health`  | Estado de salud       | ✅     |
-| `/actuator/info`    | Información de la app | ✅     |
-| `/actuator/metrics` | Métricas              | ✅     |
+|---------------------|-----------------------|--------|
+| `/actuator/health`  | Estado de salud       | ✅      |
+| `/actuator/info`    | Información de la app | ✅      |
+| `/actuator/metrics` | Métricas              | ✅      |
 
 ---
 

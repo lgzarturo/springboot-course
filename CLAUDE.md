@@ -8,91 +8,116 @@ A Spring Boot + Kotlin REST API course project simulating a hotel management pla
 
 ## Common Commands
 
+Use `make <target>` for all common tasks (see `make help` for the full list):
+
 ```bash
 # Build
-./gradlew clean build
+make build          # clean + compile + assemble
+make compile        # compile only (no tests, no clean)
 
-# Run (uses 'dev' profile by default)
-./gradlew bootRun
+# Run
+make run            # perfil dev (default)
+make run-dev        # perfil dev explícito
+make run-prod       # perfil prod
 
-# Run with explicit profile
-./gradlew bootRun --args='--spring.profiles.active=dev'
+# Tests
+make test                              # todos los tests
+make test-class CLASS=HotelServiceTest # una clase específica
+# Para un método específico, usar Gradle directamente:
+# gradlew test --tests "com.lgzarturo.springbootcourse.features.hotels.HotelServiceTest.methodName"
+make coverage                          # tests + reporte JaCoCo (build/reports/jacoco/)
+make coverage-check                    # verifica umbral del 85%
 
-# Run all tests
-./gradlew test
+# Calidad de código
+make lint           # KTLint check + Detekt (solo verifica)
+make format         # KTLint format + Detekt autoCorrect (aplica correcciones)
+make fix            # alias de format
+make quality        # gate completo: lint + tests + cobertura
 
-# Run a single test class
-./gradlew test --tests "com.lgzarturo.springbootcourse.hotels.service.HotelServiceTest"
+# Base de datos
+make ddl                               # genera build/schema-create.sql desde entidades JPA
+make create-migration VER=2 DESC="add_users"
+make migrate DESC="add_users_table"    # usa el script de migración automática
 
-# Run tests with coverage report (output: build/reports/jacoco/test/html/index.html)
-./gradlew jacocoTestReport
+# Docker
+make docker-up      # levanta servicios (BD)
+make docker-down    # detiene servicios
+make docker-logs    # logs de contenedores
 
-# Lint and static analysis
-./gradlew checkCodeStyle      # runs ktlintCheck + detekt
-./gradlew formatCode          # auto-fix with ktlintFormat + detektAutoCorrect
-./gradlew fixAll              # alias for formatCode
-
-# Full quality gate (lint + tests + coverage)
-./gradlew codeQuality
-
-# Database migrations
-./gradlew generateDDL         # generates build/schema-create.sql from JPA entities
-./gradlew createMigration -Pmigration_version=2 -Pdescription="add_users"
+# Atajos
+make ci             # simula pipeline CI completo (build + quality)
+make setup          # configura entorno local (.env + docker-up)
+make reset          # limpia build artifacts y detiene Docker
 ```
+
+> Los comandos `make` llaman a las tareas de Gradle correspondientes. Si necesitas invocar Gradle directamente,
+> usa `./gradlew <task>` en Linux/Mac o `gradlew <task>` en Windows.
 
 ## Architecture
 
-The codebase is organized **by domain module** first, then by layer within each module. Each domain (e.g., `hotels`, `ping`, `users`, `example`) follows this internal structure:
+The codebase uses **MVC organized by feature** (Screaming Architecture). Each feature is a self-contained
+package grouping all its layers. The top-level structure reflects the domain, not the technical layer.
 
 ```
-<domain>/
-├── adapters/
-│   ├── persistence/        # JPA entities, Spring Data repositories, repository adapters
-│   │   └── entity/
-│   └── rest/               # Spring MVC controllers, DTOs (request/response), mappers
-│       └── dto/
-├── application/
-│   └── ports/
-│       ├── input/          # Use case interfaces (what the domain exposes)
-│       └── output/         # Repository port interfaces (what the domain needs)
-├── domain/                 # Pure domain models, value objects, domain exceptions
-├── config/                 # Spring @Configuration beans specific to this domain
-└── service/                # Use case implementations
+src/main/kotlin/com/lgzarturo/springbootcourse/
+├── SpringbootCourseApplication.kt
+├── config/                   # Infraestructura transversal (CORS, OpenAPI, Security)
+├── common/                   # Componentes reutilizables (errores, paginación, extensiones)
+└── features/                 # Cada feature es autocontenida
+    ├── hotels/
+    │   ├── HotelController.kt        # @RestController — capa HTTP
+    │   ├── HotelService.kt           # @Service — lógica de negocio
+    │   ├── HotelJpaRepository.kt     # @Repository — Spring Data JPA
+    │   ├── HotelEntity.kt            # @Entity — modelo de persistencia JPA
+    │   ├── Hotel.kt                  # Modelo de dominio (Kotlin puro, sin anotaciones Spring)
+    │   ├── HotelServiceConfig.kt     # @Configuration beans específicos de esta feature
+    │   └── dto/
+    │       ├── CreateHotelRequest.kt
+    │       ├── UpdateHotelRequest.kt
+    │       └── HotelResponse.kt
+    ├── ping/                         # Ejemplo canónico de TDD
+    ├── users/                        # Gestión de usuarios con value objects
+    ├── rooms/                        # Habitaciones del hotel
+    └── examples/                     # Implementación de referencia con patrón hexagonal completo
 ```
 
-Global cross-cutting code lives in `shared/` (config, exception handling, extensions, constants).
+**Regla de oro:** máximo 2 niveles de anidación dentro de una feature. `hotels/dto/` es el límite.
+Si se necesitan más niveles, la feature es demasiado grande y debe dividirse.
 
 ### Key Architectural Rules
 
-- **Domain layer has zero Spring/JPA dependencies** — pure Kotlin classes only.
-- **Controllers depend on use case ports** (`*UseCasePort`), never on services directly.
-- **Services implement use case ports** and depend on repository ports.
-- **JPA entities are separate from domain models**; persistence adapters translate between them using mappers.
-- **DTOs are never passed into the domain** — controllers map DTOs → domain before calling use cases.
+- **Controllers → Services → Repositories**: flujo MVC clásico. Los controllers no acceden al repositorio directamente.
+- **Features son autocontenidas**: no hay imports cruzados entre features. La comunicación entre features
+  va a través de `common/` o mediante eventos de Spring.
+- **El modelo de dominio es Kotlin puro**: `Hotel.kt` no tiene `@Entity` ni dependencias de Spring.
+  `HotelEntity.kt` es el objeto JPA que el servicio traduce hacia/desde el dominio.
+- **DTOs no entran al servicio como DTOs**: el controller mapea Request → dominio antes de llamar al servicio.
+- **La feature `examples/`** mantiene el patrón hexagonal completo (puertos, adaptadores) como referencia
+  de cómo se construía antes. No replicar ese patrón en features nuevas.
 
-### Active Domains
+### Active Features
 
-- `ping` — simple health/ping endpoints, the canonical TDD example
-- `hotels` — hotel CRUD with search/pagination (most complete example)
-- `rooms` — hotel rooms (persistence entities defined, domain in progress)
-- `users` — user management with value objects (`Email`, `Password`, `PhoneNumber`, `UserId`)
-- `example` — reference CRUD implementation with full adapter stack
-- `cart`, `gamification`, `payments`, `pokemon`, `reservations`, `reviews`, `services` — stubs/placeholders (`PackageInfo.kt` only)
+- `ping` — health/ping endpoints, ejemplo canónico de TDD en el proyecto
+- `hotels` — CRUD completo con búsqueda paginada (ejemplo MVC más completo)
+- `rooms` — habitaciones (entidades JPA definidas, servicio en progreso)
+- `users` — gestión de usuarios con value objects (`Email`, `Password`, `PhoneNumber`, `UserId`)
+- `examples` — referencia de implementación hexagonal (no replicar en features nuevas)
+- `cart`, `gamification`, `payments`, `pokemon`, `reservations`, `reviews`, `services` — stubs (`PackageInfo.kt` only)
 
 ## Profiles
 
-| Profile | Database | Purpose |
-|---------|----------|---------|
-| `dev` | H2 in-memory + H2 console enabled | Local development (default) |
-| `test` | H2 (E2E) or Testcontainers PostgreSQL (integration, Docker required) | Tests |
-| `prod` | PostgreSQL via env vars | Production |
-| `generate-ddl` | H2, Flyway disabled | DDL generation from JPA entities |
+| Profile        | Database                                                             | Purpose                          |
+|----------------|----------------------------------------------------------------------|----------------------------------|
+| `dev`          | H2 in-memory + H2 console enabled                                    | Local development (default)      |
+| `test`         | H2 (E2E) or Testcontainers PostgreSQL (integration, Docker required) | Tests                            |
+| `prod`         | PostgreSQL via env vars                                              | Production                       |
+| `generate-ddl` | H2, Flyway disabled                                                  | DDL generation from JPA entities |
 
 ## Testing Strategy
 
 Three test layers:
 
-1. **Unit tests** — domain services tested without Spring context (fast). Use MockK for mocks.
+1. **Unit tests** — domain services tested without Spring context (fast). Use MockK for mocks and Kotest assertions (`shouldBe`, `shouldNotBe`).
 2. **Integration tests** — controller tests with `@WebMvcTest` + `MockMvc`, repository tests with `@DataJpaTest`. Extend `BaseIntegrationTest` for full-context tests with Testcontainers (requires Docker; falls back to H2 if Docker unavailable via `DockerAvailableCondition`).
 3. **E2E tests** — `HotelE2ETest` uses `TestRestTemplate` with `@SpringBootTest(webEnvironment = RANDOM_PORT)` against H2.
 
@@ -100,6 +125,20 @@ Test infrastructure:
 - `BaseIntegrationTest` — activates `test` profile, imports `TestcontainersConfiguration`
 - `TestcontainersConfiguration` — conditionally starts `postgres:17-alpine` only if Docker is available
 - `SecurityTestConfig` + `WithMockUser` — custom annotation for controller tests requiring auth context
+
+## Error Handling
+
+All unhandled exceptions are caught by `common/exception/GlobalExceptionHandler.kt` (`@RestControllerAdvice`). Domain services should throw standard exceptions — the handler maps them to HTTP status codes:
+
+| Exception                         | HTTP Status |
+|-----------------------------------|-------------|
+| `NoSuchElementException`          | 404         |
+| `IllegalStateException`           | 409         |
+| `MethodArgumentNotValidException` | 400         |
+| `ConstraintViolationException`    | 400         |
+| `Exception` (fallback)            | 500         |
+
+Prefer these standard exceptions over creating custom ones unless the distinction matters for the API consumer.
 
 ## Environment Variables
 
@@ -125,14 +164,19 @@ Breaking changes: add `BREAKING CHANGE:` footer or `!` after type (`feat!:`).
 
 ## Naming Conventions
 
-- Controllers: `*Controller.kt`
-- Use case ports: `*UseCasePort.kt`
-- Repository ports: `*RepositoryPort.kt`
-- Services: `*Service.kt`
-- DTOs: `*Request.kt`, `*Response.kt`
-- Mappers: `*Mapper.kt`
-- JPA repositories: `*JpaRepository.kt`
-- JPA entities: no suffix (e.g., `HotelEntity.kt`)
+| Artefacto            | Convención                    | Ejemplo                      |
+|----------------------|-------------------------------|------------------------------|
+| Controller           | `*Controller.kt`              | `HotelController.kt`         |
+| Service              | `*Service.kt`                 | `HotelService.kt`            |
+| Spring Data repo     | `*JpaRepository.kt`           | `HotelJpaRepository.kt`      |
+| JPA entity           | `*Entity.kt`                  | `HotelEntity.kt`             |
+| Domain model         | sin sufijo                    | `Hotel.kt`                   |
+| DTO entrada          | `*Request.kt`                 | `CreateHotelRequest.kt`      |
+| DTO salida           | `*Response.kt`                | `HotelResponse.kt`           |
+| Mapper               | `*Mapper.kt`                  | `HotelMapper.kt`             |
+| Value object         | en subpaquete `valueobjects/` | `Email.kt`, `Password.kt`    |
+| Config específica    | `*ServiceConfig.kt`           | `HotelServiceConfig.kt`      |
+| Excepción de dominio | `*Exception.kt`               | `DuplicateEmailException.kt` |
 
 ## Code Quality
 

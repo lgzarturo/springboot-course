@@ -1,4 +1,4 @@
-# Plan de Migración: Hexagonal → MVC por Features
+# Plan de Migración: Hexagonal → MVC por Features - ✅ COMPLETADA
 
 ## Contexto
 
@@ -120,7 +120,7 @@ com.lgzarturo.springbootcourse/
 ### Paquetes de Infraestructura (`config/`, `common/`)
 
 | Paquete              | Qué contiene                                                  | Qué NO contiene                                   |
-| -------------------- | ------------------------------------------------------------- | ------------------------------------------------- |
+|----------------------|---------------------------------------------------------------|---------------------------------------------------|
 | `config/`            | Configuración global de Spring (CORS, OpenAPI, Jackson, etc.) | Configuración específica de una feature           |
 | `common/exception/`  | Manejo global de errores, DTOs de error                       | Excepciones de dominio específicas de una feature |
 | `common/pagination/` | Utilidades de paginación reutilizables                        | Lógica de paginación específica de una feature    |
@@ -130,7 +130,7 @@ com.lgzarturo.springbootcourse/
 ### Paquetes de Features (`features/`)
 
 | Archivo          | Responsabilidad                                    | Annotations típicas                                  |
-| ---------------- | -------------------------------------------------- | ---------------------------------------------------- |
+|------------------|----------------------------------------------------|------------------------------------------------------|
 | `*Controller.kt` | Endpoints REST, valida input, delega al service    | `@RestController`, `@RequestMapping`                 |
 | `*Service.kt`    | Lógica de negocio, orquesta repositorios           | `@Service`                                           |
 | `*Repository.kt` | Acceso a datos, Spring Data JPA                    | `@Repository` (interface que extiende JpaRepository) |
@@ -143,7 +143,7 @@ com.lgzarturo.springbootcourse/
 ### Qué se ELIMINA
 
 | Concepto Hexagonal                            | Por qué se elimina                                    | Reemplazo                               |
-| --------------------------------------------- | ----------------------------------------------------- | --------------------------------------- |
+|-----------------------------------------------|-------------------------------------------------------|-----------------------------------------|
 | `adapters/rest/`                              | Spring ya sabe que un `@RestController` es un adapter | Archivo directo en la feature           |
 | `adapters/persistence/`                       | Spring ya sabe que un `@Repository` es un adapter     | Archivo directo en la feature           |
 | `application/ports/input/`                    | Interfaces con una sola implementación                | El service ES la interfaz               |
@@ -489,7 +489,7 @@ src/test/kotlin/com/lgzarturo/springbootcourse/
 ### Métricas de Complejidad
 
 | Métrica                         | Antes (Hexagonal)                | Después (MVC Features)                      | Mejora |
-| ------------------------------- | -------------------------------- | ------------------------------------------- | ------ |
+|---------------------------------|----------------------------------|---------------------------------------------|--------|
 | **Niveles máximos en hotels/**  | 5 (`adapters/rest/dto/request/`) | 2 (`dto/`)                                  | -60%   |
 | **Archivos en hotels/**         | 13                               | 11                                          | -15%   |
 | **Paquetes raíz**               | 14 (incluyendo 7 stubs)          | 5 (config, common, features, rooms, sentry) | -64%   |

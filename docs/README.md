@@ -27,7 +27,7 @@
 ### Cómo usar esta documentación
 
 | Si quieres...                        | Lee...                                                             |
-| ------------------------------------ | ------------------------------------------------------------------ |
+|--------------------------------------|--------------------------------------------------------------------|
 | Entender la **motivación** del curso | [Guía Narrativa](learning-path/narrative-guide.md)                 |
 | Ver **código de ejemplo** por fase   | [Itinerario de Desarrollo](learning-path/development-itinerary.md) |
 | Seguir **ejercicios paso a paso**    | [Roadmap de Ejercicios](learning-path/exercises-roadmap.md)        |

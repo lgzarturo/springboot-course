@@ -64,7 +64,7 @@ class HotelIntegrationTest {
         val response = testRestTemplate.postForEntity(baseUrl, request, HotelResponse::class.java)
 
         // Then
-        assertEquals(HttpStatus.OK, response.statusCode)
+        assertEquals(HttpStatus.CREATED, response.statusCode)
         assertNotNull(response.body)
         assertEquals("Test Hotel", response.body?.name)
         assertEquals("Test Address", response.body?.address)
