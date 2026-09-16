@@ -1,671 +1,555 @@
-# 📋 BACKLOG — Curso Spring Boot + Kotlin
-
-> **Proyecto:** Gran Hotel Pokémon — API REST de Gestión Hotelera
-> **Stack:** Spring Boot 4.1.1 · Kotlin 2.2.x · Gradle Kotlin DSL · JDK 25
-> **Arquitectura:** Screaming Architecture por Features + Hexagonal interna
-> **Metodología:** TDD (Red → Green → Refactor) · Conventional Commits
-
----
-
-## 📊 Estado Actual del Proyecto
-
-> Última actualización: Septiembre 2026
-> Versión: `0.0.3`
-> Rama activa: `feature/milestone-04-docs`
-
-### ✅ Completado
-
-| Semana | Capítulo narrativo                                 | Insignia                        | Estado     |
-| ------ | -------------------------------------------------- | ------------------------------- | ---------- |
-| 0      | La Aldea Inicial — Bienvenida y entorno            | 🏅 _Semilla de Kotlin_           | ✅ Completo |
-| 1      | Kit del Entrenador — Proyecto base                 | 🏅 _Semilla de Kotlin_           | ✅ Completo |
-| 2      | El Bosque de los Controladores — Conceptos básicos | 🏅 _Ruta de las 1000 Peticiones_ | ✅ Completo |
-| 3      | Las Minas de Datos — Persistencia con JPA          | 🏅 _Reliquia de las Entidades_   | ✅ Completo |
-| 4      | El Dojo de la Validación — Screaming Architecture  | 🏅 _Escudo de Validación_        | ✅ Completo |
-
-### 🔧 Implementado hasta ahora
-
-#### Features existentes
-
-| Feature      |      Modelo dominio      |    Entidad JPA    |        Repository         |                               Service                               |         Controller         |              Tests               |
-| ------------ | :----------------------: | :---------------: | :-----------------------: | :-----------------------------------------------------------------: | :------------------------: | :------------------------------: |
-| **ping**     |         ✅ `Ping`         |         —         |             —             |                           ✅ `PingService`                           |     ✅ `PingController`     |       ✅ Unit + Controller        |
-| **examples** |       ✅ `Example`        | ✅ `ExampleEntity` | ✅ `ExampleJpaRepository`  |                       ✅ `ExampleServicePort`                        |   ✅ `ExampleController`    |  ✅ Unit + Controller + Adapter   |
-| **hotels**   |        ✅ `Hotel`         |  ✅ `HotelEntity`  |  ✅ `HotelJpaRepository`   |                          ✅ `HotelService`                           |    ✅ `HotelController`     |    ✅ Unit + Integration + E2E    |
-| **rooms**    |         ✅ `Room`         |  ✅ `RoomEntity`   |   ✅ `RoomJpaRepository`   |                                 ❌ —                                 |            ❌ —             |               ❌ —                |
-| **users**    | ✅ `User` + Value Objects |        ❌ —        | ✅ `UserRepository` (port) | ⚠️ Stub (`CreateUserService`, `GetUserUseCase`, `UpdateUserUseCase`) | ❌ Vacío (`UserController`) | ✅ Unit (dominio y value objects) |
-| **sentry**   |            —             |         —         |             —             |                                  —                                  |    ✅ `SentryController`    |              ✅ Unit              |
-
-#### Infraestructura transversal
-
-- ✅ `GlobalExceptionHandler` — Manejo global de errores (validation, type mismatch, 404, 500)
-- ✅ `ErrorResponse` — DTO estandarizado de errores
-- ✅ `OpenApiConfig` + Swagger UI operativo (`/swagger-ui.html`)
-- ✅ `WebConfig` — CORS configurado
-- ✅ Paginación neutra: `PageRequest`, `PageResult`, `SortOrder` (clean core)
-- ✅ Extensiones de fecha/hora: `DateTimeExtensions`
-- ✅ Perfiles configurados: `dev`, `prod`, `test`, `generate-ddl`, `migration`
-- ✅ Flyway con migraciones V1 y V2
-- ✅ HikariCP configurado
-- ✅ Actuator con health, metrics, prometheus
-- ✅ Sentry integrado para error tracking
-- ✅ Detekt + KtLint + JaCoCo configurados
-- ✅ Testcontainers configurado
-
-#### Qué falta por implementar
-
-- ❌ **Users**: `UserController` vacío, servicios son stubs, no hay entidad JPA
-- ❌ **Rooms**: Sin service ni controller propios (solo entidad y repo)
-- ❌ **Reservation**: No existe
-- ❌ **Payment**: No existe
-- ❌ **Review**: No existe
-- ❌ **Pokemon**: No existe
-- ❌ **Service** (servicios adicionales): No existe
-- ❌ **Spring Security + JWT**: No implementado
-- ❌ **Documentación OpenAPI completa**: Solo configuración base
-- ❌ **Despliegue y CI/CD**: No configurado
-- ❌ **Eventos asíncronos y caché**: No implementado
-
----
-
-## 🗺️ Backlog por Semanas
-
-> Cada semana corresponde a un Capítulo/Templo del "Viaje del Héroe" de Kai en
-> el Hotel Pokémon. Los ejercicios siguen el ciclo TDD 🔴→🟢→🔵.
-
----
-
-### Semana 5 — La Fortaleza de la Seguridad 🏰
-
-**Capítulo narrativo:** _La Fortaleza de Ciudad Azafrán_
-**Insignia:** 🏅 _Llave Maestra JWT_
-**Enemigo:** Team Rocket (ataques de fuerza bruta)
-**Rama sugerida:** `feature/milestone-05-security`
-
-#### Ejercicio 5.1 — Completar el CRUD de Users con TDD
-
-> **Como** entrenador Pokémon,
-> **quiero** registrarme, ver mi perfil y actualizarlo,
-> **para** poder reservar habitaciones en el Hotel Pokémon.
-
-**Tareas:**
-
-- [ ] Crear `UserEntity` JPA mapeando el modelo de dominio `User` existente
-- [ ] Implementar `UserJpaRepository` con Spring Data
-- [ ] Crear `UserRepositoryAdapter` que implemente el puerto `UserRepository`
-- [ ] Completar `CreateUserService.execute()` con lógica real (verificar duplicados, hashear password)
-- [ ] Completar `GetUserUseCase.execute()` consultando el repositorio
-- [ ] Completar `UpdateUserUseCase.execute()` con actualización parcial
-- [ ] Implementar `UserController` con endpoints REST:
-  - `POST /api/v1/users` — Registro
-  - `GET /api/v1/users/{id}` — Consultar perfil
-  - `PUT /api/v1/users/{id}` — Actualizar perfil
-  - `DELETE /api/v1/users/{id}` — Desactivar cuenta
-  - `GET /api/v1/users` — Listar (admin)
-- [ ] Migración Flyway `V3__Add_Users_Table.sql`
-
-**Criterios de aceptación:**
-
-1. `POST /api/v1/users` con datos válidos retorna `201 Created` y el usuario creado (sin exponer password)
-2. `POST /api/v1/users` con email duplicado retorna `409 Conflict`
-3. Las contraseñas se almacenan hasheadas con BCrypt, nunca en texto plano
-4. `GET /api/v1/users/{id}` con ID inexistente retorna `404 Not Found`
-5. Los Value Objects (`Email`, `Password`, `PhoneNumber`) validan sus invariantes
-6. Tests unitarios del servicio, tests del controlador con `@WebMvcTest`, tests de integración con `@DataJpaTest`
-7. Cobertura ≥ 80% para el feature `users`
-
----
-
-#### Ejercicio 5.2 — Spring Security con JWT stateless
-
-> **Como** desarrollador del Hotel Pokémon,
-> **quiero** proteger los endpoints con autenticación JWT,
-> **para** garantizar que solo usuarios autorizados accedan a recursos protegidos.
-
-**Tareas:**
-
-- [ ] Agregar dependencias: `spring-boot-starter-security`, `jjwt-api`, `jjwt-impl`, `jjwt-jackson`
-- [ ] Crear feature `auth/` con estructura Screaming Architecture
-- [ ] Implementar `JwtService` — generación y validación de tokens
-- [ ] Implementar `JwtAuthenticationFilter` — filtro de autenticación
-- [ ] Implementar `CustomUserDetailsService` cargando usuarios desde `UserRepository`
-- [ ] Configurar `SecurityFilterChain`:
-  - CSRF deshabilitado (API stateless)
-  - Sesión STATELESS
-  - Endpoints públicos: `/api/auth/**`, `/swagger-ui/**`, `/api-docs/**`, `/actuator/health`
-  - Endpoints protegidos por rol
-- [ ] Crear `AuthController`:
-  - `POST /api/auth/login` — Autenticación (retorna JWT)
-  - `POST /api/auth/register` — Registro público
-- [ ] Configurar `PasswordEncoder` como bean (`BCryptPasswordEncoder`)
-
-**Criterios de aceptación:**
-
-1. `POST /api/auth/login` con credenciales válidas retorna `200` con token JWT
-2. `POST /api/auth/login` con credenciales inválidas retorna `401 Unauthorized`
-3. Acceso a `GET /api/v1/users` sin token retorna `401 Unauthorized`
-4. Acceso a `GET /api/v1/users` con token válido de rol `ADMIN` retorna `200`
-5. Acceso a `GET /api/v1/users` con token válido de rol `GUEST` retorna `403 Forbidden`
-6. Tokens expirados retornan `401 Unauthorized`
-7. El token incluye `username`, `roles` y timestamp de expiración en sus claims
-8. Tests de integración con `MockMvc` validan cada escenario de acceso
-
----
-
-#### Ejercicio 5.3 — Roles y autoridades granulares
-
-> **Como** administrador del Hotel Pokémon,
-> **quiero** definir roles con permisos granulares,
-> **para** controlar el acceso a funcionalidades específicas del sistema.
-
-**Tareas:**
-
-- [ ] Crear entidades `Role` y `Authority` con relación `@ManyToMany`
-- [ ] Relación `User ↔ Role` (`@ManyToMany`)
-- [ ] Definir roles base: `ROLE_GUEST`, `ROLE_STAFF`, `ROLE_ADMIN`
-- [ ] Definir authorities: `USER_READ`, `USER_WRITE`, `HOTEL_MANAGE`, `RESERVATION_CREATE`, etc.
-- [ ] Migración Flyway `V4__Add_Roles_Authorities.sql` con datos seed
-- [ ] Aplicar `@PreAuthorize` en controladores existentes
-
-**Criterios de aceptación:**
-
-1. Un usuario `GUEST` puede consultar hoteles pero no crearlos
-2. Un usuario `STAFF` puede gestionar reservas
-3. Un usuario `ADMIN` tiene acceso total
-4. Los roles se cargan al contexto de seguridad desde la base de datos
-5. Tests de autorización validan cada combinación de rol y endpoint
-
----
-
-### Semana 6 — La Torre Pokémon de las Pruebas 🗼
-
-**Capítulo narrativo:** _El Oráculo de las Pruebas_
-**Insignia:** 🏅 _Cinturón de Pruebas_
-**Enemigo:** Mewtwo (flaky tests)
-**Rama sugerida:** `feature/milestone-06-testing`
-
-#### Ejercicio 6.1 — Estrategia de testing por niveles
-
-> **Como** desarrollador,
-> **quiero** una suite de pruebas estructurada en niveles,
-> **para** garantizar calidad en cada capa de la aplicación.
-
-**Tareas:**
-
-- [ ] Implementar los 6 niveles de prueba para el feature `hotels` completo:
-  1. Unitarias de servicio de dominio (MockK, sin Spring)
-  2. De controlador con `@WebMvcTest` (servicio mockeado)
-  3. Unitarias del adapter de persistencia (JPA repo mockeado)
-  4. De integración con `@SpringBootTest` + H2
-  5. De datos JPA con `@DataJpaTest`
-  6. E2E con `@SpringBootTest` + `TestRestTemplate` + Testcontainers PostgreSQL
-- [ ] Replicar la estrategia para el feature `users`
-- [ ] Configurar `@Nested` para organizar tests por escenario (Given/When/Then)
-- [ ] Agregar `@DisplayName` descriptivos en español
-
-**Criterios de aceptación:**
-
-1. Cada feature tiene al menos pruebas en los niveles 1, 2 y 4
-2. Las pruebas unitarias NO levantan contexto de Spring (< 100ms cada una)
-3. Las pruebas E2E usan Testcontainers con PostgreSQL real
-4. No hay tests flaky — todos son reproducibles y aislados
-5. La nomenclatura sigue el patrón `debe_resultado_cuando_condición`
-6. JaCoCo reporta cobertura ≥ 80% global
-
----
-
-#### Ejercicio 6.2 — Pruebas de seguridad y endpoints protegidos
-
-> **Como** desarrollador,
-> **quiero** validar que la seguridad funciona correctamente en tests,
-> **para** prevenir regresiones en la protección de endpoints.
-
-**Tareas:**
-
-- [ ] Crear `@WithMockUser` personalizado con roles del dominio
-- [ ] Tests de endpoints protegidos con/sin token JWT
-- [ ] Tests de endpoints con token expirado
-- [ ] Tests de acceso con roles insuficientes
-- [ ] Configurar `SecurityTestConfig` para tests que no necesitan seguridad
-
-**Criterios de aceptación:**
-
-1. Tests verifican `401` para requests sin autenticación
-2. Tests verifican `403` para roles insuficientes
-3. Tests verifican acceso exitoso con credenciales válidas
-4. `SecurityTestConfig` permite ejecutar tests de features aislados sin levantar la cadena de seguridad completa
-
----
-
-#### Ejercicio 6.3 — Cobertura y quality gates
-
-> **Como** equipo de desarrollo,
-> **quiero** configurar quality gates automáticos,
-> **para** mantener estándares de calidad mínimos en cada PR.
-
-**Tareas:**
-
-- [ ] Configurar JaCoCo con umbral mínimo de cobertura al 80%
-- [ ] Configurar Detekt con reglas estrictas (complejidad ciclomática ≤ 10)
-- [ ] Configurar KtLint para estilo consistente
-- [ ] Crear tarea Gradle `check` que ejecute: `ktlintCheck` → `detekt` → `test` → `jacocoTestCoverageVerification`
-- [ ] Documentar en README cómo ejecutar la verificación completa
-
-**Criterios de aceptación:**
-
-1. `./gradlew check` falla si la cobertura es < 80%
-2. `./gradlew check` falla si hay violaciones de Detekt
-3. `./gradlew check` falla si hay problemas de formato KtLint
-4. El reporte HTML de JaCoCo se genera en `build/reports/jacoco/`
-5. Todos los tests actuales pasan con el pipeline completo
-
----
-
-### Semana 7 — El Mapa del Merodeador: Documentación 📜
-
-**Capítulo narrativo:** _El Templo de los Avisos_
-**Insignia:** 🏅 _Libro de las API_
-**Enemigo:** Ditto (documentación desactualizada)
-**Rama sugerida:** `feature/milestone-07-docs`
-
-#### Ejercicio 7.1 — Documentación OpenAPI completa
-
-> **Como** desarrollador externo,
-> **quiero** una documentación interactiva de la API,
-> **para** integrarme con el sistema del Hotel Pokémon sin depender de documentación manual.
-
-**Tareas:**
-
-- [ ] Anotar todos los controladores con `@Tag(name, description)`
-- [ ] Anotar todos los endpoints con `@Operation(summary, description)`
-- [ ] Documentar request/response con `@Schema` en los DTOs
-- [ ] Documentar códigos de respuesta con `@ApiResponse` (200, 201, 400, 401, 403, 404, 409, 500)
-- [ ] Agregar ejemplos en las anotaciones `@Schema(example = "...")`
-- [ ] Configurar seguridad JWT en OpenAPI (botón "Authorize" en Swagger UI)
-- [ ] Agrupar endpoints por feature en tags
-
-**Criterios de aceptación:**
-
-1. Swagger UI (`/swagger-ui.html`) muestra todos los endpoints organizados por feature
-2. Cada endpoint tiene summary, description y ejemplos de request/response
-3. Los modelos de DTO muestran validaciones y tipos de datos
-4. El botón "Authorize" permite ingresar un token JWT para probar endpoints protegidos
-5. Los códigos de error están documentados con ejemplos del `ErrorResponse`
-6. `/api-docs` genera un JSON OpenAPI 3.0 válido
-
----
-
-#### Ejercicio 7.2 — CRUD completo de Rooms
-
-> **Como** administrador del Hotel Pokémon,
-> **quiero** gestionar las habitaciones temáticas,
-> **para** ofrecer experiencias personalizadas a los entrenadores.
-
-**Tareas:**
-
-- [ ] Crear `RoomService` con lógica de negocio para habitaciones
-- [ ] Crear `RoomController` con endpoints:
-  - `POST /api/v1/hotels/{hotelId}/rooms` — Crear habitación
-  - `GET /api/v1/hotels/{hotelId}/rooms` — Listar habitaciones del hotel
-  - `GET /api/v1/hotels/{hotelId}/rooms/{roomId}` — Detalle de habitación
-  - `PUT /api/v1/hotels/{hotelId}/rooms/{roomId}` — Actualizar
-  - `DELETE /api/v1/hotels/{hotelId}/rooms/{roomId}` — Eliminar
-- [ ] Enriquecer `RoomEntity` con campos temáticos: `pokemonTheme`, `capacity`, `status`, `description`
-- [ ] Crear DTOs: `CreateRoomRequest`, `UpdateRoomRequest`, `RoomResponse`
-- [ ] Crear enums: `RoomType`, `RoomStatus`, `PokemonTheme`
-- [ ] Migración Flyway `V5__Enrich_Rooms_Table.sql`
-- [ ] Documentar con anotaciones OpenAPI completas
-
-**Criterios de aceptación:**
-
-1. CRUD completo funcional para habitaciones anidadas bajo un hotel
-2. Validación con Jakarta Validation en los DTOs (`@get:NotBlank`, `@get:Positive`, etc.)
-3. Un room sin hotel asociado retorna `400 Bad Request`
-4. `GET /api/v1/hotels/{hotelId}/rooms` soporta paginación y filtrado por `status` y `pokemonTheme`
-5. Tests unitarios y de integración para el feature completo
-6. Documentación OpenAPI completa para todos los endpoints
-
----
-
-### Semana 8 — El Portal a la Nube: Despliegue y Monitoreo ☁️
-
-**Capítulo narrativo:** _La Puerta de Heroku — Despliegue y Monitoreo_
-**Insignia:** 🏅 _Puerta de los Sistemas en Vivo_
-**Enemigo:** Kyogre (outage de producción)
-**Rama sugerida:** `feature/milestone-08-deploy`
-
-#### Ejercicio 8.1 — Empaquetado y Docker
-
-> **Como** equipo de operaciones,
-> **quiero** empaquetar la aplicación en un contenedor Docker optimizado,
-> **para** desplegar de forma reproducible en cualquier entorno.
-
-**Tareas:**
-
-- [ ] Crear `Dockerfile` multi-stage con Layered JARs:
-  - Stage 1: Build con Gradle
-  - Stage 2: Runtime con imagen base Distroless o Eclipse Temurin slim
-- [ ] Crear `docker-compose.yml` para desarrollo local (app + PostgreSQL + Redis)
-- [ ] Configurar `.dockerignore`
-- [ ] Optimizar la imagen (< 200MB)
-- [ ] Configurar `JAVA_TOOL_OPTIONS` para contenedores (memory limits)
-
-**Criterios de aceptación:**
-
-1. `docker build -t hotel-pokemon .` genera una imagen funcional
-2. `docker compose up` levanta la aplicación con PostgreSQL
-3. La aplicación inicia correctamente dentro del contenedor
-4. La imagen pesa menos de 200MB
-5. Los secretos se pasan como variables de entorno, nunca hardcodeados en la imagen
-
----
-
-#### Ejercicio 8.2 — Observabilidad con Actuator y Prometheus
-
-> **Como** operador del sistema,
-> **quiero** monitorear la salud y el rendimiento de la API,
-> **para** detectar y resolver problemas antes de que afecten a los usuarios.
-
-**Tareas:**
-
-- [ ] Configurar Actuator con endpoints seguros (solo `ADMIN` accede a `/actuator/**`)
-- [ ] Exponer métricas para Prometheus en `/actuator/prometheus`
-- [ ] Crear Health Indicators personalizados:
-  - `DatabaseHealthIndicator` — Verifica la conexión a PostgreSQL
-  - `ExternalServiceHealthIndicator` — Placeholder para servicios externos
-- [ ] Configurar health groups: `liveness` y `readiness` para Kubernetes
-- [ ] Agregar métricas de negocio con Micrometer:
-  - Contador de reservas creadas
-  - Timer de tiempo de respuesta por endpoint
-  - Gauge de habitaciones disponibles
-- [ ] Crear `docker-compose-monitoring.yml` con Prometheus + Grafana (opcional)
-
-**Criterios de aceptación:**
-
-1. `GET /actuator/health` retorna `{"status": "UP"}` con detalles de componentes
-2. `GET /actuator/prometheus` expone métricas en formato Prometheus
-3. Los endpoints de Actuator (excepto `/health`) requieren autenticación `ADMIN`
-4. Las health probes de Kubernetes (`/actuator/health/liveness`, `/actuator/health/readiness`) funcionan
-5. Las métricas de negocio personalizadas aparecen en el endpoint de Prometheus
-6. Sentry captura errores de producción correctamente
-
----
-
-#### Ejercicio 8.3 — CI/CD con GitHub Actions
-
-> **Como** equipo de desarrollo,
-> **quiero** automatizar el pipeline de integración continua,
-> **para** detectar errores tempranamente y mantener la calidad del código.
-
-**Tareas:**
-
-- [ ] Crear `.github/workflows/ci.yml` con:
-  - Trigger en push a `main` y PRs
-  - Matrix: JDK 25
-  - Steps: Checkout → Setup JDK → Cache Gradle → KtLint → Detekt → Test → JaCoCo → Build
-- [ ] Crear `.github/workflows/docker.yml` para construir y publicar imagen
-- [ ] Configurar cache de Gradle para acelerar builds
-- [ ] Agregar badge de CI al README
-
-**Criterios de aceptación:**
-
-1. El pipeline CI ejecuta en < 5 minutos
-2. El pipeline falla si los tests no pasan
-3. El pipeline falla si la cobertura es < 80%
-4. El pipeline falla si hay violaciones de Detekt o KtLint
-5. Los reportes de cobertura se publican como artifacts del workflow
-
----
-
-### Semana 9 — La Liga de los Maestros: Temas Avanzados ⚡
-
-**Capítulo narrativo:** _El Laberinto de la Asincronía_
-**Insignia:** 🏅 _Energía de la Caché_
-**Enemigo:** Rayquaza (congestión de mensajería)
-**Rama sugerida:** `feature/milestone-09-advanced`
-
-#### Ejercicio 9.1 — Sistema de Reservaciones
-
-> **Como** entrenador Pokémon,
-> **quiero** reservar una habitación temática en el hotel,
-> **para** disfrutar de una estadía personalizada con mi equipo Pokémon.
-
-**Tareas:**
-
-- [ ] Crear feature `reservations/` con estructura completa:
-  - Modelo de dominio: `Reservation` con máquina de estados (`PENDING` → `CONFIRMED` → `IN_PROGRESS` → `COMPLETED` / `CANCELLED`)
-  - Entidad JPA: `ReservationEntity` con relaciones a `User` y `Room`
-  - Repository, Service, Controller
-- [ ] Implementar validaciones de negocio:
-  - No permitir reservas en fechas ya ocupadas
-  - Validar que `checkOutDate > checkInDate`
-  - Calcular `totalPrice` basado en noches × precio por noche
-- [ ] Endpoints:
-  - `POST /api/v1/reservations` — Crear reserva
-  - `GET /api/v1/reservations/{id}` — Detalle
-  - `GET /api/v1/reservations` — Listar (filtros por usuario, estado, fechas)
-  - `PATCH /api/v1/reservations/{id}/confirm` — Confirmar
-  - `PATCH /api/v1/reservations/{id}/checkin` — Check-in
-  - `PATCH /api/v1/reservations/{id}/checkout` — Check-out
-  - `PATCH /api/v1/reservations/{id}/cancel` — Cancelar
-- [ ] Migración Flyway `V6__Add_Reservations_Table.sql`
-
-**Criterios de aceptación:**
-
-1. Solo transiciones de estado válidas son permitidas (no se puede hacer checkout sin checkin)
-2. No se pueden crear reservas superpuestas para la misma habitación
-3. El precio total se calcula automáticamente
-4. Al confirmar una reserva, el estado de la habitación cambia a `RESERVED`
-5. Al cancelar, la habitación vuelve a estar `AVAILABLE`
-6. Tests unitarios cubren todas las transiciones de estado y reglas de negocio
-7. Tests de integración validan el flujo completo de reservación
-
----
-
-#### Ejercicio 9.2 — Eventos de dominio con Spring Events
-
-> **Como** sistema del Hotel Pokémon,
-> **quiero** emitir eventos cuando ocurren acciones importantes,
-> **para** desacoplar la lógica de notificaciones y auditoría.
-
-**Tareas:**
-
-- [ ] Crear eventos de dominio:
-  - `ReservationCreatedEvent`
-  - `ReservationConfirmedEvent`
-  - `CheckInCompletedEvent`
-  - `CheckOutCompletedEvent`
-  - `ReservationCancelledEvent`
-- [ ] Publicar eventos con `ApplicationEventPublisher`
-- [ ] Crear listeners con `@TransactionalEventListener`:
-  - `NotificationListener` — Simular envío de emails/notificaciones
-  - `AuditListener` — Registrar cambios en log de auditoría
-- [ ] Configurar `@Async` para procesamiento asíncrono de eventos
-- [ ] Configurar `TaskExecutor` personalizado (no usar `SimpleAsyncTaskExecutor`)
-
-**Criterios de aceptación:**
-
-1. Los eventos se publican después de que la transacción se completa (`AFTER_COMMIT`)
-2. Los listeners procesan eventos de forma asíncrona sin bloquear el flujo principal
-3. Si un listener falla, no afecta la operación principal
-4. Los eventos son testables — se pueden verificar en tests de integración
-5. El log de auditoría registra quién hizo qué y cuándo
-
----
-
-#### Ejercicio 9.3 — Caché con Caffeine / Redis
-
-> **Como** sistema del Hotel Pokémon,
-> **quiero** cachear consultas frecuentes,
-> **para** mejorar el rendimiento y reducir la carga en la base de datos.
-
-**Tareas:**
-
-- [ ] Agregar dependencia de `spring-boot-starter-cache`
-- [ ] Configurar Caffeine como provider de cache (local, sin infraestructura externa)
-- [ ] Aplicar `@Cacheable` en:
-  - `HotelService.getHotelById()` — Cache por ID
-  - `RoomService.getAvailableRooms()` — Cache de disponibilidad
-- [ ] Aplicar `@CacheEvict` cuando se modifican datos
-- [ ] Aplicar `@CachePut` para actualizaciones
-- [ ] Exponer métricas de cache hit/miss en Actuator
-
-**Criterios de aceptación:**
-
-1. La segunda consulta al mismo hotel se sirve desde caché (verificar con logs de SQL)
-2. Al actualizar un hotel, el caché se invalida
-3. El caché tiene TTL configurado (ej. 5 minutos)
-4. Las métricas de `cache.gets`, `cache.puts`, `cache.evictions` están disponibles en Actuator
-5. Los tests verifican el comportamiento del caché (hit y miss)
-
----
-
-### Semana 10 — El Hotel Pokémon de Lujo: Proyecto Final 🏆
-
-**Capítulo narrativo:** _El Palacio del Hotel Pokémon — El Legado Cumplido_
-**Insignia:** 🏅 _Corona del Arquitecto_
-**Enemigo:** Arceus (sistema a escala mundial)
-**Rama sugerida:** `feature/milestone-10-capstone`
-
-#### Ejercicio 10.1 — Sistema de Pagos
-
-> **Como** entrenador Pokémon,
-> **quiero** pagar mi reservación,
-> **para** confirmar mi estadía en el hotel.
-
-**Tareas:**
-
-- [ ] Crear feature `payments/` con estructura completa:
-  - Modelo: `Payment` con estados (`PENDING` → `COMPLETED` / `FAILED` / `REFUNDED`)
-  - Entidad JPA: `PaymentEntity` con relación `@OneToOne` a `Reservation`
-  - Enums: `PaymentMethod`, `PaymentStatus`
-- [ ] Implementar `PaymentService` con:
-  - Procesamiento de pago (simulado — interfaz para futuro gateway)
-  - Reembolso
-  - Consulta de estado
-- [ ] Endpoints:
-  - `POST /api/v1/reservations/{id}/payments` — Procesar pago
-  - `GET /api/v1/payments/{id}` — Estado del pago
-  - `POST /api/v1/payments/{id}/refund` — Reembolso
-- [ ] Migración Flyway `V7__Add_Payments_Table.sql`
-
-**Criterios de aceptación:**
-
-1. Solo se puede pagar una reserva en estado `CONFIRMED`
-2. Al completar el pago, la reserva cambia a estado `IN_PROGRESS` (lista para check-in)
-3. Solo se puede reembolsar un pago `COMPLETED`
-4. El monto del pago coincide con el `totalPrice` de la reserva
-5. Tests cubren todos los flujos de pago y reembolso
-
----
-
-#### Ejercicio 10.2 — Reviews y entidades opcionales
-
-> **Como** entrenador Pokémon,
-> **quiero** dejar una reseña de mi estadía,
-> **para** ayudar a otros entrenadores a elegir su habitación.
-
-**Tareas:**
-
-- [ ] Crear feature `reviews/` con:
-  - Modelo: `Review` con rating (1-5) y comentario
-  - Entidad JPA: `ReviewEntity` con relación `@OneToOne` a `Reservation`
-- [ ] Endpoints:
-  - `POST /api/v1/reservations/{id}/reviews` — Crear reseña
-  - `GET /api/v1/hotels/{id}/reviews` — Listar reseñas del hotel
-  - `GET /api/v1/reviews/{id}` — Detalle
-- [ ] Solo se puede crear una reseña para una reserva `COMPLETED`
-- [ ] Calcular rating promedio del hotel
-- [ ] Migración Flyway `V8__Add_Reviews_Table.sql`
-
-**Criterios de aceptación:**
-
-1. Solo el usuario de la reserva puede crear la reseña
-2. Una reserva solo puede tener una reseña
-3. El rating debe estar entre 1 y 5
-4. `GET /api/v1/hotels/{id}/reviews` incluye paginación y el rating promedio
-5. Tests unitarios y de integración completos
-
----
-
-#### Ejercicio 10.3 — Integración completa y release final
-
-> **Como** equipo de desarrollo del Hotel Pokémon,
-> **quiero** integrar todas las funcionalidades y preparar el release,
-> **para** entregar un sistema de gestión hotelera completo y funcional.
-
-**Tareas:**
-
-- [ ] Verificar que todos los features funcionan integrados:
-  - Flujo completo: Registro → Login → Buscar hotel → Ver habitaciones → Reservar → Pagar → Check-in → Check-out → Dejar reseña
-- [ ] Crear test E2E del flujo completo con Testcontainers
-- [ ] Ejecutar el pipeline completo: `ktlintCheck` → `detekt` → `test` → `jacocoTestCoverageVerification` → `build`
-- [ ] Revisar y completar documentación OpenAPI de todos los endpoints
-- [ ] Actualizar README.md con:
-  - Instrucciones de setup local
-  - Endpoints disponibles
-  - Arquitectura del proyecto
-  - Cómo ejecutar tests
-- [ ] Actualizar HISTORIAL.md con los logros de todas las semanas
-- [ ] Crear tag `v1.0.0` y release notes
-- [ ] (Opcional) Crear feature `pokemon/` con registro de Pokémon acompañantes
-
-**Criterios de aceptación:**
-
-1. El flujo completo funciona de extremo a extremo en un test automatizado
-2. Todos los tests pasan (`./gradlew check`)
-3. Cobertura global ≥ 80%
-4. Swagger UI muestra todos los endpoints documentados y organizados
-5. La aplicación arranca sin errores con `./gradlew bootRun`
-6. Docker Compose levanta el entorno completo
-7. El README explica cómo poner el proyecto en marcha en < 5 minutos
-8. El proyecto tiene al menos 8 entidades del dominio implementadas
-
----
-
-## 📈 Resumen de Progreso
-
-| Semana | Temas principales                             | Insignia                         | Estado      |
-| ------ | --------------------------------------------- | -------------------------------- | ----------- |
-| 0      | Bienvenida, entorno, narrativa                | 🏅 Semilla de Kotlin              | ✅ Completo  |
-| 1      | Proyecto base, dependencias                   | 🏅 Semilla de Kotlin              | ✅ Completo  |
-| 2      | HTTP, Spring Boot, perfiles, Flyway           | 🏅 Ruta de las 1000 Peticiones    | ✅ Completo  |
-| 3      | JPA, TDD, CRUD Example, entidades             | 🏅 Reliquia de las Entidades      | ✅ Completo  |
-| 4      | Screaming Architecture, validación, Swagger   | 🏅 Escudo de Validación           | ✅ Completo  |
-| 5      | Users CRUD, Spring Security, JWT, RBAC        | 🏅 Llave Maestra JWT              | 🔲 Pendiente |
-| 6      | Testing por niveles, cobertura, quality gates | 🏅 Cinturón de Pruebas            | 🔲 Pendiente |
-| 7      | OpenAPI completa, CRUD Rooms                  | 🏅 Libro de las API               | 🔲 Pendiente |
-| 8      | Docker, Actuator, Prometheus, CI/CD           | 🏅 Puerta de los Sistemas en Vivo | 🔲 Pendiente |
-| 9      | Reservaciones, eventos, caché                 | 🏅 Energía de la Caché            | 🔲 Pendiente |
-| 10     | Pagos, reviews, integración, release v1.0     | 🏅 Corona del Arquitecto          | 🔲 Pendiente |
-
----
-
-## 🎯 Entidades del Dominio — Estado
-
-| Entidad        | Dominio |  JPA  | Repo  | Service | Controller | Tests | Semana |
-| -------------- | :-----: | :---: | :---: | :-----: | :--------: | :---: | :----: |
-| Example        |    ✅    |   ✅   |   ✅   |    ✅    |     ✅      |   ✅   |   3    |
-| Hotel          |    ✅    |   ✅   |   ✅   |    ✅    |     ✅      |   ✅   |  4-5   |
-| Room           |    ✅    |   ✅   |   ✅   |    🔲    |     🔲      |   🔲   |   7    |
-| User           |    ✅    |   🔲   |   ⚠️   |    ⚠️    |     🔲      |   ⚠️   |   5    |
-| Role/Authority |    🔲    |   🔲   |   🔲   |    🔲    |     —      |   🔲   |   5    |
-| Reservation    |    🔲    |   🔲   |   🔲   |    🔲    |     🔲      |   🔲   |   9    |
-| Payment        |    🔲    |   🔲   |   🔲   |    🔲    |     🔲      |   🔲   |   10   |
-| Review         |    🔲    |   🔲   |   🔲   |    🔲    |     🔲      |   🔲   |   10   |
-
-> ✅ = Completo · ⚠️ = Parcial/Stub · 🔲 = Pendiente
-
----
-
-## 📚 Referencias
-
-- [Narrativa del Curso](docs/course/week-00/01-historia-del-viaje.md) — El Legado del Desarrollador
-- [Método de Aprendizaje](docs/course/week-00/02-metodo-de-aprendizaje.md) — El Viaje del Héroe
-- [Calendario de Seguimiento](docs/course/README.md) — Plan semanal tentativo
-- [Entidades del Sistema](docs/course/week-03/02-entidades.md) — Definición de entidades
-- [Screaming Architecture](docs/course/week-04/01-screaming-architecture.md) — Estructura por features
-- [Spring Security + JWT](docs/course/week-05/01-spring-security.md) — Diseño de seguridad
-- [TDD para Hotels](docs/course/week-05/02-tdd-red-hotels.md) — Estrategia de testing por niveles
-- [Retos 2026](docs/course/week-05/03-retos.md) — 52 retos avanzados semanales
-- [HISTORIAL](HISTORIAL.md) — Logros e insignias conseguidas
+# BACKLOG
+
+## Global
+
+- Product: Gran Hotel Pokemon - API REST de gestion hotelera
+- Strategy: FIFO by priority, then dependency graph
+- Policy: OpenSpec delivery uses validate, scan, plan, status, next, start, done, block, and archive; no item larger than 1-2 implementation sessions; archive requires a PASS scorecard
+- Review required: yes
+- TDD required: yes
+
+## OpenSpec Scorecards
+
+Every item produces one scorecard for its final `review` card. The scorecard is
+created after the implementation diff and before the item is archived.
+
+- Record path: `.codeconductor/evaluation/scorecards/<scorecard-id>.json`
+- Create: `npx cc-codeconductor scorecard create --task <BC-id> --from-diff`
+- Record: `npx cc-codeconductor scorecard record --task <BC-id> --verdict <PASS|REVISE|REJECT> --score <0-3>`
+- PASS threshold: weighted score `>= 2.0` and no critical criterion scored `0`
+- REVISE: correct the findings and repeat the review scorecard
+- REJECT: return the item to `task-coach` for re-scoping and create a new card
+
+### Scorecard criteria
+
+| ID | Criterion | Weight | Evidence required |
+| --- | --- | ---: | --- |
+| acceptance | Acceptance criteria met | 30% | Each criterion mapped to code, spec, or test evidence |
+| minimal_diff | Minimal diff and no scope creep | 20% | Diff is limited to the declared scope |
+| tests | Tests present and passing | 15% | TDD evidence and passing verification command |
+| regressions | No regressions introduced | 15% | Full applicable test suite passes |
+| conventions | Code follows project conventions | 5% | Architecture, naming, and style checks |
+| documentation | Documentation updated if required | 5% | Public API or decision documentation evidence |
+| context_discipline | Context discipline | 5% | Work stayed within declared scope and boundaries |
+| cc_gain | Complexity diffusion (cc-gain) | 5% | Complexity-auditor result or explicit N/A rationale |
+
+Scores use `0 = not met`, `1 = partial`, `2 = met`, and `3 = exceeded`.
+The weighted score is `sum(score * weight)`. The evaluator must record the
+agent, contract version, date, findings, weighted score, verdict, and evidence.
+
+### OpenSpec phase evidence
+
+| Phase | Required deliverable | Gate |
+| --- | --- | --- |
+| discover | Repository map, affected files, dependencies, and risks | Scope is explicit |
+| design | Technical plan with approach, files, risks, and edge cases | Human review when risk is high |
+| test | Tests that cover every acceptance criterion and fail for the intended reason | Red evidence exists |
+| implement | Minimal implementation within declared boundaries | Green evidence exists |
+| review | Acceptance audit, regression result, and scorecard | PASS scorecard before archive |
+
+## Items
+
+### BC-006 | Implement user management CRUD
+
+- Priority: P1
+- Status: READY
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-005
+- Description: Complete user persistence, application services, and REST endpoints so trainers can register, view, update, deactivate, and list users without exposing passwords.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/resources/db/migration/V3__Add_Users_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`
+- Out of scope: JWT authentication, roles, authorities, and user-facing administration UI
+- Business value: Provides the account foundation required by authentication and reservations.
+- Acceptance:
+  - [ ] `POST /api/v1/users` returns `201 Created` for valid input and never serializes a password
+  - [ ] A duplicate email returns `409 Conflict` and does not create a second user
+  - [ ] Passwords are persisted as BCrypt hashes and are never stored in plain text
+  - [ ] `GET /api/v1/users/{id}` returns `404 Not Found` for an unknown identifier
+  - [ ] `Email`, `Password`, and `PhoneNumber` reject invalid values through their domain invariants
+  - [ ] Unit, `@WebMvcTest`, and `@DataJpaTest` coverage exists for the implemented user flows
+- Risks: Existing value objects and Flyway version ordering must remain compatible.
+- Progress: 0%
+- Branch: `feature/milestone-05-security`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-007 | Implement stateless JWT authentication
+
+- Priority: P1
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-006
+- Description: Add login and registration authentication with signed, expiring JWTs and protect API endpoints through Spring Security.
+- Scope: `build.gradle.kts`, `src/main/kotlin/com/lgzarturo/springbootcourse/config/security/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/auth/`, `src/test/kotlin/com/lgzarturo/springbootcourse/config/security/`
+- Out of scope: OAuth2 providers, refresh tokens, multi-factor authentication, and frontend login screens
+- Business value: Prevents unauthenticated access to user and hotel management operations.
+- Acceptance:
+  - [ ] Valid credentials at `POST /api/auth/login` return `200 OK` with a signed JWT
+  - [ ] Invalid credentials return `401 Unauthorized`
+  - [ ] Protected endpoints return `401 Unauthorized` without a valid token
+  - [ ] A valid token with an allowed role reaches the protected endpoint, while an insufficient role returns `403 Forbidden`
+  - [ ] Expired or invalidly signed tokens return `401 Unauthorized`
+  - [ ] JWT claims include the username, roles, and expiration timestamp
+  - [ ] MockMvc integration tests cover public, authenticated, forbidden, and expired-token requests
+- Risks: Token secrets and expiration settings must come from configuration and must not be committed.
+- Progress: 0%
+- Branch: `feature/milestone-05-security`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-008 | Add roles and granular authorities
+
+- Priority: P1
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-007
+- Description: Persist roles and authorities and apply them to API operations so access is controlled by explicit permissions.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/kotlin/com/lgzarturo/springbootcourse/config/security/`, `src/main/resources/db/migration/V4__Add_Roles_Authorities.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`
+- Out of scope: Organization-level tenancy, external identity providers, and UI permission management
+- Business value: Enables least-privilege access for guests, staff, and administrators.
+- Acceptance:
+  - [ ] `ROLE_GUEST`, `ROLE_STAFF`, and `ROLE_ADMIN` are persisted and loaded into the security context
+  - [ ] Authorities include user read/write, hotel management, and reservation creation permissions
+  - [ ] A guest can read hotels but cannot create or modify them
+  - [ ] Staff can manage reservations and administrators retain access to all declared operations
+  - [ ] Flyway seeds are idempotent and the user-to-role relationship is persisted
+  - [ ] Authorization tests cover every declared role and protected endpoint combination
+- Risks: Role and authority naming must match JWT claims and existing controller annotations.
+- Progress: 0%
+- Branch: `feature/milestone-05-security`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-009 | Establish layered feature testing
+
+- Priority: P1
+- Status: TODO
+- Type: tech-debt
+- Owner: spring-kotlin team
+- Depends on: BC-006
+- Description: Establish a repeatable test strategy for hotels and users across domain, web, persistence, integration, and end-to-end boundaries.
+- Scope: `src/test/kotlin/com/lgzarturo/springbootcourse/features/hotels/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/test/kotlin/com/lgzarturo/springbootcourse/support/`
+- Out of scope: Load testing, production observability, and mutation-testing infrastructure
+- Business value: Detects regressions at the cheapest test layer and documents the testing approach for future features.
+- Acceptance:
+  - [ ] Hotels and users each have unit, controller, and full-context integration coverage
+  - [ ] Repository behavior is covered with `@DataJpaTest` where persistence is used
+  - [ ] End-to-end tests use the configured Testcontainers PostgreSQL path when Docker is available
+  - [ ] Unit tests execute without a Spring context and each test completes in less than 100 ms on the test runner
+  - [ ] Tests use isolated fixtures and pass reproducibly in two consecutive runs
+  - [ ] Scenario names follow `debe_resultado_cuando_condicion` or an equivalent documented convention
+- Risks: Docker availability and H2/PostgreSQL differences can make integration results diverge.
+- Progress: 0%
+- Branch: `feature/milestone-06-testing`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-010 | Verify protected endpoint behavior
+
+- Priority: P1
+- Status: TODO
+- Type: tech-debt
+- Owner: spring-kotlin team
+- Depends on: BC-007, BC-009
+- Description: Add reusable security test support and integration coverage for JWT authentication, authorization, and isolated feature tests.
+- Scope: `src/test/kotlin/com/lgzarturo/springbootcourse/config/security/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/`, `src/test/kotlin/com/lgzarturo/springbootcourse/support/SecurityTestConfig.kt`
+- Out of scope: Changes to production authorization rules unless a failing test identifies a defect
+- Business value: Prevents security regressions from silently exposing protected resources.
+- Acceptance:
+  - [ ] Requests without authentication are asserted as `401 Unauthorized`
+  - [ ] Requests with insufficient roles are asserted as `403 Forbidden`
+  - [ ] Requests with valid JWT credentials are asserted as successful for each permitted role
+  - [ ] Expired and malformed tokens are asserted as `401 Unauthorized`
+  - [ ] Custom `WithMockUser` fixtures represent the domain roles used by the API
+  - [ ] `SecurityTestConfig` lets isolated controller tests run without the complete production security chain
+- Risks: Test-only security configuration must not be component-scanned into production behavior.
+- Progress: 0%
+- Branch: `feature/milestone-06-testing`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-011 | Enforce automated quality gates
+
+- Priority: P1
+- Status: TODO
+- Type: tech-debt
+- Owner: spring-kotlin team
+- Depends on: BC-009
+- Description: Make formatting, static analysis, tests, coverage, and build validation executable through one documented quality gate.
+- Scope: `build.gradle.kts`, `config/detekt/detekt.yml`, `Makefile`, `README.md`, `.github/workflows/ci.yml`
+- Out of scope: Rewriting existing production code solely to increase the target threshold
+- Business value: Makes pull-request quality checks deterministic and repeatable.
+- Acceptance:
+  - [ ] `make quality` runs KtLint, Detekt, tests, JaCoCo verification, and build in the declared order
+  - [ ] The gate fails when coverage is below 85 percent
+  - [ ] The gate fails on a KtLint violation or Detekt violation
+  - [ ] JaCoCo HTML output is generated under `build/reports/jacoco/`
+  - [ ] README documents the local quality command and its required prerequisites
+  - [ ] The current test suite passes through the complete gate
+- Risks: Existing CI task names and the project-level 85 percent policy must remain aligned.
+- Progress: 0%
+- Branch: `feature/milestone-06-testing`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-012 | Complete OpenAPI documentation
+
+- Priority: P2
+- Status: TODO
+- Type: tech-debt
+- Owner: spring-kotlin team
+- Depends on: BC-008, BC-011
+- Description: Document every public REST endpoint, DTO schema, response code, and JWT security requirement in the generated OpenAPI contract.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/config/OpenApiConfig.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/`, `src/main/kotlin/com/lgzarturo/springbootcourse/common/`, `src/test/kotlin/com/lgzarturo/springbootcourse/`
+- Out of scope: Changing endpoint semantics or introducing a separate API documentation service
+- Business value: Lets external developers integrate with the API using a single executable contract.
+- Acceptance:
+  - [ ] Swagger UI lists every controller endpoint grouped by feature
+  - [ ] Every endpoint has a summary, description, request schema, response schema, and applicable status codes
+  - [ ] DTO schemas expose validation constraints and representative examples
+  - [ ] Swagger UI exposes an `Authorize` control for JWT bearer tokens
+  - [ ] Error responses include the documented `ErrorResponse` schema and examples
+  - [ ] `/api-docs` returns a valid OpenAPI 3 JSON document
+- Risks: Documentation annotations must stay synchronized with security and validation behavior.
+- Progress: 0%
+- Branch: `feature/milestone-07-docs`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-013 | Implement room management CRUD
+
+- Priority: P1
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-006, BC-012
+- Description: Complete the rooms feature with domain logic, persistence fields, validation, pagination, filtering, REST endpoints, and OpenAPI documentation.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/rooms/`, `src/main/resources/db/migration/V5__Enrich_Rooms_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/rooms/`
+- Out of scope: Reservations, payments, and room availability synchronization with external systems
+- Business value: Makes hotel inventory manageable and provides the resource required for reservations.
+- Acceptance:
+  - [ ] Room create, list, detail, update, and delete endpoints work under a hotel resource
+  - [ ] DTO validation rejects blank names, non-positive capacities, and invalid room values with `400 Bad Request`
+  - [ ] A room without a valid hotel association returns `400 Bad Request`
+  - [ ] Room listing supports pagination and filtering by status and Pokemon theme
+  - [ ] Room type, status, theme, capacity, and description are persisted by the migration and entity
+  - [ ] Unit, controller, persistence, and integration tests cover the complete room feature
+  - [ ] All room endpoints are represented in the generated OpenAPI document
+- Risks: Room state transitions must remain compatible with future reservation rules.
+- Progress: 0%
+- Branch: `feature/milestone-07-docs`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-014 | Package the application with Docker
+
+- Priority: P2
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-013
+- Description: Produce a reproducible multi-stage application image and a local Compose environment for the API and its database dependencies.
+- Scope: `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `build.gradle.kts`, `README.md`
+- Out of scope: Kubernetes manifests, cloud-specific deployment, and production secret provisioning
+- Business value: Reduces environment drift and makes local and CI execution reproducible.
+- Acceptance:
+  - [ ] `docker build -t hotel-pokemon .` creates an image that starts the application
+  - [ ] `docker compose up` starts the application with PostgreSQL using configured environment variables
+  - [ ] The Dockerfile uses separate build and runtime stages with a non-root runtime user
+  - [ ] The resulting image is smaller than 200 MB
+  - [ ] No database password or signing secret is embedded in the image layers
+  - [ ] The container health check reports application readiness
+- Risks: The JDK 25 runtime and layered JAR layout must remain compatible with the selected base image.
+- Progress: 0%
+- Branch: `feature/milestone-08-deploy`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-015 | Expose production observability
+
+- Priority: P2
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-014
+- Description: Expose secured health probes and business metrics for operators using Actuator, Micrometer, Prometheus, and Sentry.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/config/`, `src/main/kotlin/com/lgzarturo/springbootcourse/common/`, `src/main/resources/`, `docker-compose-monitoring.yml`, `src/test/kotlin/com/lgzarturo/springbootcourse/`
+- Out of scope: Building a custom monitoring dashboard or replacing Sentry
+- Business value: Shortens detection time for outages, failed dependencies, and degraded reservation flows.
+- Acceptance:
+  - [ ] `/actuator/health` reports component status and returns `UP` when dependencies are healthy
+  - [ ] `/actuator/health/liveness` and `/actuator/health/readiness` return the configured probe groups
+  - [ ] `/actuator/prometheus` returns metrics in Prometheus exposition format
+  - [ ] Actuator endpoints other than health require administrator authorization
+  - [ ] Reservation counters, endpoint timers, and available-room gauges are visible in metrics
+  - [ ] Sentry captures an unhandled production exception with the configured environment
+- Risks: Health details and metric labels must not expose credentials or high-cardinality personal data.
+- Progress: 0%
+- Branch: `feature/milestone-08-deploy`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-016 | Automate CI/CD workflows
+
+- Priority: P2
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-011, BC-014
+- Description: Automate build, quality, coverage, and container publication checks for pushes and pull requests.
+- Scope: `.github/workflows/ci.yml`, `.github/workflows/docker.yml`, `README.md`, `Makefile`
+- Out of scope: Cloud infrastructure provisioning and deployment approval policies
+- Business value: Detects regressions before merge and provides a reproducible release artifact.
+- Acceptance:
+  - [ ] CI runs on pushes to `main` and on pull requests
+  - [ ] CI uses JDK 25 and caches Gradle dependencies
+  - [ ] CI executes formatting, static analysis, tests, coverage verification, and build
+  - [ ] CI fails when any required quality or test task fails
+  - [ ] Coverage reports are uploaded as workflow artifacts
+  - [ ] The Docker workflow builds and publishes an image only from an authorized release context
+- Risks: Workflow permissions and registry credentials must follow least privilege.
+- Progress: 0%
+- Branch: `feature/milestone-08-deploy`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-017 | Implement reservation management
+
+- Priority: P1
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-008, BC-013
+- Description: Implement reservation creation, querying, and lifecycle transitions while preventing overlapping bookings and keeping room state consistent.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/rooms/`, `src/main/resources/db/migration/V6__Add_Reservations_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/reservations/`
+- Out of scope: Payment processing, notifications, and reviews
+- Business value: Delivers the central hotel booking workflow.
+- Acceptance:
+  - [ ] Reservation creation rejects overlapping dates for the same room
+  - [ ] Check-out date must be after check-in date and invalid ranges return `400 Bad Request`
+  - [ ] Total price equals the number of nights multiplied by the room nightly price
+  - [ ] Only valid transitions from `PENDING` to `CONFIRMED`, `IN_PROGRESS`, `COMPLETED`, or `CANCELLED` are accepted
+  - [ ] Confirming a reservation marks the room `RESERVED` and cancelling it restores `AVAILABLE`
+  - [ ] Reservation listing supports user, status, and date filters with pagination
+  - [ ] Unit and integration tests cover every state transition and the complete booking flow
+- Risks: Concurrent reservation requests require a database-safe overlap strategy.
+- Progress: 0%
+- Branch: `feature/milestone-09-advanced`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-018 | Publish reservation domain events
+
+- Priority: P2
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-017
+- Description: Publish reservation lifecycle events after commit and process notifications and audit records asynchronously.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/kotlin/com/lgzarturo/springbootcourse/common/events/`, `src/main/kotlin/com/lgzarturo/springbootcourse/config/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/reservations/`
+- Out of scope: Kafka, RabbitMQ, external email delivery, and a persistent outbox
+- Business value: Decouples notifications and audit behavior from the reservation transaction.
+- Acceptance:
+  - [ ] Created, confirmed, checked-in, checked-out, and cancelled reservations publish distinct events
+  - [ ] Events are delivered through `@TransactionalEventListener` with `AFTER_COMMIT`
+  - [ ] Listeners execute asynchronously on a configured task executor
+  - [ ] A listener failure does not roll back or fail the completed reservation operation
+  - [ ] Audit output records actor, action, reservation identifier, and timestamp
+  - [ ] Integration tests verify event publication timing and listener execution
+- Risks: Asynchronous processing is in-process and must be documented as non-durable.
+- Progress: 0%
+- Branch: `feature/milestone-09-advanced`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-019 | Add cache for frequent queries
+
+- Priority: P2
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-013
+- Description: Cache hotel and room availability queries with explicit TTL, invalidation, and Actuator cache metrics.
+- Scope: `build.gradle.kts`, `src/main/kotlin/com/lgzarturo/springbootcourse/config/cache/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/hotels/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/rooms/`, `src/test/kotlin/com/lgzarturo/springbootcourse/config/cache/`
+- Out of scope: Redis infrastructure, distributed cache coordination, and caching mutable reservation state
+- Business value: Reduces database load for repeated hotel and room availability queries.
+- Acceptance:
+  - [ ] Caffeine is configured as the cache provider with a five-minute TTL
+  - [ ] Repeating a hotel lookup returns the cached value without a second repository call
+  - [ ] Hotel and room mutations evict or update the affected cache entries
+  - [ ] Actuator exposes cache get, put, and eviction metrics
+  - [ ] Tests verify cache miss, hit, update, and eviction behavior
+  - [ ] Cache keys do not contain credentials or unbounded user-controlled data
+- Risks: Stale availability must never be used to authorize a reservation.
+- Progress: 0%
+- Branch: `feature/milestone-09-advanced`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-020 | Implement reservation payments
+
+- Priority: P1
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-017
+- Description: Add simulated payment processing, status queries, and refunds for confirmed reservations behind a replaceable gateway boundary.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/payments/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/resources/db/migration/V7__Add_Payments_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/payments/`
+- Out of scope: Real card data, external payment provider credentials, and PCI compliance certification
+- Business value: Completes the reservation confirmation path without storing sensitive payment data.
+- Acceptance:
+  - [ ] A payment can be created only for a reservation in `CONFIRMED` status
+  - [ ] A completed payment moves the reservation to `IN_PROGRESS`
+  - [ ] A refund can be created only for a `COMPLETED` payment
+  - [ ] The payment amount equals the reservation total price
+  - [ ] Payment status transitions cover `PENDING`, `COMPLETED`, `FAILED`, and `REFUNDED`
+  - [ ] Unit and integration tests cover successful, failed, duplicate, and refund flows
+- Risks: The simulated gateway must make it impossible to persist raw payment credentials.
+- Progress: 0%
+- Branch: `feature/milestone-10-capstone`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-021 | Implement stay reviews
+
+- Priority: P1
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-017, BC-020
+- Description: Allow the guest who completed a reservation to create one rated review and expose paginated hotel review summaries.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/reviews/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/resources/db/migration/V8__Add_Reviews_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/reviews/`
+- Out of scope: Moderation workflows, image uploads, and public user profiles
+- Business value: Provides trustworthy hotel feedback and a measurable guest experience signal.
+- Acceptance:
+  - [ ] Only the user who owns a `COMPLETED` reservation can create its review
+  - [ ] A reservation can have at most one review
+  - [ ] Ratings outside the inclusive range 1-5 are rejected with `400 Bad Request`
+  - [ ] `GET /api/v1/hotels/{id}/reviews` returns paginated reviews and the average rating
+  - [ ] Review detail returns `404 Not Found` for an unknown review identifier
+  - [ ] Unit and integration tests cover authorization, uniqueness, validation, pagination, and average-rating calculation
+- Risks: Review ownership must be checked from authenticated identity, not a request body field.
+- Progress: 0%
+- Branch: `feature/milestone-10-capstone`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-022 | Complete integrated release
+
+- Priority: P0
+- Status: TODO
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-012, BC-015, BC-016, BC-018, BC-019, BC-020, BC-021
+- Description: Verify the complete hotel journey, consolidate release documentation, and publish the first production-ready application version.
+- Scope: `src/test/kotlin/com/lgzarturo/springbootcourse/`, `README.md`, `HISTORIAL.md`, `BACKLOG.md`, `.github/workflows/`, `Dockerfile`, `docker-compose.yml`
+- Out of scope: New business capabilities not required by the end-to-end journey and optional Pokemon companion management
+- Business value: Demonstrates that the course project operates as one coherent, releasable system.
+- Acceptance:
+  - [ ] An automated end-to-end test passes for register, login, hotel search, room selection, reservation, payment, check-in, check-out, and review
+  - [ ] `./gradlew check` passes with global coverage at or above 85 percent
+  - [ ] Swagger UI documents every released endpoint and the JWT authorization flow
+  - [ ] `./gradlew bootRun` starts without application errors under the documented local profile
+  - [ ] Docker Compose starts the documented application and database environment
+  - [ ] README and HISTORIAL document setup, endpoints, architecture, tests, and completed milestones
+  - [ ] Release notes and tag `v1.0.0` identify the verified release contents
+- Risks: The end-to-end flow can reveal cross-feature coupling that violates feature isolation.
+- Progress: 0%
+- Branch: `feature/milestone-10-capstone`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+## Archive
+
+### BC-001 | Establish the Kotlin project foundation
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: none
+- Description: Establish the initial Kotlin and Spring Boot project, local development profile, build tooling, and course workspace.
+- Scope: `build.gradle.kts`, `settings.gradle.kts`, `gradlew`, `src/main/`, `src/test/`
+- Out of scope: Hotel business features and production deployment
+- Business value: Provides the executable foundation for all later milestones.
+- Acceptance:
+  - [x] The project compiles with the documented Gradle command
+  - [x] The dev profile starts with the documented local database configuration
+  - [x] The test source set is configured and executable
+- Progress: 100%
+- Last update: 2026-09-16
+
+### BC-002 | Add basic request handling
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-001
+- Description: Add the initial ping, example, and hotel HTTP flows with controller and service tests.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/ping/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/examples/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/hotels/`, `src/test/`
+- Out of scope: Authentication and reservations
+- Business value: Establishes the first working REST examples and the course TDD loop.
+- Acceptance:
+  - [x] Ping and example endpoints return their documented responses
+  - [x] Hotel controller and service tests pass
+  - [x] Controllers delegate business operations to services
+- Progress: 100%
+- Last update: 2026-09-16
+
+### BC-003 | Add JPA persistence
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-002
+- Description: Add domain-to-JPA translation, repositories, migrations, and integration coverage for persistent hotel data.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/hotels/`, `src/main/resources/db/migration/`, `src/test/`
+- Out of scope: User persistence and external databases beyond configured profiles
+- Business value: Makes hotel data durable and demonstrates the persistence boundary.
+- Acceptance:
+  - [x] Hotel entities and repositories persist and retrieve hotel records
+  - [x] Flyway migrations run in the configured migration profile
+  - [x] Domain models remain free of Spring and JPA annotations
+- Progress: 100%
+- Last update: 2026-09-16
+
+### BC-004 | Implement the hotels CRUD
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-003
+- Description: Deliver the complete hotel CRUD with validation, pagination, standardized errors, and integration coverage.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/hotels/`, `src/main/kotlin/com/lgzarturo/springbootcourse/common/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/hotels/`
+- Out of scope: Rooms, users, and security
+- Business value: Provides the reference MVC feature for the rest of the course.
+- Acceptance:
+  - [x] Hotel create, list, detail, update, and delete operations pass their integration tests
+  - [x] Invalid requests return standardized validation responses
+  - [x] Listing supports neutral pagination and sorting
+- Progress: 100%
+- Last update: 2026-09-16
+
+### BC-005 | Establish feature architecture and validation
+
+- Priority: P1
+- Status: DONE
+- Type: refactor
+- Owner: spring-kotlin team
+- Depends on: BC-004
+- Description: Establish feature-isolated MVC structure, value objects for users, global exception handling, API configuration, and project quality tooling.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/`, `src/main/kotlin/com/lgzarturo/springbootcourse/common/`, `src/main/kotlin/com/lgzarturo/springbootcourse/config/`, `config/`, `Makefile`
+- Out of scope: Completing user persistence and authentication
+- Business value: Defines the conventions that keep future features maintainable and independently testable.
+- Acceptance:
+  - [x] Existing features follow the documented MVC-by-feature package structure
+  - [x] User value objects enforce their domain invariants through unit tests
+  - [x] Global exception handling maps validation, not-found, conflict, and fallback errors to the documented responses
+  - [x] OpenAPI base configuration, CORS, Actuator, Sentry, KtLint, Detekt, JaCoCo, and Testcontainers are configured
+- Progress: 100%
+- Last update: 2026-09-16
