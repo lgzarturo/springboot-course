@@ -5,7 +5,7 @@ value class Password(
     val value: String,
 ) {
     init {
-        require(isSecure(value)) {
+        require(isSecure(value) || isEncrypted(value)) {
             "Password must be at least 8 characters and contain uppercase, lowercase, and number"
         }
     }
@@ -16,5 +16,7 @@ value class Password(
         fun isSecure(password: String): Boolean = PASSWORD_REGEX.matches(password)
 
         fun fromEncrypted(encrypted: String): Password = Password(encrypted)
+
+        private fun isEncrypted(password: String): Boolean = password.matches("^\\$2[aby]\\$\\d{2}\\$.{53}$".toRegex())
     }
 }

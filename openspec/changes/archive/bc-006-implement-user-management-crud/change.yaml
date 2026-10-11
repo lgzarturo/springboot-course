@@ -1,0 +1,5 @@
+version: 1
+backlogId: BC-006
+profile: standard
+capabilities:
+  - implement-user-management-crud

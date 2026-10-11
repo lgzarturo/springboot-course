@@ -1,5 +1,11 @@
 package com.lgzarturo.springbootcourse.features.users
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.stereotype.Component
+
+@Component
 class PasswordEncoder {
-    fun encode(rawPassword: CharSequence): String = "$rawPassword"
+    private val delegate = BCryptPasswordEncoder()
+
+    fun encode(rawPassword: CharSequence): String = requireNotNull(delegate.encode(rawPassword))
 }

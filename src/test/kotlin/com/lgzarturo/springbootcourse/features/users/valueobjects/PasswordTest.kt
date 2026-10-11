@@ -70,7 +70,7 @@ class PasswordTest {
     @Test
     @DisplayName("Debería crear un Password desde un valor encriptado")
     fun `should create password from encrypted value`() {
-        val encrypted = "Pikachu123!"
+        val encrypted = "\$2a\$10\$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"
 
         val password = Password.fromEncrypted(encrypted)
 

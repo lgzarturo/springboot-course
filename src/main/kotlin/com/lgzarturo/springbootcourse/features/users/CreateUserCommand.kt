@@ -1,6 +1,6 @@
 package com.lgzarturo.springbootcourse.features.users
 
-class CreateUserCommand(
+data class CreateUserCommand(
     val email: String,
     val password: String,
     val firstName: String,

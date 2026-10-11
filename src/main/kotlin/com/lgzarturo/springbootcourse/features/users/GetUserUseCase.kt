@@ -1,23 +1,15 @@
 package com.lgzarturo.springbootcourse.features.users
 
-import com.lgzarturo.springbootcourse.features.users.valueobjects.Email
-import com.lgzarturo.springbootcourse.features.users.valueobjects.Password
-import com.lgzarturo.springbootcourse.features.users.valueobjects.PhoneNumber
-import com.lgzarturo.springbootcourse.features.users.valueobjects.UserId
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
-class GetUserUseCase {
-    fun execute(id: Long): User {
-        // PENDING: Implement this method
-        println("Executing GetUserUseCase with id: $id")
-        return User(
-            id = UserId.generate(),
-            email = Email("ash@pokemon.com"),
-            password = Password("Pikachu123!"),
-            firstName = "Ash",
-            lastName = "Ketchum",
-            phoneNumber = PhoneNumber("+14155552671"),
-            role = UserRole.GUEST,
-            isActive = true,
-        )
-    }
+@Service
+class GetUserUseCase(
+    private val userRepository: UserRepository,
+) {
+    @Transactional(readOnly = true)
+    fun execute(id: Long): User = userRepository.findById(id) ?: throw NoSuchElementException("User $id not found")
+
+    @Transactional(readOnly = true)
+    fun executeAll(): List<User> = userRepository.findAll()
 }

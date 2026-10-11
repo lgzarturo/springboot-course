@@ -1,0 +1,84 @@
+### User Controller Tests
+### Base URL
+@baseUrl = http://localhost:8080
+@apiVersion = v1
+@userEmail = misty.http@example.com
+# Id para las peticiones 3-5. Si las ejecutas de forma individual,
+# actualizalo con el "id" devuelto por la peticion 1.
+@userId = 1
+
+### 1. Crear usuario
+# @name createUser
+# Esperado: 201 Created sin campo "password" en la respuesta.
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "MistyPassword123",
+  "firstName": "Misty",
+  "lastName": "Waterflower",
+  "phoneNumber": "+5219981234567"
+}
+
+### 2. Listar usuarios
+GET {{baseUrl}}/api/{{apiVersion}}/users
+Accept: application/json
+
+> {% client.test("Lista usuarios", function() { client.assert(response.status === 200, "Expected 200 OK"); }); %}
+
+### 3. Obtener usuario creado
+GET {{baseUrl}}/api/{{apiVersion}}/users/{{userId}}
+Accept: application/json
+
+> {% client.test("Obtiene el usuario creado", function() { client.assert(response.status === 200, "Expected 200 OK"); }); %}
+
+### 4. Actualizar usuario creado
+# Esperado: 200 OK.
+PUT {{baseUrl}}/api/{{apiVersion}}/users/{{userId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "Misty",
+  "lastName": "Waterflower Updated",
+  "phoneNumber": "+5219987654321"
+}
+
+### 5. Desactivar usuario creado
+DELETE {{baseUrl}}/api/{{apiVersion}}/users/{{userId}}
+
+> {% client.test("Desactiva el usuario creado", function() { client.assert(response.status === 204, "Expected 204 No Content"); }); %}
+
+### 6. Rechazar correo duplicado
+# Esperado: 409 Conflict (requiere haber ejecutado la peticion 1 antes).
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "MistyPassword123",
+  "firstName": "Misty",
+  "lastName": "Waterflower"
+}
+
+### 7. Rechazar datos inválidos
+# Esperado: 400 Bad Request.
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "invalid-email",
+  "password": "weak",
+  "firstName": "",
+  "lastName": ""
+}
+
+### 8. Usuario inexistente
+GET {{baseUrl}}/api/{{apiVersion}}/users/999999
+Accept: application/json
+
+> {% client.test("Devuelve 404 para un usuario inexistente", function() { client.assert(response.status === 404, "Expected 404 Not Found"); }); %}

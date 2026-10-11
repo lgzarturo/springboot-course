@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "taskCards": [
+    {
+      "id": "BC-006-discover",
+      "backlogId": "BC-006",
+      "phase": "discover",
+      "title": "BC-006: Discover scope and impact",
+      "prompt": "Backlog item BC-006 — Implement user management CRUD\n\nDescription: Complete user persistence, application services, and REST endpoints so trainers can register, view, update, deactivate, and list users without exposing passwords.\nScope: `build.gradle.kts`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/resources/db/migration/V3__Add_Users_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`\n\nMap repository structure, conventions, and impact radius for this change.",
+      "agent": "repo-explorer",
+      "modelHint": "repo-explorer",
+      "dependsOn": [],
+      "acceptanceCriteria": [
+        "Repo map identifies relevant files and impact radius"
+      ],
+      "status": "done",
+      "itemHash": "269f5ad68538e285"
+    },
+    {
+      "id": "BC-006-design",
+      "backlogId": "BC-006",
+      "phase": "design",
+      "title": "BC-006: Technical design",
+      "prompt": "Backlog item BC-006 — Implement user management CRUD\n\nDescription: Complete user persistence, application services, and REST endpoints so trainers can register, view, update, deactivate, and list users without exposing passwords.\nScope: `build.gradle.kts`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/resources/db/migration/V3__Add_Users_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`\n\nProduce a Technical Plan with approach, files affected, risks, and edge cases.",
+      "agent": "architect",
+      "modelHint": "architect",
+      "dependsOn": [
+        "BC-006-discover"
+      ],
+      "acceptanceCriteria": [
+        "Technical plan lists files affected and approach"
+      ],
+      "status": "done",
+      "itemHash": "269f5ad68538e285"
+    },
+    {
+      "id": "BC-006-test",
+      "backlogId": "BC-006",
+      "phase": "test",
+      "title": "BC-006: Test coverage",
+      "prompt": "Backlog item BC-006 — Implement user management CRUD\n\nDescription: Complete user persistence, application services, and REST endpoints so trainers can register, view, update, deactivate, and list users without exposing passwords.\nScope: `build.gradle.kts`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/resources/db/migration/V3__Add_Users_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`\n\nWrite TDD tests covering acceptance criteria before or after implementation per project policy.",
+      "agent": "tester",
+      "modelHint": "tester",
+      "dependsOn": [
+        "BC-006-design"
+      ],
+      "acceptanceCriteria": [
+        "Test covers: `POST /api/v1/users` returns `201 Created` for valid input and never serializes a password",
+        "Test covers: A duplicate email returns `409 Conflict` and does not create a second user",
+        "Test covers: Passwords are persisted as BCrypt hashes and are never stored in plain text",
+        "Test covers: `GET /api/v1/users/{id}` returns `404 Not Found` for an unknown identifier",
+        "Test covers: `Email`, `Password`, and `PhoneNumber` reject invalid values through their domain invariants",
+        "Test covers: Unit, `@WebMvcTest`, and `@DataJpaTest` coverage exists for the implemented user flows"
+      ],
+      "status": "done",
+      "itemHash": "269f5ad68538e285"
+    },
+    {
+      "id": "BC-006-implement",
+      "backlogId": "BC-006",
+      "phase": "implement",
+      "title": "BC-006: Implementation",
+      "prompt": "Backlog item BC-006 — Implement user management CRUD\n\nDescription: Complete user persistence, application services, and REST endpoints so trainers can register, view, update, deactivate, and list users without exposing passwords.\nScope: `build.gradle.kts`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/resources/db/migration/V3__Add_Users_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`\n\nImplement the minimal diff to satisfy tests and acceptance criteria.",
+      "agent": "implementer",
+      "modelHint": "implementer",
+      "dependsOn": [
+        "BC-006-test"
+      ],
+      "acceptanceCriteria": [
+        "`POST /api/v1/users` returns `201 Created` for valid input and never serializes a password",
+        "A duplicate email returns `409 Conflict` and does not create a second user",
+        "Passwords are persisted as BCrypt hashes and are never stored in plain text",
+        "`GET /api/v1/users/{id}` returns `404 Not Found` for an unknown identifier",
+        "`Email`, `Password`, and `PhoneNumber` reject invalid values through their domain invariants",
+        "Unit, `@WebMvcTest`, and `@DataJpaTest` coverage exists for the implemented user flows"
+      ],
+      "status": "done",
+      "itemHash": "269f5ad68538e285"
+    },
+    {
+      "id": "BC-006-review",
+      "backlogId": "BC-006",
+      "phase": "review",
+      "title": "BC-006: Review and validation",
+      "prompt": "Backlog item BC-006 — Implement user management CRUD\n\nDescription: Complete user persistence, application services, and REST endpoints so trainers can register, view, update, deactivate, and list users without exposing passwords.\nScope: `build.gradle.kts`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/resources/db/migration/V3__Add_Users_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`\n\nVerify acceptance criteria, test coverage, scope alignment, and code quality.",
+      "agent": "reviewer",
+      "modelHint": "reviewer",
+      "dependsOn": [
+        "BC-006-implement"
+      ],
+      "acceptanceCriteria": [
+        "All acceptance criteria verified",
+        "Tests pass",
+        "No scope creep beyond backlog item"
+      ],
+      "status": "done",
+      "itemHash": "269f5ad68538e285"
+    }
+  ],
+  "changePaths": {
+    "BC-006": "openspec/changes/archive/bc-006-implement-user-management-crud"
+  },
+  "itemSnapshots": {
+    "BC-006": "{\"status\":\"READY\",\"progress\":20,\"title\":\"Implement user management CRUD\",\"description\":\"Complete user persistence, application services, and REST endpoints so trainers can register, view, update, deactivate, and list users without exposing passwords.\",\"scope\":\"`build.gradle.kts`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/resources/db/migration/V3__Add_Users_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`\",\"type\":\"feature\",\"priority\":\"P1\",\"acceptanceCriteria\":[\"`POST /api/v1/users` returns `201 Created` for valid input and never serializes a password\",\"A duplicate email returns `409 Conflict` and does not create a second user\",\"Passwords are persisted as BCrypt hashes and are never stored in plain text\",\"`GET /api/v1/users/{id}` returns `404 Not Found` for an unknown identifier\",\"`Email`, `Password`, and `PhoneNumber` reject invalid values through their domain invariants\",\"Unit, `@WebMvcTest`, and `@DataJpaTest` coverage exists for the implemented user flows\"]}"
+  }
+}

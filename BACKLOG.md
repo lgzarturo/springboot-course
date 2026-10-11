@@ -49,30 +49,6 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
 
 ## Items
 
-### BC-006 | Implement user management CRUD
-
-- Priority: P1
-- Status: READY
-- Type: feature
-- Owner: spring-kotlin team
-- Depends on: BC-005
-- Description: Complete user persistence, application services, and REST endpoints so trainers can register, view, update, deactivate, and list users without exposing passwords.
-- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/resources/db/migration/V3__Add_Users_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`
-- Out of scope: JWT authentication, roles, authorities, and user-facing administration UI
-- Business value: Provides the account foundation required by authentication and reservations.
-- Acceptance:
-  - [ ] `POST /api/v1/users` returns `201 Created` for valid input and never serializes a password
-  - [ ] A duplicate email returns `409 Conflict` and does not create a second user
-  - [ ] Passwords are persisted as BCrypt hashes and are never stored in plain text
-  - [ ] `GET /api/v1/users/{id}` returns `404 Not Found` for an unknown identifier
-  - [ ] `Email`, `Password`, and `PhoneNumber` reject invalid values through their domain invariants
-  - [ ] Unit, `@WebMvcTest`, and `@DataJpaTest` coverage exists for the implemented user flows
-- Risks: Existing value objects and Flyway version ordering must remain compatible.
-- Progress: 0%
-- Branch: `feature/milestone-05-security`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
 ### BC-007 | Implement stateless JWT authentication
 
 - Priority: P1
@@ -462,6 +438,30 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
 - Last update: 2026-09-16
 
 ## Archive
+### BC-006 | Implement user management CRUD
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-005
+- Description: Complete user persistence, application services, and REST endpoints so trainers can register, view, update, deactivate, and list users without exposing passwords.
+- Scope: BACKLOG.md, build.gradle.kts, src/main/kotlin/com/lgzarturo/springbootcourse/features/users/, src/main/resources/db/migration/V3__Add_Users_Table.sql, src/test/kotlin/com/lgzarturo/springbootcourse/features/users/
+- Out of scope: JWT authentication, roles, authorities, and user-facing administration UI
+- Business value: Provides the account foundation required by authentication and reservations.
+- Acceptance:
+  - [x] `POST /api/v1/users` returns `201 Created` for valid input and never serializes a password
+  - [x] A duplicate email returns `409 Conflict` and does not create a second user
+  - [x] Passwords are persisted as BCrypt hashes and are never stored in plain text
+  - [x] `GET /api/v1/users/{id}` returns `404 Not Found` for an unknown identifier
+  - [x] `Email`, `Password`, and `PhoneNumber` reject invalid values through their domain invariants
+  - [x] Unit, `@WebMvcTest`, and `@DataJpaTest` coverage exists for the implemented user flows
+- Risks: Existing value objects and Flyway version ordering must remain compatible.
+- Progress: 100%
+- Branch: `feature/milestone-05-security`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
 
 ### BC-001 | Establish the Kotlin project foundation
 

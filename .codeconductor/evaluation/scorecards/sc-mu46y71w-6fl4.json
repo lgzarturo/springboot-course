@@ -1,0 +1,72 @@
+{
+  "id": "sc-mu46y71w-6fl4",
+  "taskId": "BC-006",
+  "agent": "reviewer",
+  "model": "opencode-go/qwen3.8-max",
+  "contractVersion": "1.4.1",
+  "criteria": [
+    {
+      "id": "acceptance",
+      "label": "Acceptance criteria met",
+      "weight": 0.3,
+      "score": 3,
+      "notes": "All FR/SC mapped to tasks",
+      "autoSuggested": true
+    },
+    {
+      "id": "minimal_diff",
+      "label": "Minimal diff (no scope creep)",
+      "weight": 0.2,
+      "score": 0,
+      "notes": "Files outside scope: BACKLOG.md, build.gradle.kts, src/main/kotlin/com/lgzarturo/springbootcourse/features/users/CreateUserCommand.kt, src/main/kotlin/com/lgzarturo/springbootcourse/features/users/CreateUserService.kt, src/main/kotlin/com/lgzarturo/springbootcourse/features/users/GetUserUseCase.kt",
+      "autoSuggested": true
+    },
+    {
+      "id": "tests",
+      "label": "Tests present and passing",
+      "weight": 0.15,
+      "score": 2
+    },
+    {
+      "id": "regressions",
+      "label": "No regressions introduced",
+      "weight": 0.15,
+      "score": 2
+    },
+    {
+      "id": "conventions",
+      "label": "Code follows project conventions",
+      "weight": 0.05,
+      "score": 2
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation updated if required",
+      "weight": 0.05,
+      "score": 2
+    },
+    {
+      "id": "context_discipline",
+      "label": "Context discipline",
+      "weight": 0.05,
+      "score": 2
+    },
+    {
+      "id": "cc_gain",
+      "label": "Complexity diffusion (cc-gain)",
+      "weight": 0.05,
+      "score": 3,
+      "notes": "cc-gain raw=37.400000000000006, verdict=positive",
+      "autoSuggested": true
+    }
+  ],
+  "weightedScore": 1.95,
+  "verdict": "REJECT",
+  "findings": [
+    "Scope creep detected in 19 file(s).",
+    "Complexity auditor: 17 finding(s)."
+  ],
+  "createdAt": "2026-09-16T14:23:38.056Z",
+  "backlogId": "BC-006",
+  "source": "manual"
+}

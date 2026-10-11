@@ -1,23 +1,31 @@
 package com.lgzarturo.springbootcourse.features.users
 
-import com.lgzarturo.springbootcourse.features.users.valueobjects.Email
-import com.lgzarturo.springbootcourse.features.users.valueobjects.Password
 import com.lgzarturo.springbootcourse.features.users.valueobjects.PhoneNumber
-import com.lgzarturo.springbootcourse.features.users.valueobjects.UserId
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
-class UpdateUserUseCase {
-    fun execute(id: Long): User {
-        // PENDING: Implement this method
-        println("Executing UpdateUserUseCase with id: $id")
-        return User(
-            id = UserId.generate(),
-            email = Email("ash@pokemon.com"),
-            password = Password("Pikachu123!"),
-            firstName = "Ash",
-            lastName = "Ketchum",
-            phoneNumber = PhoneNumber("+14155552671"),
-            role = UserRole.GUEST,
-            isActive = true,
-        )
+@Service
+class UpdateUserUseCase(
+    private val userRepository: UserRepository,
+) {
+    @Transactional
+    fun execute(
+        id: Long,
+        command: UpdateUserCommand,
+    ): User {
+        val user = userRepository.findById(id) ?: throw NoSuchElementException("User $id not found")
+        val updated =
+            user.updateProfile(
+                firstName = command.firstName,
+                lastName = command.lastName,
+                phoneNumber = command.phoneNumber?.let(::PhoneNumber),
+            )
+        return userRepository.save(updated)
+    }
+
+    @Transactional
+    fun deactivate(id: Long): User {
+        val user = userRepository.findById(id) ?: throw NoSuchElementException("User $id not found")
+        return userRepository.save(user.deactivate())
     }
 }

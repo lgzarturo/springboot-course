@@ -95,6 +95,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
+    implementation("org.springframework.security:spring-security-crypto")
 
     // Kotlin
     implementation("tools.jackson.module:jackson-module-kotlin")
