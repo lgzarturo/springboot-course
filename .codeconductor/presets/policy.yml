@@ -1,0 +1,157 @@
+version: 1
+
+# NOTE:
+# This policy is declarative. Until the CodeConductor policy compiler exists,
+# enforcement depends on the target tool.
+
+runtime:
+  user: cc-agent
+  mode: native
+  cleanEnv: true
+  network:
+    default: deny
+    allowDomains:
+      - google.com
+      - github.com
+      - openai.com
+      - repo.maven.apache.org
+      - registry.npmjs.org
+
+filesystem:
+  workspace: rw
+
+denyRead:
+  - "~/*"
+  - "/Users/*/**"
+  - "/home/*/**"
+  - "**/.env"
+  - "**/.env.*"
+  - "**/secrets/**"
+  - "**/.aws/**"
+  - "**/.kube/**"
+  - "**/.ssh/**"
+  - "**/config/**"
+  - "**/kubeconfig/**"
+  - "**/ssh/**"
+  - "**/.gnupg/**"
+  - "**/.npm/**"
+  - "**/.npmrc"
+  - "**/.pypirc"
+
+denyWrite:
+  - ".git/**"
+  - ".claude/**"
+  - ".opencode/**"
+  # Session handoffs belong in .codeconductor/sessions/ (gitignored). The
+  # compiler does not exist yet; gitignore + workflow redaction are the
+  # compensating controls for /cc:handoff.
+  - ".codeconductor/**"
+  - ".code-conductor/policy.yml"
+  - "/etc/**"
+  - "/var/**"
+  - "~/**"
+
+# Optional keyword patterns for secret detection, merged with
+# CodeConductorConfig.safety.secretPatterns at runtime.
+#
+# Built-in detection does NOT rely on this list: high-confidence signatures
+# (AWS access key ids, AWS_SECRET_ACCESS_KEY values, GitHub PATs, PEM/OpenSSH
+# private key headers) are enforced in code and always active. Entries here add
+# legacy keyword matching (`<keyword> = <value of 8+ chars>`), which is prone to
+# false positives — add them only when a project needs them.
+secretPatterns: []
+
+targets:
+  opencode:
+    unsupportedRules: []
+    warnings:
+      - "Enforcement depends on OpenCode permission support."
+      - "Command patterns are string-based until the policy compiler exists."
+  claude:
+    unsupportedRules:
+      - "denyRead"
+      - "denyWrite"
+      - "runtime.network.allowDomains"
+    warnings:
+      - "Claude settings primarily represent shell permissions; filesystem and network boundaries depend on Claude Code
+        capabilities and manual isolation."
+  codex:
+    unsupportedRules:
+      - "denyRead"
+      - "denyWrite"
+      - "runtime.network"
+      - "commands"
+    warnings:
+      - "Codex preset currently represents policy intent through AGENTS.md contracts; runtime enforcement depends on
+        Codex capabilities."
+  gemini:
+    unsupportedRules:
+      - "denyRead"
+      - "denyWrite"
+      - "runtime.network"
+      - "commands"
+    warnings:
+      - "Gemini CLI preset currently represents policy intent through agent files; runtime enforcement depends on Gemini
+        CLI capabilities."
+  cursor:
+    unsupportedRules:
+      - "denyRead"
+      - "denyWrite"
+      - "runtime.network"
+      - "commands"
+    warnings:
+      - "Cursor preset currently represents policy intent through agent files; runtime enforcement depends on Cursor
+        capabilities."
+
+commands:
+  allow:
+    - "git status"
+    - "git log"
+    - "git diff"
+    - "./gradlew clean"
+    - "./gradlew build"
+    - "./gradlew test"
+
+  ask:
+    - "git add"
+    - "git commit"
+    - "git push"
+    - "git pull"
+    - "git switch*"
+    - "git checkout*"
+    - "docker compose*"
+
+  deny:
+    - "git push --force"
+    - "git push -f"
+    - "git rebase *"
+    - "git reset --hard *"
+    - "git rm --cached *"
+    - "rm -rf *"
+    - "sudo *"
+    - "chmod 777 *"
+    - "chown *"
+    - "dd *"
+    - "mkfs *"
+    - "mount *"
+    - "umount *"
+    - "launchctl *"
+    - "systemctl *"
+    - "ln -s *"
+    - "symlink *"
+    - "curl * | sh"
+    - "curl * | bash"
+    - "wget * | sh"
+    - "wget * | bash"
+
+git:
+  protectedBranches:
+    - "master"
+    - "main"
+    - "develop"
+
+  deny:
+    - forcePush
+    - pushProtectedBranch
+    - rebaseProtectedBranch
+    - resetProtectedBranch

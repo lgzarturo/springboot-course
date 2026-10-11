@@ -1,0 +1,30 @@
+{
+  "code-formatter": {
+    "enabled": true,
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const fs=require('fs');const c=['scripts/invoke-hook.cjs','.agents/scripts/invoke-hook.cjs'];const p=c.find(f=>fs.existsSync(f));if(p){require(require('path').resolve(p));}else{const body=process.argv.includes('post-tool')?{}:{decision:'allow'};process.stdout.write(JSON.stringify(body)+'\\n');process.exit(0);}\" post-tool --format=agy"
+          }
+        ]
+      }
+    ]
+  },
+  "safety-gate": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "run_command|view_file|write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const fs=require('fs');const c=['scripts/invoke-hook.cjs','.agents/scripts/invoke-hook.cjs'];const p=c.find(f=>fs.existsSync(f));if(p){require(require('path').resolve(p));}else{const body=process.argv.includes('post-tool')?{}:{decision:'allow'};process.stdout.write(JSON.stringify(body)+'\\n');process.exit(0);}\" pre-tool --format=agy"
+          }
+        ]
+      }
+    ]
+  }
+}

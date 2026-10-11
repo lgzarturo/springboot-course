@@ -1,38 +1,44 @@
-<!-- code-review-graph MCP tools -->
-## MCP Tools: code-review-graph
+<!-- CODECONDUCTOR:BEGIN managed -->
 
-**IMPORTANT: This project has a knowledge graph. ALWAYS use the
-code-review-graph MCP tools BEFORE using Grep/Glob/Read to explore
-the codebase.** The graph is faster, cheaper (fewer tokens), and gives
-you structural context (callers, dependents, test coverage) that file
-scanning cannot.
+# CodeConductor — Gemini CLI Preset
 
-### When to use graph tools FIRST
+This file configures CodeConductor for **Gemini CLI**. It lives at the project
+root (`GEMINI.md`) so Gemini CLI's hierarchical context loader picks it up
+from the current directory and every ancestor up to the project root.
 
-- **Exploring code**: `semantic_search_nodes` or `query_graph` instead of Grep
-- **Understanding impact**: `get_impact_radius` instead of manually tracing imports
-- **Code review**: `detect_changes` + `get_review_context` instead of reading entire files
-- **Finding relationships**: `query_graph` with callers_of/callees_of/imports_of/tests_for
-- **Architecture questions**: `get_architecture_overview` + `list_communities`
+## Behavioral Discipline
 
-Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
+1. **Think Before Coding** — state assumptions; ask if uncertain; present
+   alternatives instead of picking silently.
+2. **Simplicity First** — minimum code that solves the problem; no
+   speculative abstractions.
+3. **Surgical Changes** — touch only what the task requires; match existing
+   style; remove only what your own change made unused.
+4. **Goal-Driven Execution** — turn the task into a verifiable goal with a
+   success check; loop until it passes.
 
-### Key Tools
+## Commands
 
-| Tool | Use when |
-|------|----------|
-| `detect_changes` | Reviewing code changes — gives risk-scored analysis |
-| `get_review_context` | Need source snippets for review — token-efficient |
-| `get_impact_radius` | Understanding blast radius of a change |
-| `get_affected_flows` | Finding which execution paths are impacted |
-| `query_graph` | Tracing callers, callees, imports, tests, dependencies |
-| `semantic_search_nodes` | Finding functions/classes by name or keyword |
-| `get_architecture_overview` | Understanding high-level codebase structure |
-| `refactor_tool` | Planning renames, finding dead code |
+CodeConductor ships its slash commands as native Gemini CLI TOML commands
+under `.gemini/commands/cc/`, invoked as `/cc:<name>` (e.g. `/cc:feature`,
+`/cc:review`). Run `/cc:ask "<problem>"` when unsure which one applies — it
+recommends exactly one and stops; it does not start the workflow.
 
-### Workflow
+Skills live under `.gemini/skills/` (Gemini CLI's native Agent Skills
+discovery path, shared with `.agents/skills/` per the Agent Skills open
+standard). Read `.gemini/skills/using-cc-skills/SKILL.md` first — it maps
+intent to the right slash command.
 
-1. The graph auto-updates on file changes (via hooks).
-2. Use `detect_changes` for code review.
-3. Use `get_affected_flows` to understand impact.
-4. Use `query_graph` pattern="tests_for" to check coverage.
+## What never changes
+
+- Do not invoke the Implementer without an accepted Technical Plan.
+- Do not skip the Reviewer step for medium- or high-risk changes.
+- Do not store secrets in any file loaded by Gemini CLI.
+
+## Receipt integrity
+
+- For any implementation, test, review, handoff, or delivery decision, capture or verify the current RDD receipt with `npx cc-codeconductor rdd`.
+- A receipt is valid only for its exact candidate. If code, tests, contracts, or runner configuration changed, repeat the affected verification.
+- TDD and Mutation Testing retain their existing gates; RDD verifies that their observed evidence still belongs to the current candidate.
+
+<!-- CODECONDUCTOR:END managed -->

@@ -1,0 +1,6 @@
+profile: balanced
+target: opencode
+overrides: {}
+subagentPolicy:
+  orchestrator: primary
+  testerReviewer: delegate
