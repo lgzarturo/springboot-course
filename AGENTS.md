@@ -1,145 +1,111 @@
-# AGENTS.md — Project-Specific Guidance
+# CodeConductor — Agent Instructions
 
-## Quick Reference
+This project uses CodeConductor for structured AI-assisted engineering
+workflows.
 
-| Task              | Command                                                               |
-|-------------------|-----------------------------------------------------------------------|
-| Build             | `make build`                                                          |
-| Run dev           | `make run`                                                            |
-| Run tests         | `make test`                                                           |
-| Single test class | `make test-class CLASS=HotelServiceTest`                              |
-| Coverage report   | `make coverage` (output: `build/reports/jacoco/test/html/index.html`) |
-| Coverage gate     | `make coverage-check` (requires ≥85%)                                 |
-| Lint check        | `make lint`                                                           |
-| Format fix        | `make format`                                                         |
-| Full quality gate | `make quality`                                                        |
-| DDL from entities | `make ddl`                                                            |
-| Docker services   | `make docker-up` / `make docker-down`                                 |
+## Behavioral Discipline
 
-> On Windows: use `gradlew <task>` directly instead of `./gradlew`.
+These principles apply to **all agents** in every workflow. They reduce common
+LLM coding mistakes and bias toward caution over speed.
 
-## Architecture
+1. **Think Before Coding** — State assumptions explicitly. If uncertain, ask. If
+   multiple interpretations exist, present them — don't pick silently. If a
+   simpler approach exists, say so.
+2. **Simplicity First** — Minimum code that solves the problem. No features
+   beyond what was asked. No abstractions for single-use code. No speculative
+   "flexibility." Ask: "Would a senior engineer say this is overcomplicated?"
+3. **Surgical Changes** — Touch only what you must. Don't "improve" adjacent
+   code. Match existing style. Remove only what YOUR changes made unused. Every
+   changed line must trace directly to the user's request.
+4. **Goal-Driven Execution** — Transform tasks into verifiable goals with
+   success criteria. For multi-step tasks, state a plan with verification
+   checks. Loop until verified.
 
-- **Pattern**: MVC by feature (Screaming Architecture) — not Hexagonal
-- **Rule**: Max 2 nesting levels inside a feature (`hotels/dto/` is the limit)
-- **Domain vs JPA**: `Hotel.kt` = pure domain (no Spring annotations). `HotelEntity.kt` = JPA entity. Service translates between them.
-- **DTOs**: Controller maps Request → Domain before calling Service. DTOs never enter the service layer.
-- **Feature isolation**: No cross-feature imports. Use `common/` or Spring events for inter-feature communication.
-- **`examples/`** package: Only one with full hexagonal pattern. Don't replicate in new features.
+<!-- CODECONDUCTOR:BEGIN managed -->
 
-## Profiles
+# CodeConductor — Muse Preset
 
-- `dev` — H2 in-memory, default for local dev
-- `test` — H2 (unit/integration) or Testcontainers PostgreSQL (requires Docker)
-- `prod` — PostgreSQL via env vars
-- `generate-ddl` — H2, Flyway disabled (for DDL generation)
+This file configures CodeConductor for **Muse** (Meta's coding-agent CLI,
+binary `muse`). It lives at the project root (`AGENTS.md`) so Muse's
+context-file loader picks it up automatically.
 
-## Testing
+## Behavioral Discipline
 
-- **Unit**: Service tests without Spring context (fast). Use MockK.
-- **Integration**: `@WebMvcTest`, `@DataJpaTest`, or extend `BaseIntegrationTest` for full context.
-- **Testcontainers**: Auto-enabled for integration tests if Docker is available; falls back to H2 if not.
-- **Security tests**: Use `SecurityTestConfig` + `@WithMockUser` custom annotation.
+1. **Think Before Coding** — state assumptions; ask if uncertain; present
+   alternatives instead of picking silently.
+2. **Simplicity First** — minimum code that solves the problem; no
+   speculative abstractions.
+3. **Surgical Changes** — touch only what the task requires; match existing
+   style; remove only what your own change made unused.
+4. **Goal-Driven Execution** — turn the task into a verifiable goal with a
+   success check; loop until it passes.
 
-## Environment
+## Commands
 
-- Create `.env` from `.env.example` — `build.gradle.kts` auto-loads it as fallback.
-- Required vars: `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`, `DB_PORT`
-- Optional: `SENTRY_DSN`, `SENTRY_AUTH_TOKEN`
+CodeConductor ships its workflows as Muse skills under `.agents/skills/`,
+invoked as `/cc:<name>` (e.g. `/cc:feature`, `/cc:review`). Run `/cc:ask
+"<problem>"` when unsure which one applies — it recommends exactly one and
+stops; it does not start the workflow.
 
-## Code Quality
+Skills live under `.agents/skills/` (Muse discovers skills there natively,
+per its own docs). Read `.agents/skills/using-cc-skills/SKILL.md` first —
+it maps intent to the right slash command.
 
-- KTLint 1.7.1 — auto-fixes with `make format`
-- Detekt 2.0.0-alpha.1 — static analysis, `autoCorrect = true` in config
-- JaCoCo — 85% minimum coverage enforced in CI
+Where a step says "adopt the `X` role", read the matching skill under
+`.agents/skills/` and act as that role for the rest of the step.
 
-## Important Files
+## What never changes
 
-- `CLAUDE.md` — detailed architecture and workflow guidance
-- `Makefile` — source of truth for all make targets
-- `config/detekt/detekt.yml` — linter rules
-- `build.gradle.kts` — build configuration, env loading
+- Do not invoke the Implementer without an accepted Technical Plan.
+- Do not skip the Reviewer step for medium- or high-risk changes.
+- Do not store secrets in any file loaded by Muse.
 
+## Receipt integrity
 
-**Enfoque**
+- For any implementation, test, review, handoff, or delivery decision, capture or verify the current RDD receipt with `npx cc-codeconductor rdd`.
+- A receipt is valid only for its exact candidate. If code, tests, contracts, or runner configuration changed, repeat the affected verification.
+- TDD and Mutation Testing retain their existing gates; RDD verifies that their observed evidence still belongs to the current candidate.
 
-* Piensa antes de actuar. Lee los archivos existentes antes de escribir código.
-* Sé conciso en la salida, pero exhaustivo en el razonamiento.
-* Prefiere editar en lugar de reescribir archivos completos.
-* No vuelvas a leer archivos que ya leíste, a menos que puedan haber cambiado.
-* Omite archivos mayores a 100KB salvo que sea explícitamente necesario.
-* Sugiere ejecutar `/cost` cuando una sesión se alargue para monitorear la proporción de caché.
-* Recomienda iniciar una nueva sesión al cambiar a una tarea no relacionada.
-* Prueba tu código antes de declararlo terminado.
-* Sin introducciones complacientes ni relleno innecesario al cerrar.
-* Mantén las soluciones simples y directas.
-* Las instrucciones del usuario siempre tienen prioridad sobre este archivo.
+<!-- CODECONDUCTOR:END managed -->
 
-## Salida
-- Devuelve primero el código. Explicación después, solo si no es obvio.
-- Sin texto en línea. Usa comentarios con moderación, solo donde la lógica no sea clara.
-- Sin boilerplate a menos que se solicite explícitamente.
+---
 
-## Reglas de Código
-- La solución funcional más simple. Sin sobreingeniería.
-- Sin abstracciones para operaciones de un solo uso.
-- Sin funcionalidades especulativas o "quizá también quieras...".
-- Lee el archivo antes de modificarlo. Nunca edites a ciegas.
-- Sin docstrings ni anotaciones de tipo en código que no se esté modificando.
-- Sin manejo de errores para escenarios que no pueden ocurrir.
-- Tres líneas similares son mejores que una abstracción prematura.
+## Project-Specific Notes
 
-## Reglas de Revisión
-- Indica el bug. Muestra la corrección. Fin.
-- Sin sugerencias fuera del alcance de la revisión.
-- Sin cumplidos sobre el código antes o después de la revisión.
+This section is manually maintained. Add project-specific conventions,
+exceptions, or context here.
 
-## Reglas de Depuración
-- Nunca especules sobre un bug sin leer primero el código relevante.
-- Indica qué encontraste, dónde, y la solución. Una sola pasada.
-- Si la causa no es clara: dilo. No adivines.
+## Approach
 
-## Formato Simple
-- Sin guiones largos, comillas tipográficas ni símbolos Unicode decorativos.
-- Solo guiones simples y comillas rectas.
-- Caracteres de lenguaje natural (acentos, CJK, etc.) están bien cuando el contenido lo requiera.
-- El código debe ser seguro para copiar y pegar.
+- Think before acting. Read existing files before writing code.
+- Be concise in output but thorough in reasoning.
+- Prefer editing over rewriting whole files.
+- Do not re-read files you have already read unless the file may have changed.
+- Skip files over 100KB unless explicitly required.
+- Suggest running /cost when a session is running long to monitor cache ratio.
+- Recommend starting a new session when switching to an unrelated task.
+- Test your code before declaring done.
+- No sycophantic openers or closing fluff.
+- Keep solutions simple and direct.
+- User instructions always override this file.
+- When using tools, be precise and minimal with context.
+- Prose/docs/code comments: be terse and direct. Prefer concrete nouns over abstract ones. Omit filler phrases ("note that", "please", "as mentioned"). One idea per sentence.
 
-<!-- code-review-graph MCP tools -->
-## MCP Tools: code-review-graph
+## Context Budget
 
-**IMPORTANT: This project has a knowledge graph. ALWAYS use the
-code-review-graph MCP tools BEFORE using Grep/Glob/Read to explore
-the codebase.** The graph is faster, cheaper (fewer tokens), and gives
-you structural context (callers, dependents, test coverage) that file
-scanning cannot.
+- If the task type differs from the previous one, execute "/clear" before
+  starting.
+- Delegate verbose operations to sub-agents.
 
-### When to use graph tools FIRST
+## graphify
 
-- **Exploring code**: `semantic_search_nodes` or `query_graph` instead of Grep
-- **Understanding impact**: `get_impact_radius` instead of manually tracing imports
-- **Code review**: `detect_changes` + `get_review_context` instead of reading entire files
-- **Finding relationships**: `query_graph` with callers_of/callees_of/imports_of/tests_for
-- **Architecture questions**: `get_architecture_overview` + `list_communities`
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
 
-Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
+When the user types `/graphify`, invoke the `skill` tool with `skill: "graphify"` before doing anything else.
 
-### Key Tools
-
-| Tool | Use when |
-|------|----------|
-| `detect_changes` | Reviewing code changes — gives risk-scored analysis |
-| `get_review_context` | Need source snippets for review — token-efficient |
-| `get_impact_radius` | Understanding blast radius of a change |
-| `get_affected_flows` | Finding which execution paths are impacted |
-| `query_graph` | Tracing callers, callees, imports, tests, dependencies |
-| `semantic_search_nodes` | Finding functions/classes by name or keyword |
-| `get_architecture_overview` | Understanding high-level codebase structure |
-| `refactor_tool` | Planning renames, finding dead code |
-
-### Workflow
-
-1. The graph auto-updates on file changes (via hooks).
-2. Use `detect_changes` for code review.
-3. Use `get_affected_flows` to understand impact.
-4. Use `query_graph` pattern="tests_for" to check coverage.
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).

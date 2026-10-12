@@ -1,0 +1,74 @@
+{
+  "id": "sc-mv3h9wsy-mal9",
+  "taskId": "BC-007",
+  "agent": "reviewer",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "contractVersion": "1.7.0",
+  "criteria": [
+    {
+      "id": "acceptance",
+      "label": "Acceptance criteria met",
+      "weight": 0.3,
+      "score": 3,
+      "notes": "All FR/SC mapped to tasks",
+      "autoSuggested": true
+    },
+    {
+      "id": "minimal_diff",
+      "label": "Minimal diff (no scope creep)",
+      "weight": 0.2,
+      "score": 0,
+      "notes": "Files outside scope: docs/INDEX.md, docs/course/README.md",
+      "autoSuggested": true
+    },
+    {
+      "id": "tests",
+      "label": "Tests present and passing",
+      "weight": 0.15,
+      "score": 2,
+      "notes": "Verification-runner RED/GREEN evidence verified",
+      "autoSuggested": true
+    },
+    {
+      "id": "regressions",
+      "label": "No regressions introduced",
+      "weight": 0.15,
+      "score": 2
+    },
+    {
+      "id": "conventions",
+      "label": "Code follows project conventions",
+      "weight": 0.05,
+      "score": 2
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation updated if required",
+      "weight": 0.05,
+      "score": 2
+    },
+    {
+      "id": "context_discipline",
+      "label": "Context discipline",
+      "weight": 0.05,
+      "score": 2
+    },
+    {
+      "id": "cc_gain",
+      "label": "Complexity diffusion (cc-gain)",
+      "weight": 0.05,
+      "score": 3,
+      "notes": "cc-gain raw=19.200000000000003, verdict=positive",
+      "autoSuggested": true
+    }
+  ],
+  "weightedScore": 1.95,
+  "verdict": "REJECT",
+  "findings": [
+    "Scope creep detected in 2 file(s).",
+    "Complexity auditor: 14 finding(s)."
+  ],
+  "createdAt": "2026-10-11T07:04:36.961Z",
+  "backlogId": "BC-007",
+  "source": "manual"
+}

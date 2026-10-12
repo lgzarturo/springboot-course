@@ -1,0 +1,26 @@
+---
+name: cc-odd
+description: Create or resume an opt-in Delivery Ledger for substantial authorized work.
+---
+
+# odd
+
+Invoke as `$cc-odd`. The user request follows the skill mention.
+
+# /cc:odd
+
+## Step 0 — CCEP Bootstrap
+
+```bash
+npx cc-codeconductor ccep profile odd --output json
+npx cc-codeconductor ccep compile --command odd --phase <phase-id> "$ARGUMENTS" --view prompt --output json
+```
+
+Pass each subagent only the compiled `prompt` for its phase.
+
+Create a ledger only after authorization and tracked coordination. Read-only and small work do not create state.
+
+When ODD has verification evidence, include its RDD receipt in the ledger
+handoff. On resume, verify it against the workspace before relying on a prior
+test or review result. If it is stale, keep the ledger and repeat only the
+invalidated verification.

@@ -53,8 +53,14 @@ help: ## Muestra esta ayuda
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ { printf "  $(GREEN)%-22s$(RESET) %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
 	@echo ""
 	@echo "$(YELLOW)Variables:$(RESET)"
-	@echo "  DESC   Descripción de la migración  (make migrate DESC='add_users')"
-	@echo "  VER    Versión de la migración       (make create-migration VER=2 DESC='add_rooms')"
+	@echo "  DESC        Descripción de la migración  (make migrate DESC='add_users')"
+	@echo "  VER         Versión de la migración       (make create-migration VER=2 DESC='add_rooms')"
+	@echo "  TYPE        Tipo de incremento SemVer     (make release TYPE=minor)"
+	@echo "  VERSION     Versión explícita             (make release VERSION=0.1.0)"
+	@echo "  NOTES       Notas del release             (make release NOTES='Notas...')"
+	@echo "  NOTES_FILE  Archivo de notas del release  (make release NOTES_FILE='release.md')"
+	@echo "  ALLOW_DIRTY Permitir release con git sucio (make release ALLOW_DIRTY=true)"
+	@echo "  SKIP_TESTS  Omitir suite de tests         (make release SKIP_TESTS=true)"
 	@echo ""
 
 # =============================================================================
@@ -68,9 +74,48 @@ build: ## Compila el proyecto
 compile: ## Compila sin limpiar ni ejecutar tests
 	$(GRADLEW) classes testClasses
 
+# =============================================================================
+# VERSIONADO Y RELEASES
+# =============================================================================
 .PHONY: version
 version: ## Muestra la versión actual del proyecto
 	$(GRADLEW) printVersion
+
+.PHONY: whatsnext
+whatsnext: ## Muestra sugerencias de próximas versiones SemVer (patch, minor, major)
+	$(GRADLEW) whatsnext
+
+.PHONY: bump-version
+bump-version: ## Incrementa versión en archivos (make bump-version TYPE=minor o VERSION=0.1.0)
+	$(GRADLEW) bumpVersion $(if $(TYPE),-Ptype=$(TYPE),) $(if $(VERSION),-PnewVersion=$(VERSION),)
+
+.PHONY: bump-patch
+bump-patch: ## Incrementa versión PATCH en archivos (x.y.Z+1)
+	$(GRADLEW) bumpPatch
+
+.PHONY: bump-minor
+bump-minor: ## Incrementa versión MINOR en archivos (x.Y+1.0)
+	$(GRADLEW) bumpMinor
+
+.PHONY: bump-major
+bump-major: ## Incrementa versión MAJOR en archivos (X+1.0.0)
+	$(GRADLEW) bumpMajor
+
+.PHONY: release
+release: ## Crea release completo (tests, bump, changelog, commit y git tag)
+	$(GRADLEW) createRelease $(if $(TYPE),-Ptype=$(TYPE),) $(if $(VERSION),-PnewVersion=$(VERSION),) $(if $(NOTES),-Pnotes="$(NOTES)",) $(if $(NOTES_FILE),-PnotesFile="$(NOTES_FILE)",) $(if $(ALLOW_DIRTY),-PallowDirty=$(ALLOW_DIRTY),) $(if $(SKIP_TESTS),-PskipTests=$(SKIP_TESTS),)
+
+.PHONY: release-patch
+release-patch: ## Crea release PATCH (0.0.x) con tests, tag y changelog
+	$(GRADLEW) createRelease -Ptype=patch $(if $(NOTES),-Pnotes="$(NOTES)",) $(if $(NOTES_FILE),-PnotesFile="$(NOTES_FILE)",) $(if $(ALLOW_DIRTY),-PallowDirty=$(ALLOW_DIRTY),) $(if $(SKIP_TESTS),-PskipTests=$(SKIP_TESTS),)
+
+.PHONY: release-minor
+release-minor: ## Crea release MINOR (0.x.0) con tests, tag y changelog
+	$(GRADLEW) createRelease -Ptype=minor $(if $(NOTES),-Pnotes="$(NOTES)",) $(if $(NOTES_FILE),-PnotesFile="$(NOTES_FILE)",) $(if $(ALLOW_DIRTY),-PallowDirty=$(ALLOW_DIRTY),) $(if $(SKIP_TESTS),-PskipTests=$(SKIP_TESTS),)
+
+.PHONY: release-major
+release-major: ## Crea release MAJOR (x.0.0) con tests, tag y changelog
+	$(GRADLEW) createRelease -Ptype=major $(if $(NOTES),-Pnotes="$(NOTES)",) $(if $(NOTES_FILE),-PnotesFile="$(NOTES_FILE)",) $(if $(ALLOW_DIRTY),-PallowDirty=$(ALLOW_DIRTY),) $(if $(SKIP_TESTS),-PskipTests=$(SKIP_TESTS),)
 
 # =============================================================================
 # EJECUCIÓN

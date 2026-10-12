@@ -45,3 +45,9 @@ out/
 docs/pending-wip/*.md
 # Added by code-review-graph
 .code-review-graph/
+
+# CodeConductor OpenSpec (local operational artifacts)
+BACKLOG.md
+openspec/
+.codeconductor/openspec-state.json
+graphify-out/

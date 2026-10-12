@@ -35,3 +35,9 @@ que se utilizan:
 - `DB_NAME` - Nombre de la base de datos.
 - `DB_USER` - Usuario de la base de datos.
 - `DB_PASSWORD` - Contraseña de la base de datos.
+
+## Seguridad y JWT
+
+Configuración para autenticación sin estado mediante tokens JWT (firmados con HMAC-SHA256):
+
+- `JWT_SECRET` - Clave secreta para la firma criptográfica de tokens JWT. Requiere un mínimo de 256 bits (32 bytes). Generación recomendada: `python3 -c "import secrets; print(secrets.token_urlsafe(48))"`.

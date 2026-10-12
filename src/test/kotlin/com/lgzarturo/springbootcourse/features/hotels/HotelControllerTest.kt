@@ -2,6 +2,7 @@ package com.lgzarturo.springbootcourse.features.hotels
 
 import com.lgzarturo.springbootcourse.features.hotels.dto.CreateHotelRequest
 import com.lgzarturo.springbootcourse.features.hotels.dto.UpdateHotelRequest
+import com.lgzarturo.springbootcourse.security.SecurityTestConfig
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -37,7 +38,7 @@ class HotelMockkTestConfig {
  * Verifica el comportamiento de los endpoints REST
  */
 @WebMvcTest(HotelController::class)
-@Import(HotelMockkTestConfig::class)
+@Import(HotelMockkTestConfig::class, SecurityTestConfig::class)
 @DisplayName("HotelController Integration Tests")
 class HotelControllerTest {
     @Autowired

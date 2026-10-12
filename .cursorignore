@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.gradle/
+*.lock
+.env*
+coverage/
+graphify-out/
+.next/
+.turbo/
+__pycache__/
+*.pyc
+.venv/
+target/
+vendor/

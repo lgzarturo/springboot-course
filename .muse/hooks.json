@@ -1,0 +1,30 @@
+{
+  "safety-gate": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const fs=require('fs');const c=['.muse/hooks/invoke-hook.cjs'];const p=c.find(f=>fs.existsSync(f));if(p){require(require('path').resolve(p));}else{process.exit(0);}\" pre-tool --format=muse"
+          }
+        ]
+      }
+    ]
+  },
+  "code-formatter": {
+    "enabled": true,
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const fs=require('fs');const c=['.muse/hooks/invoke-hook.cjs'];const p=c.find(f=>fs.existsSync(f));if(p){require(require('path').resolve(p));}else{process.exit(0);}\" post-tool --format=muse"
+          }
+        ]
+      }
+    ]
+  }
+}

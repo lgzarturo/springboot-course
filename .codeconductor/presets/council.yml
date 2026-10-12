@@ -1,0 +1,74 @@
+# Single source of truth for the council roster (loaded by
+# src/core/presets/preset-loader.ts -> loadCouncilPreset, consumed by
+# `cc install council --target <t>` in src/commands/install.command.ts).
+# Per-role checklist and finding-format content lives in
+# src/domain/council/council-agent.ts (generateAgentContent /
+# checklistFor), shared by every generator except Codex, which renders
+# its own TOML shape in src/adapters/codex/codex-council-generator.ts.
+# Adding or renaming an agent here requires a matching entry in
+# ROLE_PROFILES (council-agent.ts) and, if it changes the roster's ids,
+# updating DEFAULT_COUNCIL_AGENTS in src/domain/council/council-spec.ts —
+# test/unit/domain/council/council-spec.test.ts asserts the two stay in sync.
+name: council
+version: 0.1.0
+description: Multi-agent council for code review and architecture decisions
+outputContract: v1
+
+agents:
+  - id: architect
+    role: Architect
+    context: repo-readonly
+    modelHint: strong-reasoning
+    focus:
+      - architecture
+      - design-patterns
+      - code-structure
+
+  - id: product
+    role: Product
+    context: prompt-only
+    modelHint: balanced
+    focus:
+      - requirements
+      - ux
+      - business-value
+
+  - id: delivery
+    role: Delivery
+    context: repo-readonly
+    modelHint: practical-coding
+    focus:
+      - delivery
+      - testing
+      - deployment
+
+  - id: data-ops
+    role: DataOps
+    context: repo-readonly
+    modelHint: analytical
+    focus:
+      - data
+      - pipelines
+      - analytics
+
+  - id: security-reviewer
+    role: Security Reviewer
+    context: repo-readonly
+    modelHint: security-reasoning
+    focus:
+      - security
+      - vulnerabilities
+      - compliance
+      - credentials
+      - injection
+      - auth
+      - supply-chain
+
+  - id: devil
+    role: Devil
+    context: repo-readonly
+    modelHint: adversarial
+    focus:
+      - review
+      - edge-cases
+      - failure-modes

@@ -10,6 +10,15 @@
             "timeout": 30
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/invoke-hook.cjs post-tool"
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -22,7 +31,97 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/invoke-hook.cjs session-start"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Read|Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/invoke-hook.cjs pre-tool"
+          }
+        ]
       }
     ]
+  },
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Edit(**)"
+    ],
+    "deny": [
+      "Agent(bypass-runner)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(su *)",
+      "Bash(chmod 777 *)",
+      "Bash(chown *)",
+      "Bash(dd *)",
+      "Bash(mkfs *)",
+      "Bash(diskutil *)",
+      "Bash(mount *)",
+      "Bash(umount *)",
+      "Bash(systemctl *)",
+      "Bash(launchctl *)",
+      "Bash(curl * | sh)",
+      "Bash(curl * | bash)",
+      "Bash(wget * | sh)",
+      "Bash(wget * | bash)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git rebase *)",
+      "Bash(git reset --hard *)",
+      "Bash(rm -fr *)",
+      "Bash(chmod -R *)",
+      "Bash(eval *)",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(git push --force*)",
+      "PowerShell(git push -f*)",
+      "PowerShell(git reset --hard*)",
+      "PowerShell(git rebase *)",
+      "PowerShell(Invoke-Expression *)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(!.env.example)",
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(!.env.example)",
+      "Read(secrets/**)",
+      "Edit(secrets/**)",
+      "Read(**/credentials.json)",
+      "Edit(**/credentials.json)",
+      "Read(**/serviceAccount*.json)",
+      "Edit(**/serviceAccount*.json)",
+      "Read(**/*.pem)",
+      "Edit(**/*.pem)",
+      "Read(**/*.key)",
+      "Edit(**/*.key)",
+      "Read(**/id_rsa*)",
+      "Edit(**/id_rsa*)",
+      "Read(~/.ssh/**)",
+      "Edit(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Edit(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Edit(~/.gnupg/**)",
+      "Edit(.codeconductor/**)",
+      "Write(.codeconductor/**)"
+    ],
+    "ask": [
+      "Bash(*)",
+      "WebFetch(*)"
+    ],
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable"
   }
 }
