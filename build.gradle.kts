@@ -2,6 +2,9 @@ import dev.detekt.gradle.Detekt
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
+import java.time.LocalDate
+import java.io.File
+
 
 plugins {
     val kotlinVersion = "2.2.20"
@@ -242,31 +245,211 @@ tasks.register<Exec>("codecovUpload") {
 }
 
 // --- Version Management ---
+fun calculateNextSemVer(current: String, type: String): String {
+    val clean = current.removePrefix("v").trim()
+    val base = clean.substringBefore("-").substringBefore("+")
+    val parts = base.split(".")
+    val major = parts.getOrNull(0)?.toIntOrNull() ?: 0
+    val minor = parts.getOrNull(1)?.toIntOrNull() ?: 0
+    val patch = parts.getOrNull(2)?.toIntOrNull() ?: 0
+
+    return when (type.lowercase().trim()) {
+        "major" -> "${major + 1}.0.0"
+        "minor" -> "$major.${minor + 1}.0"
+        "patch" -> "$major.$minor.${patch + 1}"
+        else -> throw IllegalArgumentException(
+            "Tipo de incremento no válido: '$type'. Valores permitidos: 'major', 'minor', 'patch'",
+        )
+    }
+}
+
+fun updateVersionInProject(oldVer: String, newVer: String) {
+    println("Sincronizando versión de '$oldVer' a '$newVer' en archivos del proyecto:")
+
+    // 1. build.gradle.kts
+    val buildFile = file("build.gradle.kts")
+    if (buildFile.exists()) {
+        val content = buildFile.readText()
+        val regex = Regex("""version\s*=\s*"$oldVer"""")
+        if (regex.containsMatchIn(content)) {
+            buildFile.writeText(content.replace(regex, """version = "$newVer""""))
+            println("  ✓ build.gradle.kts")
+        }
+    }
+
+    // 2. OpenApiConfig.kt
+    val openApiFile = file("src/main/kotlin/com/lgzarturo/springbootcourse/config/OpenApiConfig.kt")
+    if (openApiFile.exists()) {
+        val content = openApiFile.readText()
+        if (content.contains(".version(\"$oldVer\")")) {
+            openApiFile.writeText(content.replace(".version(\"$oldVer\")", ".version(\"$newVer\")"))
+            println("  ✓ OpenApiConfig.kt")
+        }
+    }
+
+    // 3. Ping.kt
+    val pingFile = file("src/main/kotlin/com/lgzarturo/springbootcourse/features/ping/Ping.kt")
+    if (pingFile.exists()) {
+        val content = pingFile.readText()
+        val regex = Regex("""val\s+version:\s*String\s*=\s*"$oldVer"""")
+        if (regex.containsMatchIn(content)) {
+            pingFile.writeText(content.replace(regex, """val version: String = "$newVer""""))
+            println("  ✓ Ping.kt")
+        }
+    }
+
+    // 4. PingControllerTest.kt
+    val pingControllerTestFile = file("src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingControllerTest.kt")
+    if (pingControllerTestFile.exists()) {
+        val content = pingControllerTestFile.readText()
+        if (content.contains(".value(\"$oldVer\")")) {
+            pingControllerTestFile.writeText(content.replace(".value(\"$oldVer\")", ".value(\"$newVer\")"))
+            println("  ✓ PingControllerTest.kt")
+        }
+    }
+
+    // 5. PingServiceTest.kt
+    val pingServiceTestFile = file("src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingServiceTest.kt")
+    if (pingServiceTestFile.exists()) {
+        val content = pingServiceTestFile.readText()
+        if (content.contains("\"$oldVer\", result.version")) {
+            pingServiceTestFile.writeText(content.replace("\"$oldVer\", result.version", "\"$newVer\", result.version"))
+            println("  ✓ PingServiceTest.kt")
+        }
+    }
+
+    // 6. README.md
+    val readmeFile = file("README.md")
+    if (readmeFile.exists()) {
+        val content = readmeFile.readText()
+        if (content.contains("releases/tag/v$oldVer")) {
+            readmeFile.writeText(content.replace("releases/tag/v$oldVer", "releases/tag/v$newVer"))
+            println("  ✓ README.md")
+        }
+    }
+}
+
+fun executeGitCommand(rootDir: File, vararg command: String): String {
+    val process = ProcessBuilder("git", *command)
+        .directory(rootDir)
+        .redirectErrorStream(true)
+        .start()
+    val output = process.inputStream.bufferedReader().readText()
+    val exitCode = process.waitFor()
+    if (exitCode != 0) {
+        throw GradleException("Error ejecutando 'git ${command.joinToString(" ")}' (código $exitCode):\n$output")
+    }
+    return output.trim()
+}
+
+fun updateChangelogContent(changelog: File, newVer: String, notes: String?, recentCommits: String) {
+    if (!changelog.exists()) {
+        println("  ⚠ No se encontró CHANGELOG.md")
+        return
+    }
+
+    val content = changelog.readText()
+    val today = LocalDate.now().toString()
+    val sectionHeader = "## [$newVer] - $today"
+
+    if (content.contains("## [$newVer]")) {
+        println("  ℹ CHANGELOG.md ya contiene la sección para la versión $newVer")
+        return
+    }
+
+    val unreleasedTag = "## [Unreleased]"
+    var existingUnreleased = ""
+    if (content.contains(unreleasedTag)) {
+        val afterUnreleased = content.substringAfter(unreleasedTag)
+        val nextSectionIndex = afterUnreleased.indexOf("\n## [")
+        val candidate = if (nextSectionIndex != -1) {
+            afterUnreleased.substring(0, nextSectionIndex).trim()
+        } else {
+            afterUnreleased.trim()
+        }
+        if (candidate.isNotBlank()) {
+            existingUnreleased = candidate
+        }
+    }
+
+    val releaseContent = when {
+        !notes.isNullOrBlank() -> notes.trim()
+        existingUnreleased.isNotBlank() -> existingUnreleased
+        recentCommits.isNotBlank() -> "### Added\n\n$recentCommits"
+        else -> """
+        ### Added
+        - Actualización a versión $newVer
+        """.trimIndent()
+    }
+
+    val newSection = "\n$sectionHeader\n\n$releaseContent\n"
+
+    val contentWithCleanUnreleased = if (existingUnreleased.isNotBlank() && content.contains(unreleasedTag)) {
+        val afterUnreleased = content.substringAfter(unreleasedTag)
+        val nextSectionIndex = afterUnreleased.indexOf("\n## [")
+        if (nextSectionIndex != -1) {
+            val rest = afterUnreleased.substring(nextSectionIndex)
+            content.substringBefore(unreleasedTag) + unreleasedTag + "\n" + rest
+        } else {
+            content
+        }
+    } else {
+        content
+    }
+
+    val updatedContent = if (contentWithCleanUnreleased.contains(unreleasedTag)) {
+        contentWithCleanUnreleased.replace(unreleasedTag, "$unreleasedTag$newSection")
+    } else {
+        "# Changelog\n$newSection\n$contentWithCleanUnreleased"
+    }
+
+    val repoUrl = "https://github.com/lgzarturo/springboot-course"
+    val newUnreleasedRef = "[Unreleased]: $repoUrl/compare/v$newVer...HEAD"
+    val newVerRef = "[$newVer]: $repoUrl/releases/tag/v$newVer"
+
+    val unreleasedRegex = Regex("""\[Unreleased\]:\s*https://github\.com/[^\s]+""")
+    val finalContent = if (unreleasedRegex.containsMatchIn(updatedContent)) {
+        updatedContent.replace(unreleasedRegex, "$newUnreleasedRef\n$newVerRef")
+    } else {
+        "$updatedContent\n$newUnreleasedRef\n$newVerRef\n"
+    }
+
+    changelog.writeText(finalContent)
+    println("  ✓ CHANGELOG.md actualizado con sección [$newVer] - $today")
+}
+
 tasks.register("printVersion") {
     group = "versioning"
-    description = "Imprime la version actual del proyecto"
+    description = "Imprime la versión actual del proyecto"
     doLast {
-        println("Version actual: $version")
+        println("Versión actual: $version")
     }
 }
 
 tasks.register("whatsnext") {
     group = "versioning"
-    description = "Simula el proximo release sin crear tags"
+    description = "Muestra la versión actual y calcula los próximos incrementos SemVer"
     doLast {
+        val currentVer = version.toString()
+        val nextPatch = calculateNextSemVer(currentVer, "patch")
+        val nextMinor = calculateNextSemVer(currentVer, "minor")
+        val nextMajor = calculateNextSemVer(currentVer, "major")
+
         val separator = "=".repeat(50)
         println(separator)
-        println("SIMULACION DE PROXIMO RELEASE")
+        println("VERSIONADO SEMÁNTICO (SemVer)")
         println(separator)
-        println("Version actual: $version")
+        println("Versión actual: $currentVer")
         println()
-        println("Para ver que version se generaria:")
-        println("1. Revisa los commits desde el ultimo tag")
-        println("2. Segun los tipos de commit (feat/fix/BREAKING CHANGE)")
-        println("3. Se incrementara la version segun SemVer")
+        println("Próximos incrementos sugeridos:")
+        println("  • PATCH (fix, perf):        $nextPatch (tag: v$nextPatch)")
+        println("  • MINOR (feat, milestone):  $nextMinor (tag: v$nextMinor)")
+        println("  • MAJOR (breaking change):  $nextMajor (tag: v$nextMajor)")
         println()
-        println("Usa semantic-release en dry-run mode para ver detalles:")
-        println("npx semantic-release --dry-run")
+        println("Comandos disponibles:")
+        println("  make release-minor   o   ./gradlew createRelease -Ptype=minor")
+        println("  make release-patch   o   ./gradlew createRelease -Ptype=patch")
+        println("  make release-major   o   ./gradlew createRelease -Ptype=major")
         println(separator)
     }
 }
@@ -279,14 +462,182 @@ tasks.register("generateChangelog") {
         println(separator)
         println("GENERACION DE CHANGELOG")
         println(separator)
-        println("El changelog se genera automaticamente en CI/CD")
-        println("mediante semantic-release cuando se hace merge a main")
+        println("El changelog se actualiza automáticamente al ejecutar:")
+        println("  make release-minor   o   ./gradlew createRelease -Ptype=minor")
         println()
-        println("Para generar localmente:")
-        println("npx conventional-changelog -p conventionalcommits -i CHANGELOG.md -s")
+        println("Para generación interactiva con conventional-changelog:")
+        println("  npx conventional-changelog -p conventionalcommits -i CHANGELOG.md -s")
         println(separator)
     }
 }
+
+tasks.register("bumpVersion") {
+    group = "versioning"
+    description = "Incrementa la versión en build.gradle.kts y archivos relacionados (sin commit/tag)"
+    doLast {
+        val currentVer = version.toString()
+        val targetVer = if (project.hasProperty("newVersion")) {
+            project.property("newVersion").toString().removePrefix("v").trim()
+        } else {
+            val type = project.findProperty("type")?.toString() ?: "patch"
+            calculateNextSemVer(currentVer, type)
+        }
+
+        if (targetVer == currentVer) {
+            throw GradleException("La nueva versión ($targetVer) es idéntica a la versión actual ($currentVer).")
+        }
+
+        updateVersionInProject(currentVer, targetVer)
+        println("\n✓ Versión actualizada con éxito: $currentVer -> $targetVer")
+    }
+}
+
+tasks.register("bumpPatch") {
+    group = "versioning"
+    description = "Incrementa la versión PATCH (x.y.Z+1)"
+    doLast {
+        val currentVer = version.toString()
+        val targetVer = calculateNextSemVer(currentVer, "patch")
+        updateVersionInProject(currentVer, targetVer)
+        println("\n✓ Versión PATCH actualizada con éxito: $currentVer -> $targetVer")
+    }
+}
+
+tasks.register("bumpMinor") {
+    group = "versioning"
+    description = "Incrementa la versión MINOR (x.Y+1.0)"
+    doLast {
+        val currentVer = version.toString()
+        val targetVer = calculateNextSemVer(currentVer, "minor")
+        updateVersionInProject(currentVer, targetVer)
+        println("\n✓ Versión MINOR actualizada con éxito: $currentVer -> $targetVer")
+    }
+}
+
+tasks.register("bumpMajor") {
+    group = "versioning"
+    description = "Incrementa la versión MAJOR (X+1.0.0)"
+    doLast {
+        val currentVer = version.toString()
+        val targetVer = calculateNextSemVer(currentVer, "major")
+        updateVersionInProject(currentVer, targetVer)
+        println("\n✓ Versión MAJOR actualizada con éxito: $currentVer -> $targetVer")
+    }
+}
+
+tasks.register("createRelease") {
+    group = "versioning"
+    description = "Genera un release SemVer completo: tests, actualización de archivos, CHANGELOG.md, commit y git tag"
+
+    val skipTests = project.hasProperty("skipTests") && project.property("skipTests").toString() == "true"
+    if (!skipTests) {
+        dependsOn("test")
+    }
+
+    doLast {
+        val currentVer = version.toString()
+        val targetVer = if (project.hasProperty("newVersion")) {
+            project.property("newVersion").toString().removePrefix("v").trim()
+        } else {
+            val type = project.findProperty("type")?.toString() ?: "minor"
+            calculateNextSemVer(currentVer, type)
+        }
+
+        if (targetVer == currentVer) {
+            throw GradleException("La nueva versión ($targetVer) es idéntica a la versión actual ($currentVer).")
+        }
+
+        val targetTag = "v$targetVer"
+
+        // 1. Verificar si el tag ya existe
+        val existingTags = try {
+            executeGitCommand(rootDir, "tag", "-l", targetTag)
+        } catch (e: Exception) {
+            ""
+        }
+        if (existingTags.isNotBlank()) {
+            throw GradleException("El tag '$targetTag' ya existe en git.")
+        }
+
+        // 2. Verificar estado de git
+        val status = try {
+            executeGitCommand(rootDir, "status", "--porcelain")
+        } catch (e: Exception) {
+            ""
+        }
+        val allowDirty = project.hasProperty("allowDirty") && project.property("allowDirty").toString() == "true"
+        if (status.isNotBlank() && !allowDirty) {
+            println("⚠ Cambios detectados en el repositorio antes de liberar:")
+            status.lines().filter { it.isNotBlank() }.forEach { println("   $it") }
+            throw GradleException(
+                "El repositorio tiene cambios sin confirmar. Confirma tus cambios antes de liberar, o usa -PallowDirty=true",
+            )
+        }
+
+        val separator = "=".repeat(60)
+        println(separator)
+        println("INICIANDO PROCESO DE RELEASE")
+        println(separator)
+        println("Versión actual: $currentVer")
+        println("Nueva versión:  $targetVer (Tag: $targetTag)")
+        println()
+
+        // 3. Obtener commits recientes para changelog si no se especifican notas
+        val previousTag = try {
+            executeGitCommand(rootDir, "describe", "--tags", "--abbrev=0")
+        } catch (e: Exception) {
+            "v$currentVer"
+        }
+        val recentCommits = try {
+            executeGitCommand(rootDir, "log", "$previousTag..HEAD", "--pretty=format:- %s", "--no-merges")
+        } catch (e: Exception) {
+            ""
+        }
+
+        // 4. Actualizar versión en archivos del proyecto
+        updateVersionInProject(currentVer, targetVer)
+
+        // 5. Actualizar CHANGELOG.md
+        val notesFileProp = project.findProperty("notesFile")?.toString()
+        val customNotes = when {
+            !notesFileProp.isNullOrBlank() -> file(notesFileProp).readText()
+            project.hasProperty("notes") -> project.property("notes").toString()
+            else -> null
+        }
+        val changelogFile = file("CHANGELOG.md")
+        updateChangelogContent(changelogFile, targetVer, customNotes, recentCommits)
+
+        // 6. Git commit y tag
+        val filesToCommit = listOf(
+            "build.gradle.kts",
+            "src/main/kotlin/com/lgzarturo/springbootcourse/config/OpenApiConfig.kt",
+            "src/main/kotlin/com/lgzarturo/springbootcourse/features/ping/Ping.kt",
+            "src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingControllerTest.kt",
+            "src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingServiceTest.kt",
+            "README.md",
+            "CHANGELOG.md",
+        ).filter { file(it).exists() }
+
+        executeGitCommand(rootDir, "add", *filesToCommit.toTypedArray())
+
+        val commitMessage = "chore(release): $targetTag [skip ci]\n\nRelease version $targetVer"
+        executeGitCommand(rootDir, "commit", "-m", commitMessage)
+        println("  ✓ Git commit creado: chore(release): $targetTag [skip ci]")
+
+        executeGitCommand(rootDir, "tag", "-a", targetTag, "-m", "Release $targetTag")
+        println("  ✓ Git tag creado: $targetTag")
+
+        println()
+        println(separator)
+        println("✓ RELEASE $targetTag COMPLETADO EXITOSAMENTE")
+        println(separator)
+        println("Para publicar este release en GitHub ejecuta:")
+        println("  git push origin HEAD")
+        println("  git push origin $targetTag")
+        println(separator)
+    }
+}
+
 
 tasks.register<JavaExec>("generateDDL") {
     group = "database"

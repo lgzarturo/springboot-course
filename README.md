@@ -139,6 +139,13 @@ terminal:
 - `./gradlew createMigration -Pmigration_version=1 -Pdescription="nombre"`: Crea
   una nueva migración de Flyway.
 
+### Versionado y Releases
+
+- `make version` / `./gradlew printVersion`: Muestra la versión actual del proyecto.
+- `make whatsnext` / `./gradlew whatsnext`: Simula los próximos incrementos SemVer (patch, minor, major).
+- `make bump-minor`: Incrementa versión en archivos del proyecto (`build.gradle.kts`, `OpenApiConfig`, `Ping`, pruebas y `README.md`).
+- `make release-minor`: Proceso completo de release (ejecuta tests, bump de versión, actualiza `CHANGELOG.md`, crea commit y tag en Git).
+
 ---
 
 ## ⚠️ Nota Importante para Desarrolladores
