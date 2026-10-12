@@ -33,11 +33,12 @@ class WithMockDomainUserSecurityContextFactory : WithSecurityContextFactory<With
     override fun createSecurityContext(annotation: WithMockDomainUser): SecurityContext {
         val context = SecurityContextHolder.createEmptyContext()
         val authorities = annotation.role.allGrantedAuthorities().map { SimpleGrantedAuthority(it) }
-        val principal = org.springframework.security.core.userdetails.User(
-            annotation.username,
-            "password",
-            authorities,
-        )
+        val principal =
+            org.springframework.security.core.userdetails.User(
+                annotation.username,
+                "password",
+                authorities,
+            )
         val auth = UsernamePasswordAuthenticationToken(principal, "password", authorities)
         context.authentication = auth
         return context

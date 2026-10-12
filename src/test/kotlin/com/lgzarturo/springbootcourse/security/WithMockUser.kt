@@ -22,16 +22,18 @@ annotation class WithMockUser(
 class WithMockUserSecurityContextFactory : WithSecurityContextFactory<WithMockUser> {
     override fun createSecurityContext(annotation: WithMockUser): SecurityContext {
         val context = SecurityContextHolder.createEmptyContext()
-        val grantedAuthorities = (
-            annotation.roles.map { if (it.startsWith("ROLE_")) it else "ROLE_$it" } +
-            annotation.authorities
-        ).distinct().map { SimpleGrantedAuthority(it) }
+        val grantedAuthorities =
+            (
+                annotation.roles.map { if (it.startsWith("ROLE_")) it else "ROLE_$it" } +
+                    annotation.authorities
+            ).distinct().map { SimpleGrantedAuthority(it) }
 
-        val principal = org.springframework.security.core.userdetails.User(
-            annotation.username,
-            "password",
-            grantedAuthorities,
-        )
+        val principal =
+            org.springframework.security.core.userdetails.User(
+                annotation.username,
+                "password",
+                grantedAuthorities,
+            )
         val auth = UsernamePasswordAuthenticationToken(principal, "password", grantedAuthorities)
         context.authentication = auth
         return context

@@ -1,9 +1,9 @@
 import dev.detekt.gradle.Detekt
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.util.Properties
-import java.time.LocalDate
 import java.io.File
+import java.time.LocalDate
+import java.util.Properties
 
 
 plugins {
@@ -245,7 +245,10 @@ tasks.register<Exec>("codecovUpload") {
 }
 
 // --- Version Management ---
-fun calculateNextSemVer(current: String, type: String): String {
+fun calculateNextSemVer(
+    current: String,
+    type: String,
+): String {
     val clean = current.removePrefix("v").trim()
     val base = clean.substringBefore("-").substringBefore("+")
     val parts = base.split(".")
@@ -263,7 +266,10 @@ fun calculateNextSemVer(current: String, type: String): String {
     }
 }
 
-fun updateVersionInProject(oldVer: String, newVer: String) {
+fun updateVersionInProject(
+    oldVer: String,
+    newVer: String,
+) {
     println("Sincronizando versión de '$oldVer' a '$newVer' en archivos del proyecto:")
 
     // 1. build.gradle.kts
@@ -299,7 +305,8 @@ fun updateVersionInProject(oldVer: String, newVer: String) {
     }
 
     // 4. PingControllerTest.kt
-    val pingControllerTestFile = file("src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingControllerTest.kt")
+    val pingControllerTestFile =
+        file("src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingControllerTest.kt")
     if (pingControllerTestFile.exists()) {
         val content = pingControllerTestFile.readText()
         if (content.contains(".value(\"$oldVer\")")) {
@@ -329,11 +336,15 @@ fun updateVersionInProject(oldVer: String, newVer: String) {
     }
 }
 
-fun executeGitCommand(rootDir: File, vararg command: String): String {
-    val process = ProcessBuilder("git", *command)
-        .directory(rootDir)
-        .redirectErrorStream(true)
-        .start()
+fun executeGitCommand(
+    rootDir: File,
+    vararg command: String,
+): String {
+    val process =
+        ProcessBuilder("git", *command)
+            .directory(rootDir)
+            .redirectErrorStream(true)
+            .start()
     val output = process.inputStream.bufferedReader().readText()
     val exitCode = process.waitFor()
     if (exitCode != 0) {
@@ -342,7 +353,12 @@ fun executeGitCommand(rootDir: File, vararg command: String): String {
     return output.trim()
 }
 
-fun updateChangelogContent(changelog: File, newVer: String, notes: String?, recentCommits: String) {
+fun updateChangelogContent(
+    changelog: File,
+    newVer: String,
+    notes: String?,
+    recentCommits: String,
+) {
     if (!changelog.exists()) {
         println("  ⚠ No se encontró CHANGELOG.md")
         return
@@ -362,57 +378,63 @@ fun updateChangelogContent(changelog: File, newVer: String, notes: String?, rece
     if (content.contains(unreleasedTag)) {
         val afterUnreleased = content.substringAfter(unreleasedTag)
         val nextSectionIndex = afterUnreleased.indexOf("\n## [")
-        val candidate = if (nextSectionIndex != -1) {
-            afterUnreleased.substring(0, nextSectionIndex).trim()
-        } else {
-            afterUnreleased.trim()
-        }
+        val candidate =
+            if (nextSectionIndex != -1) {
+                afterUnreleased.substring(0, nextSectionIndex).trim()
+            } else {
+                afterUnreleased.trim()
+            }
         if (candidate.isNotBlank()) {
             existingUnreleased = candidate
         }
     }
 
-    val releaseContent = when {
-        !notes.isNullOrBlank() -> notes.trim()
-        existingUnreleased.isNotBlank() -> existingUnreleased
-        recentCommits.isNotBlank() -> "### Added\n\n$recentCommits"
-        else -> """
-        ### Added
-        - Actualización a versión $newVer
-        """.trimIndent()
-    }
+    val releaseContent =
+        when {
+            !notes.isNullOrBlank() -> notes.trim()
+            existingUnreleased.isNotBlank() -> existingUnreleased
+            recentCommits.isNotBlank() -> "### Added\n\n$recentCommits"
+            else ->
+                """
+                ### Added
+                - Actualización a versión $newVer
+                """.trimIndent()
+        }
 
     val newSection = "\n$sectionHeader\n\n$releaseContent\n"
 
-    val contentWithCleanUnreleased = if (existingUnreleased.isNotBlank() && content.contains(unreleasedTag)) {
-        val afterUnreleased = content.substringAfter(unreleasedTag)
-        val nextSectionIndex = afterUnreleased.indexOf("\n## [")
-        if (nextSectionIndex != -1) {
-            val rest = afterUnreleased.substring(nextSectionIndex)
-            content.substringBefore(unreleasedTag) + unreleasedTag + "\n" + rest
+    val contentWithCleanUnreleased =
+        if (existingUnreleased.isNotBlank() && content.contains(unreleasedTag)) {
+            val afterUnreleased = content.substringAfter(unreleasedTag)
+            val nextSectionIndex = afterUnreleased.indexOf("\n## [")
+            if (nextSectionIndex != -1) {
+                val rest = afterUnreleased.substring(nextSectionIndex)
+                content.substringBefore(unreleasedTag) + unreleasedTag + "\n" + rest
+            } else {
+                content
+            }
         } else {
             content
         }
-    } else {
-        content
-    }
 
-    val updatedContent = if (contentWithCleanUnreleased.contains(unreleasedTag)) {
-        contentWithCleanUnreleased.replace(unreleasedTag, "$unreleasedTag$newSection")
-    } else {
-        "# Changelog\n$newSection\n$contentWithCleanUnreleased"
-    }
+    val updatedContent =
+        if (contentWithCleanUnreleased.contains(unreleasedTag)) {
+            contentWithCleanUnreleased.replace(unreleasedTag, "$unreleasedTag$newSection")
+        } else {
+            "# Changelog\n$newSection\n$contentWithCleanUnreleased"
+        }
 
     val repoUrl = "https://github.com/lgzarturo/springboot-course"
     val newUnreleasedRef = "[Unreleased]: $repoUrl/compare/v$newVer...HEAD"
     val newVerRef = "[$newVer]: $repoUrl/releases/tag/v$newVer"
 
     val unreleasedRegex = Regex("""\[Unreleased\]:\s*https://github\.com/[^\s]+""")
-    val finalContent = if (unreleasedRegex.containsMatchIn(updatedContent)) {
-        updatedContent.replace(unreleasedRegex, "$newUnreleasedRef\n$newVerRef")
-    } else {
-        "$updatedContent\n$newUnreleasedRef\n$newVerRef\n"
-    }
+    val finalContent =
+        if (unreleasedRegex.containsMatchIn(updatedContent)) {
+            updatedContent.replace(unreleasedRegex, "$newUnreleasedRef\n$newVerRef")
+        } else {
+            "$updatedContent\n$newUnreleasedRef\n$newVerRef\n"
+        }
 
     changelog.writeText(finalContent)
     println("  ✓ CHANGELOG.md actualizado con sección [$newVer] - $today")
@@ -476,12 +498,17 @@ tasks.register("bumpVersion") {
     description = "Incrementa la versión en build.gradle.kts y archivos relacionados (sin commit/tag)"
     doLast {
         val currentVer = version.toString()
-        val targetVer = if (project.hasProperty("newVersion")) {
-            project.property("newVersion").toString().removePrefix("v").trim()
-        } else {
-            val type = project.findProperty("type")?.toString() ?: "patch"
-            calculateNextSemVer(currentVer, type)
-        }
+        val targetVer =
+            if (project.hasProperty("newVersion")) {
+                project
+                    .property("newVersion")
+                    .toString()
+                    .removePrefix("v")
+                    .trim()
+            } else {
+                val type = project.findProperty("type")?.toString() ?: "patch"
+                calculateNextSemVer(currentVer, type)
+            }
 
         if (targetVer == currentVer) {
             throw GradleException("La nueva versión ($targetVer) es idéntica a la versión actual ($currentVer).")
@@ -536,12 +563,17 @@ tasks.register("createRelease") {
 
     doLast {
         val currentVer = version.toString()
-        val targetVer = if (project.hasProperty("newVersion")) {
-            project.property("newVersion").toString().removePrefix("v").trim()
-        } else {
-            val type = project.findProperty("type")?.toString() ?: "minor"
-            calculateNextSemVer(currentVer, type)
-        }
+        val targetVer =
+            if (project.hasProperty("newVersion")) {
+                project
+                    .property("newVersion")
+                    .toString()
+                    .removePrefix("v")
+                    .trim()
+            } else {
+                val type = project.findProperty("type")?.toString() ?: "minor"
+                calculateNextSemVer(currentVer, type)
+            }
 
         if (targetVer == currentVer) {
             throw GradleException("La nueva versión ($targetVer) es idéntica a la versión actual ($currentVer).")
@@ -550,21 +582,23 @@ tasks.register("createRelease") {
         val targetTag = "v$targetVer"
 
         // 1. Verificar si el tag ya existe
-        val existingTags = try {
-            executeGitCommand(rootDir, "tag", "-l", targetTag)
-        } catch (e: Exception) {
-            ""
-        }
+        val existingTags =
+            try {
+                executeGitCommand(rootDir, "tag", "-l", targetTag)
+            } catch (e: Exception) {
+                ""
+            }
         if (existingTags.isNotBlank()) {
             throw GradleException("El tag '$targetTag' ya existe en git.")
         }
 
         // 2. Verificar estado de git
-        val status = try {
-            executeGitCommand(rootDir, "status", "--porcelain")
-        } catch (e: Exception) {
-            ""
-        }
+        val status =
+            try {
+                executeGitCommand(rootDir, "status", "--porcelain")
+            } catch (e: Exception) {
+                ""
+            }
         val allowDirty = project.hasProperty("allowDirty") && project.property("allowDirty").toString() == "true"
         if (status.isNotBlank() && !allowDirty) {
             println("⚠ Cambios detectados en el repositorio antes de liberar:")
@@ -583,40 +617,44 @@ tasks.register("createRelease") {
         println()
 
         // 3. Obtener commits recientes para changelog si no se especifican notas
-        val previousTag = try {
-            executeGitCommand(rootDir, "describe", "--tags", "--abbrev=0")
-        } catch (e: Exception) {
-            "v$currentVer"
-        }
-        val recentCommits = try {
-            executeGitCommand(rootDir, "log", "$previousTag..HEAD", "--pretty=format:- %s", "--no-merges")
-        } catch (e: Exception) {
-            ""
-        }
+        val previousTag =
+            try {
+                executeGitCommand(rootDir, "describe", "--tags", "--abbrev=0")
+            } catch (e: Exception) {
+                "v$currentVer"
+            }
+        val recentCommits =
+            try {
+                executeGitCommand(rootDir, "log", "$previousTag..HEAD", "--pretty=format:- %s", "--no-merges")
+            } catch (e: Exception) {
+                ""
+            }
 
         // 4. Actualizar versión en archivos del proyecto
         updateVersionInProject(currentVer, targetVer)
 
         // 5. Actualizar CHANGELOG.md
         val notesFileProp = project.findProperty("notesFile")?.toString()
-        val customNotes = when {
-            !notesFileProp.isNullOrBlank() -> file(notesFileProp).readText()
-            project.hasProperty("notes") -> project.property("notes").toString()
-            else -> null
-        }
+        val customNotes =
+            when {
+                !notesFileProp.isNullOrBlank() -> file(notesFileProp).readText()
+                project.hasProperty("notes") -> project.property("notes").toString()
+                else -> null
+            }
         val changelogFile = file("CHANGELOG.md")
         updateChangelogContent(changelogFile, targetVer, customNotes, recentCommits)
 
         // 6. Git commit y tag
-        val filesToCommit = listOf(
-            "build.gradle.kts",
-            "src/main/kotlin/com/lgzarturo/springbootcourse/config/OpenApiConfig.kt",
-            "src/main/kotlin/com/lgzarturo/springbootcourse/features/ping/Ping.kt",
-            "src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingControllerTest.kt",
-            "src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingServiceTest.kt",
-            "README.md",
-            "CHANGELOG.md",
-        ).filter { file(it).exists() }
+        val filesToCommit =
+            listOf(
+                "build.gradle.kts",
+                "src/main/kotlin/com/lgzarturo/springbootcourse/config/OpenApiConfig.kt",
+                "src/main/kotlin/com/lgzarturo/springbootcourse/features/ping/Ping.kt",
+                "src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingControllerTest.kt",
+                "src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/PingServiceTest.kt",
+                "README.md",
+                "CHANGELOG.md",
+            ).filter { file(it).exists() }
 
         executeGitCommand(rootDir, "add", *filesToCommit.toTypedArray())
 
@@ -637,7 +675,6 @@ tasks.register("createRelease") {
         println(separator)
     }
 }
-
 
 tasks.register<JavaExec>("generateDDL") {
     group = "database"

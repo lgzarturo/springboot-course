@@ -7,11 +7,9 @@ import com.lgzarturo.springbootcourse.security.JwtTestHelper
  * Shared helpers and fixtures for layered feature testing (BC-009).
  */
 object LayeredTestSupport {
-    fun uniqueEmail(prefix: String = "trainer"): String =
-        "$prefix.${System.nanoTime()}@pokemon.com"
+    fun uniqueEmail(prefix: String = "trainer"): String = "$prefix.${System.nanoTime()}@pokemon.com"
 
-    fun uniquePhone(): String =
-        "+1415${(1000000..9999999).random()}"
+    fun uniquePhone(): String = "+1415${(1000000..9999999).random()}"
 
     fun mintTokenForRole(
         secret: String,

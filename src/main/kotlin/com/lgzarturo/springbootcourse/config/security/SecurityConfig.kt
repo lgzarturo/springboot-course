@@ -31,7 +31,11 @@ class SecurityConfig(
                 auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                 auth.requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                 auth.requestMatchers(*PUBLIC_PATHS).permitAll()
-                auth.requestMatchers(HttpMethod.GET, "/api/v1/hotels/**").hasAnyAuthority("hotels:read", "ROLE_GUEST", "ROLE_STAFF", "ROLE_ADMIN")
+                auth
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        "/api/v1/hotels/**",
+                    ).hasAnyAuthority("hotels:read", "ROLE_GUEST", "ROLE_STAFF", "ROLE_ADMIN")
                 auth.requestMatchers(HttpMethod.GET, "/api/v1/users/*").authenticated()
                 auth.requestMatchers("/api/v1/hotels/**").hasAnyAuthority("hotels:manage", "ROLE_STAFF", "ROLE_ADMIN")
                 auth.requestMatchers(HttpMethod.GET, "/api/v1/users").hasAnyAuthority("users:read", "ROLE_ADMIN")

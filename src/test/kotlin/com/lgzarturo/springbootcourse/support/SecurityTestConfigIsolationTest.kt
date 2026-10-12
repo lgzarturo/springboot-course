@@ -31,7 +31,8 @@ class SecurityTestConfigIsolationTest {
     fun `debe_permitir_ejecutar_slice_sin_cadena_produccion_cuando_se_importa_security_test_config`() {
         every { pingUseCasePort.getPing() } returns Ping(message = "pong")
 
-        mockMvc.perform(get("/api/v1/ping"))
+        mockMvc
+            .perform(get("/api/v1/ping"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.message").value("pong"))
     }
