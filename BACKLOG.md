@@ -49,103 +49,6 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
 
 ## Items
 
-### BC-007 | Implement stateless JWT authentication
-
-- Priority: P1
-- Status: TODO
-- Type: feature
-- Owner: spring-kotlin team
-- Depends on: BC-006
-- Description: Add login and registration authentication with signed, expiring JWTs and protect API endpoints through Spring Security.
-- Scope: `build.gradle.kts`, `src/main/kotlin/com/lgzarturo/springbootcourse/config/security/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/auth/`, `src/test/kotlin/com/lgzarturo/springbootcourse/config/security/`
-- Out of scope: OAuth2 providers, refresh tokens, multi-factor authentication, and frontend login screens
-- Business value: Prevents unauthenticated access to user and hotel management operations.
-- Acceptance:
-  - [ ] Valid credentials at `POST /api/auth/login` return `200 OK` with a signed JWT
-  - [ ] Invalid credentials return `401 Unauthorized`
-  - [ ] Protected endpoints return `401 Unauthorized` without a valid token
-  - [ ] A valid token with an allowed role reaches the protected endpoint, while an insufficient role returns `403 Forbidden`
-  - [ ] Expired or invalidly signed tokens return `401 Unauthorized`
-  - [ ] JWT claims include the username, roles, and expiration timestamp
-  - [ ] MockMvc integration tests cover public, authenticated, forbidden, and expired-token requests
-- Risks: Token secrets and expiration settings must come from configuration and must not be committed.
-- Progress: 0%
-- Branch: `feature/milestone-05-security`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
-### BC-008 | Add roles and granular authorities
-
-- Priority: P1
-- Status: TODO
-- Type: feature
-- Owner: spring-kotlin team
-- Depends on: BC-007
-- Description: Persist roles and authorities and apply them to API operations so access is controlled by explicit permissions.
-- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/kotlin/com/lgzarturo/springbootcourse/config/security/`, `src/main/resources/db/migration/V4__Add_Roles_Authorities.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`
-- Out of scope: Organization-level tenancy, external identity providers, and UI permission management
-- Business value: Enables least-privilege access for guests, staff, and administrators.
-- Acceptance:
-  - [ ] `ROLE_GUEST`, `ROLE_STAFF`, and `ROLE_ADMIN` are persisted and loaded into the security context
-  - [ ] Authorities include user read/write, hotel management, and reservation creation permissions
-  - [ ] A guest can read hotels but cannot create or modify them
-  - [ ] Staff can manage reservations and administrators retain access to all declared operations
-  - [ ] Flyway seeds are idempotent and the user-to-role relationship is persisted
-  - [ ] Authorization tests cover every declared role and protected endpoint combination
-- Risks: Role and authority naming must match JWT claims and existing controller annotations.
-- Progress: 0%
-- Branch: `feature/milestone-05-security`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
-### BC-009 | Establish layered feature testing
-
-- Priority: P1
-- Status: TODO
-- Type: tech-debt
-- Owner: spring-kotlin team
-- Depends on: BC-006
-- Description: Establish a repeatable test strategy for hotels and users across domain, web, persistence, integration, and end-to-end boundaries.
-- Scope: `src/test/kotlin/com/lgzarturo/springbootcourse/features/hotels/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/test/kotlin/com/lgzarturo/springbootcourse/support/`
-- Out of scope: Load testing, production observability, and mutation-testing infrastructure
-- Business value: Detects regressions at the cheapest test layer and documents the testing approach for future features.
-- Acceptance:
-  - [ ] Hotels and users each have unit, controller, and full-context integration coverage
-  - [ ] Repository behavior is covered with `@DataJpaTest` where persistence is used
-  - [ ] End-to-end tests use the configured Testcontainers PostgreSQL path when Docker is available
-  - [ ] Unit tests execute without a Spring context and each test completes in less than 100 ms on the test runner
-  - [ ] Tests use isolated fixtures and pass reproducibly in two consecutive runs
-  - [ ] Scenario names follow `debe_resultado_cuando_condicion` or an equivalent documented convention
-- Risks: Docker availability and H2/PostgreSQL differences can make integration results diverge.
-- Progress: 0%
-- Branch: `feature/milestone-06-testing`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
-### BC-010 | Verify protected endpoint behavior
-
-- Priority: P1
-- Status: TODO
-- Type: tech-debt
-- Owner: spring-kotlin team
-- Depends on: BC-007, BC-009
-- Description: Add reusable security test support and integration coverage for JWT authentication, authorization, and isolated feature tests.
-- Scope: `src/test/kotlin/com/lgzarturo/springbootcourse/config/security/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/`, `src/test/kotlin/com/lgzarturo/springbootcourse/support/SecurityTestConfig.kt`
-- Out of scope: Changes to production authorization rules unless a failing test identifies a defect
-- Business value: Prevents security regressions from silently exposing protected resources.
-- Acceptance:
-  - [ ] Requests without authentication are asserted as `401 Unauthorized`
-  - [ ] Requests with insufficient roles are asserted as `403 Forbidden`
-  - [ ] Requests with valid JWT credentials are asserted as successful for each permitted role
-  - [ ] Expired and malformed tokens are asserted as `401 Unauthorized`
-  - [ ] Custom `WithMockUser` fixtures represent the domain roles used by the API
-  - [ ] `SecurityTestConfig` lets isolated controller tests run without the complete production security chain
-- Risks: Test-only security configuration must not be component-scanned into production behavior.
-- Progress: 0%
-- Branch: `feature/milestone-06-testing`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
 ### BC-011 | Enforce automated quality gates
 
 - Priority: P1
@@ -438,6 +341,104 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
 - Last update: 2026-09-16
 
 ## Archive
+### BC-010 | Verify protected endpoint behavior
+
+- Priority: P1
+- Status: DONE
+- Type: tech-debt
+- Owner: spring-kotlin team
+- Depends on: BC-007, BC-009
+- Description: Add reusable security test support and integration coverage for JWT authentication, authorization, and isolated feature tests.
+- Scope: `src/test/kotlin/com/lgzarturo/springbootcourse/config/security/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/`, `src/test/kotlin/com/lgzarturo/springbootcourse/support/SecurityTestConfig.kt`
+- Out of scope: Changes to production authorization rules unless a failing test identifies a defect
+- Business value: Prevents security regressions from silently exposing protected resources.
+- Acceptance:
+  - [x] Requests without authentication are asserted as `401 Unauthorized`
+  - [x] Requests with insufficient roles are asserted as `403 Forbidden`
+  - [x] Requests with valid JWT credentials are asserted as successful for each permitted role
+  - [x] Expired and malformed tokens are asserted as `401 Unauthorized`
+  - [x] Custom `WithMockUser` fixtures represent the domain roles used by the API
+  - [x] `SecurityTestConfig` lets isolated controller tests run without the complete production security chain
+- Risks: Test-only security configuration must not be component-scanned into production behavior.
+- Progress: 100%
+- Branch: `feature/milestone-06-testing`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-009 | Establish layered feature testing
+
+- Priority: P1
+- Status: DONE
+- Type: tech-debt
+- Owner: spring-kotlin team
+- Depends on: BC-006
+- Description: Establish a repeatable test strategy for hotels and users across domain, web, persistence, integration, and end-to-end boundaries.
+- Scope: `src/test/kotlin/com/lgzarturo/springbootcourse/features/hotels/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/test/kotlin/com/lgzarturo/springbootcourse/support/`
+- Out of scope: Load testing, production observability, and mutation-testing infrastructure
+- Business value: Detects regressions at the cheapest test layer and documents the testing approach for future features.
+- Acceptance:
+  - [x] Hotels and users each have unit, controller, and full-context integration coverage
+  - [x] Repository behavior is covered with `@DataJpaTest` where persistence is used
+  - [x] End-to-end tests use the configured Testcontainers PostgreSQL path when Docker is available
+  - [x] Unit tests execute without a Spring context and each test completes in less than 100 ms on the test runner
+  - [x] Tests use isolated fixtures and pass reproducibly in two consecutive runs
+  - [x] Scenario names follow `debe_resultado_cuando_condicion` or an equivalent documented convention
+- Risks: Docker availability and H2/PostgreSQL differences can make integration results diverge.
+- Progress: 100%
+- Branch: `feature/milestone-06-testing`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-008 | Add roles and granular authorities
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-007
+- Description: Persist roles and authorities and apply them to API operations so access is controlled by explicit permissions.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/kotlin/com/lgzarturo/springbootcourse/config/security/`, `src/main/resources/db/migration/V4__Add_Roles_Authorities.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/users/`
+- Out of scope: Organization-level tenancy, external identity providers, and UI permission management
+- Business value: Enables least-privilege access for guests, staff, and administrators.
+- Acceptance:
+  - [x] `ROLE_GUEST`, `ROLE_STAFF`, and `ROLE_ADMIN` are persisted and loaded into the security context
+  - [x] Authorities include user read/write, hotel management, and reservation creation permissions
+  - [x] A guest can read hotels but cannot create or modify them
+  - [x] Staff can manage reservations and administrators retain access to all declared operations
+  - [x] Flyway seeds are idempotent and the user-to-role relationship is persisted
+  - [x] Authorization tests cover every declared role and protected endpoint combination
+- Risks: Role and authority naming must match JWT claims and existing controller annotations.
+- Progress: 100%
+- Branch: `feature/milestone-05-security`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-007 | Implement stateless JWT authentication
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-006
+- Description: Add login and registration authentication with signed, expiring JWTs and protect API endpoints through Spring Security.
+- Scope: `BACKLOG.md`, `.codeconductor/`, `build.gradle.kts`, `.env.example`, `src/main/kotlin/com/lgzarturo/springbootcourse/config/security/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/auth/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/users/`, `src/main/kotlin/com/lgzarturo/springbootcourse/common/exception/GlobalExceptionHandler.kt`, `src/main/resources/application.yaml`, `src/main/resources/application-test.yaml`, `src/test/kotlin/com/lgzarturo/springbootcourse/security/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/auth/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/example/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/hotels/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/ping/`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/sentry/`, `src/test/resources/application.yaml`, `docs/`
+- Out of scope: OAuth2 providers, refresh tokens, multi-factor authentication, and frontend login screens
+- Business value: Prevents unauthenticated access to user and hotel management operations.
+- Acceptance:
+  - [x] Valid credentials at `POST /api/v1/auth/login` return `200 OK` with a signed JWT
+  - [x] Registration reuses public `POST /api/v1/users`, which creates `GUEST` users
+  - [x] Invalid credentials return `401 Unauthorized`
+  - [x] Protected endpoints return `401 Unauthorized` without a valid token
+  - [x] A valid token with an allowed role reaches the protected endpoint, while an insufficient role returns `403 Forbidden`
+  - [x] Expired or invalidly signed tokens return `401 Unauthorized`
+  - [x] JWT claims include the username, roles, and expiration timestamp
+  - [x] MockMvc integration tests cover public, authenticated, forbidden, and expired-token requests
+- Risks: Token secrets and expiration settings must come from configuration and must not be committed.
+- Progress: 100%
+- Branch: `feature/milestone-05-security`
+- Reviewer: reviewer
+- Last update: 2026-10-11
+
 ### BC-006 | Implement user management CRUD
 
 - Priority: P1

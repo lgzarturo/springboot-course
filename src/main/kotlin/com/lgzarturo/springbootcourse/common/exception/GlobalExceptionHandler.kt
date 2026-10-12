@@ -1,5 +1,6 @@
 package com.lgzarturo.springbootcourse.common.exception
 
+import com.lgzarturo.springbootcourse.features.auth.exceptions.InvalidCredentialsException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
@@ -135,6 +136,12 @@ class GlobalExceptionHandler {
         ex: NoSuchElementException,
         request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.NOT_FOUND)
+
+    @ExceptionHandler(InvalidCredentialsException::class)
+    fun handleInvalidCredentialsException(
+        ex: InvalidCredentialsException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.UNAUTHORIZED)
 
     private fun handleSpecificStatusCodeException(
         ex: Exception,

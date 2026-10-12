@@ -50,3 +50,4 @@ docs/pending-wip/*.md
 BACKLOG.md
 openspec/
 .codeconductor/openspec-state.json
+graphify-out/

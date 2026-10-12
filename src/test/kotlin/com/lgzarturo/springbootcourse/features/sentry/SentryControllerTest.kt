@@ -1,5 +1,6 @@
 package com.lgzarturo.springbootcourse.features.sentry
 
+import com.lgzarturo.springbootcourse.security.SecurityTestConfig
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -29,6 +31,7 @@ import org.springframework.web.util.HtmlUtils
  * Verifica los endpoints de prueba de Sentry con mocks estáticos
  */
 @WebMvcTest(SentryController::class)
+@Import(SecurityTestConfig::class)
 @DisplayName("SentryController Tests")
 class SentryControllerTest {
     @Autowired

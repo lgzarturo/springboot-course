@@ -8,4 +8,9 @@ class PasswordEncoder {
     private val delegate = BCryptPasswordEncoder()
 
     fun encode(rawPassword: CharSequence): String = requireNotNull(delegate.encode(rawPassword))
+
+    fun matches(
+        rawPassword: CharSequence,
+        encodedPassword: String,
+    ): Boolean = delegate.matches(rawPassword, encodedPassword)
 }

@@ -1,5 +1,6 @@
 package com.lgzarturo.springbootcourse.features.ping
 
+import com.lgzarturo.springbootcourse.security.SecurityTestConfig
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.junit.jupiter.api.DisplayName
@@ -18,7 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
  * Verifica el comportamiento de los endpoints REST
  */
 @WebMvcTest(PingController::class)
-@Import(PingMapper::class)
+@Import(PingMapper::class, SecurityTestConfig::class)
 @DisplayName("PingController Integration Tests")
 class PingControllerTest {
     @Autowired
