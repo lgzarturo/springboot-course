@@ -52,6 +52,7 @@ semanas. Los tiempos pueden ajustarse según tu ritmo.
   - [Documento sobre la implementación de seguridad con Spring Security y JWT](week-05/01-spring-security.md)
   - [Retos para este 2026 en el desarrollo con Spring Boot y Kotlin](week-05/03-retos.md)
   - [Cuestionario sobre SpringBoot y Kotlin](week-05/04-cuestionario.md)
+  - [La Fortaleza de la Seguridad — Users, Security & JWT](week-05/05-seguridad-y-usuarios.md)
 - Semana 6: Pruebas (_JUnit 5, Spring Boot Test, pruebas de integración y
   controladores_).
 - Semana 7: Documentación de API (_OpenAPI/Swagger con SpringDoc_).

@@ -205,3 +205,29 @@ Referencias:
   `/api/v1/examples`)
 
 ---
+
+### Milestone 5: Seguridad, Autenticación JWT y Control de Acceso RBAC
+
+**Fecha:** 2026-10-12
+**Versión:** 0.1.0
+
+**Logros:**
+
+- **Spring Security 6.x sin estado**: Se configuró la cadena de filtros `SecurityFilterChain` completamente stateless (`SessionCreationPolicy.STATELESS`), deshabilitando CSRF y sesiones HTTP para soportar autenticación basada en API REST y microservicios.
+- **Autenticación con JWT (JJWT 0.12.6)**: Se implementó `JwtTokenProvider` para la creación y validación criptográfica de tokens JWT usando claves seguras HMAC-SHA256, junto con `JwtAuthenticationFilter` para extraer el bearer token e inyectar el principal autenticado en el `SecurityContextHolder`.
+- **Manejo de errores REST seguro**: Se configuraron `RestAuthenticationEntryPoint` (401 Unauthorized) y `RestAccessDeniedHandler` (403 Forbidden) devolviendo respuestas JSON estructuradas y limpias sin exponer trazas de la aplicación.
+- **Control de Acceso Basado en Roles (RBAC)**: Se definieron los roles `GUEST`, `STAFF` y `ADMIN` con sus respectivas autoridades granulares, aplicando seguridad declarativa mediante `@EnableMethodSecurity` y `@PreAuthorize`.
+- **Módulo de Usuarios y Value Objects**: Se construyó el dominio `User` utilizando Value Objects inmutables con validación embebida (`UserId`, `Email`, `Password`, `PhoneNumber`, `Role`), y se integró `BCryptPasswordEncoder` para el hashing de credenciales.
+- **Migraciones Flyway V3 y V4**: Se diseñaron y aplicaron las migraciones SQL para crear la tabla `users` e incorporar la gestión de roles.
+- **Estrategia de Pruebas en 5 Capas**: Se implementó la pirámide de pruebas con soporte de seguridad: unitarias con MockK, slices web `@WebMvcTest` con `@WithMockDomainUser`, integración de repositorios JPA con H2/Testcontainers, servicios y pruebas End-to-End.
+- **Versionado Semántico y Release Automation**: Se automatizó el ciclo de liberación mediante Gradle y Makefile (`make release`, `make bump-version`, `make whatsnext`), con sincronización automática de versiones en archivos, generación de changelog y etiquetado Git.
+
+#### 🏆 Insignia - Guardián de la Fortaleza (Seguridad y Control de Acceso)
+
+Referencias:
+
+- Rama: `feature/milestone-05-security`
+- Tag: `v0.1.0`
+- Migraciones: `db/migration/V3__create_users_table.sql`, `db/migration/V4__add_roles_to_users.sql`
+
+---

@@ -348,20 +348,50 @@ El proyecto incluye un workflow automatizado que:
    - Crea tag de Git
    - Crea GitHub Release con notas generadas
 
-### Comandos Gradle
+### Comandos de Versionado y Release (Makefile y Gradle)
+
+El proyecto incluye soporte nativo tanto en `Makefile` como en `Gradle` para gestionar el versionado semántico y las liberaciones de versión.
+
+#### Usando Makefile (Recomendado)
 
 ```bash
-# Ver la versión actual
-.\gradlew.bat printVersion
+# Ver versión actual y consultar posibles incrementos
+make version
+make whatsnext
 
-# Generar changelog manualmente
-.\gradlew.bat generateChangelog
+# Incrementar versión únicamente en archivos del proyecto (sin commit ni tag)
+make bump-patch                          # Incremento PATCH (x.y.Z+1)
+make bump-minor                          # Incremento MINOR (x.Y+1.0)
+make bump-major                          # Incremento MAJOR (X+1.0.0)
+make bump-version VERSION=0.1.0          # Versión explícita
 
-# Simular próximo release (sin crear tag)
-.\gradlew.bat whatsnext
+# Proceso completo de Release (Ejecuta tests, bump, CHANGELOG.md, commit y tag)
+make release-patch                       # Release tipo PATCH (0.0.x)
+make release-minor                       # Release tipo MINOR (0.x.0)
+make release-major                       # Release tipo MAJOR (x.0.0)
+
+# Release con notas personalizadas o versión explícita
+make release TYPE=minor NOTES="Notas del release..."
+make release VERSION=0.1.0 NOTES_FILE="release-notes.md"
+```
+
+#### Usando Gradle directamente
+
+```bash
+# Ver versión actual y simulación de incremento
+./gradlew printVersion
+./gradlew whatsnext
+
+# Incrementar versión en archivos
+./gradlew bumpPatch
+./gradlew bumpMinor
+./gradlew bumpMajor
+./gradlew bumpVersion -PnewVersion=0.1.0
 
 # Crear release completo
-.\gradlew.bat release
+./gradlew createRelease -Ptype=minor
+./gradlew createRelease -Ptype=patch
+./gradlew createRelease -Ptype=major -Pnotes="Notas de la versión"
 ```
 
 ---

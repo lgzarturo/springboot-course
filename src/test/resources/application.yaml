@@ -4,3 +4,10 @@ sentry:
 logging:
   level:
     root: WARN
+
+# JWT de pruebas: este archivo oculta al application.yaml principal en tests,
+# así que los contextos sin perfil también necesitan estas propiedades.
+jwt:
+  secret: TestSecretKeyForJwtSigningThatIsLongEnough1234567890
+  access-token-expiration: 15m
+  issuer: springboot-course-test

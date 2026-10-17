@@ -1,28 +1,33 @@
 package com.lgzarturo.springbootcourse.features.users
 
+import com.lgzarturo.springbootcourse.features.users.exceptions.DuplicateEmailException
 import com.lgzarturo.springbootcourse.features.users.valueobjects.Email
 import com.lgzarturo.springbootcourse.features.users.valueobjects.Password
 import com.lgzarturo.springbootcourse.features.users.valueobjects.PhoneNumber
-import com.lgzarturo.springbootcourse.features.users.valueobjects.UserId
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
+@Service
 class CreateUserService(
-    @Suppress("UnusedPrivateProperty")
     private val userRepository: UserRepository,
-    @Suppress("UnusedPrivateProperty")
     private val passwordEncoder: PasswordEncoder,
 ) {
+    @Transactional
     fun execute(command: CreateUserCommand): User {
-        // PENDING: Implement this method
-        println("Executing CreateUserService with command: $command")
-        return User(
-            id = UserId.generate(),
-            email = Email("ash@pokemon.com"),
-            password = Password("Pikachu123!"),
-            firstName = "Ash",
-            lastName = "Ketchum",
-            phoneNumber = PhoneNumber("+14155552671"),
-            role = UserRole.GUEST,
-            isActive = true,
-        )
+        if (userRepository.existsByEmail(command.email)) {
+            throw DuplicateEmailException(command.email)
+        }
+
+        val user =
+            User.create(
+                email = Email(command.email),
+                password = Password.fromEncrypted(passwordEncoder.encode(command.password)),
+                firstName = command.firstName,
+                lastName = command.lastName,
+                phoneNumber = command.phoneNumber?.let(::PhoneNumber),
+                role = command.role,
+            )
+
+        return userRepository.save(user)
     }
 }

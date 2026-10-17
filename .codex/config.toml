@@ -1,0 +1,38 @@
+# Codex Council Configuration
+
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+
+[project]
+name = "council"
+version = "0.1.0"
+
+[agents.architect]
+description = "Architect council agent. Focus: architecture, design-patterns, code-structure. Context: repo-readonly. Model hint: strong-reasoning."
+config_file = "agents/council_architect.toml"
+nickname_candidates = ["Architect", "Council Architect"]
+
+[agents.product]
+description = "Product council agent. Focus: requirements, ux, business-value. Context: prompt-only. Model hint: balanced."
+config_file = "agents/council_product.toml"
+nickname_candidates = ["Product", "Council Product"]
+
+[agents.delivery]
+description = "Delivery council agent. Focus: delivery, testing, deployment. Context: repo-readonly. Model hint: practical-coding."
+config_file = "agents/council_delivery.toml"
+nickname_candidates = ["Delivery", "Council Delivery"]
+
+[agents.data-ops]
+description = "DataOps council agent. Focus: data, pipelines, analytics. Context: repo-readonly. Model hint: analytical."
+config_file = "agents/council_data-ops.toml"
+nickname_candidates = ["DataOps", "Council DataOps"]
+
+[agents.security-reviewer]
+description = "Security Reviewer council agent. Focus: security, vulnerabilities, compliance, credentials, injection, auth, supply-chain. Context: repo-readonly. Model hint: security-reasoning."
+config_file = "agents/council_security-reviewer.toml"
+nickname_candidates = ["Security Reviewer", "Council Security Reviewer"]
+
+[agents.devil]
+description = "Devil council agent. Focus: review, edge-cases, failure-modes. Context: repo-readonly. Model hint: adversarial."
+config_file = "agents/council_devil.toml"
+nickname_candidates = ["Devil", "Council Devil"]

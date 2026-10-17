@@ -1,0 +1,11 @@
+---
+description: YAGNI and stdlib-first constraints for source code changes.
+globs: "src/**"
+alwaysApply: false
+---
+
+# YAGNI and Stdlib-First
+
+- Do not build features or abstractions not explicitly requested.
+- Prefer the language standard library over third-party packages.
+- Every line must solve a problem that exists now.

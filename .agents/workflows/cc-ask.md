@@ -1,0 +1,56 @@
+---
+description: >-
+  Recommend one CodeConductor slash command from a natural-language
+  problem. Does not start that workflow.
+---
+
+# Ask — recommend a slash command
+
+Problem: $ARGUMENTS
+
+This is a **router**, not a delivery workflow. Recommend exactly one command.
+Do **not** run the recommended `/cc-` command unless the human confirms.
+
+---
+
+## Step 1 — Recommend (deterministic)
+
+Run `npx cc-codeconductor`:
+
+```bash
+npx cc-codeconductor ask "$ARGUMENTS" --output json
+```
+
+or:
+
+```bash
+npx cc-codeconductor ask "$ARGUMENTS" --output json
+```
+
+The catalog is only:
+
+| Slash | When |
+| ----- | ---- |
+| `/cc-feature` | new behavior |
+| `/cc-fix` | bug / regression |
+| `/cc-refactor` | structure, no behavior change |
+| `/cc-review` | inspect a diff/PR |
+| `/cc-tdd-cycle` | red → green → refactor |
+| `/cc-backlog` | create or append BACKLOG.md / objectives |
+| `/cc-openspec` | BACKLOG / BC-xxx delivery |
+
+If the CLI is unavailable, apply the same catalog and the same priority:
+backlog (author) vs openspec (deliver) → tdd-cycle → review → refactor → fix → feature (default).
+
+---
+
+## Step 2 — Show and stop
+
+Print:
+
+- **Recommended:** the slash command
+- **Why:** one or two sentences from the CLI `reason` (or your matching)
+
+**STOP.** Wait for the human. Do not invoke the recommended workflow.
+
+For a full preset inventory (skills, commands on disk), use `/cc-help` / `cc-help`.

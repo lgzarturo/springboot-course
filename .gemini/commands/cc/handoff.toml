@@ -1,0 +1,45 @@
+description = "Compact the session into gitignored `.codeconductor/sessions/handoff.md` (redact secrets)."
+
+prompt = """
+# Handoff Workflow
+
+Handoff request: {{args}}
+
+## Step 0 — CCEP Bootstrap
+
+Command: `handoff` (fixed for this workflow — do not infer from user text)
+
+1. Run: `npx cc-codeconductor ccep profile handoff --output json` to get the phases and their roles.
+2. For each delegated phase, run: `npx cc-codeconductor ccep compile --command handoff --phase <phase-id> "{{args}}" --view prompt --output json`
+3. After planner/intake JSON is available, run: `npx cc-codeconductor ccep evaluate --command handoff --input <planner.json> --output json`. If `stop` is true, show questions or risks and wait for human input.
+4. Pass each subagent only the compiled `prompt` for its phase — never forward raw `{{args}}` to planners.
+
+---
+
+## Step 1 — Compact (docs)
+
+Invoke `docs`. Write **only** `.codeconductor/sessions/handoff.md` (gitignored).
+Do not write `.codeconductor/handoff.md` or any tracked path.
+
+Before writing, redact secrets, tokens, API keys, passwords, connection strings,
+`.env` contents, and log/stack-trace lines that embed those values. Summarize
+errors instead of pasting dumps. If unresolved credential material remains, stop
+and wait for a human (CCEP `stopOnHighRisk`).
+
+Include: goal, Task Card status (no secret fields), files touched, test
+pass/fail (not log dumps), open questions, the next `/cc:` command, plus links
+to the Delivery Ledger and verification evidence when they exist. Do not repeat
+the original request or transcript.
+
+If a Delivery Ledger exists, run `npx cc-codeconductor odd handoff --id <ledger-id> --output json`
+and use its `handoff` envelope as the source for these fields. Secret redaction
+still applies.
+
+Do not edit source or tests.
+
+---
+
+## Completion
+
+Report the handoff path. Another session should be able to continue from that file alone.
+"""

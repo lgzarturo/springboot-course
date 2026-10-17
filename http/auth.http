@@ -1,0 +1,91 @@
+### Authentication & Protected Endpoints Tests
+### Base URL
+@baseUrl = http://localhost:8080
+@apiVersion = v1
+
+### 1. Registrar un usuario (Público, rol GUEST)
+# @name registerUser
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "trainer.ash@example.com",
+  "password": "PikachuPassword123",
+  "firstName": "Ash",
+  "lastName": "Ketchum",
+  "phoneNumber": "+14155552671"
+}
+
+### 2. Login con credenciales válidas (Público, retorna JWT)
+# @name loginValid
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "trainer.ash@example.com",
+  "password": "PikachuPassword123"
+}
+
+> {%
+    client.test("Login exitoso devuelve token", function() {
+        client.assert(response.status === 200, "Expected 200 OK");
+        client.assert(response.body.token !== undefined, "Expected token in response");
+        client.global.set("authToken", response.body.token);
+    });
+%}
+
+### 3. Login con contraseña incorrecta (Retorna 401 Unauthorized)
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "trainer.ash@example.com",
+  "password": "WrongPassword999"
+}
+
+> {%
+    client.test("Login inválido devuelve 401", function() {
+        client.assert(response.status === 401, "Expected 401 Unauthorized");
+    });
+%}
+
+### 4. Consultar hoteles sin token (Protegido, retorna 401 Unauthorized)
+GET {{baseUrl}}/api/{{apiVersion}}/hotels
+Accept: application/json
+
+> {%
+    client.test("Acceso sin token es rechazado", function() {
+        client.assert(response.status === 401, "Expected 401 Unauthorized");
+    });
+%}
+
+### 5. Consultar hoteles con token GUEST (Permitido, retorna 200 OK)
+GET {{baseUrl}}/api/{{apiVersion}}/hotels
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+> {%
+    client.test("Acceso con token es exitoso", function() {
+        client.assert(response.status === 200, "Expected 200 OK");
+    });
+%}
+
+### 6. Crear hotel con token GUEST (Prohibido para GUEST, retorna 403 Forbidden)
+POST {{baseUrl}}/api/{{apiVersion}}/hotels
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Cerulean Gym Resort",
+  "address": "Cerulean City Waterfront"
+}
+
+> {%
+    client.test("Rol GUEST no puede crear hoteles", function() {
+        client.assert(response.status === 403, "Expected 403 Forbidden");
+    });
+%}

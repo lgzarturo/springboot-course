@@ -1,6 +1,6 @@
 # 🚀 Spring Boot Course — API REST Real
 
-[![Release](https://img.shields.io/github/v/release/lgzarturo/springboot-course?label=Latest%20Release)](https://github.com/lgzarturo/springboot-course/releases/tag/v0.0.3)
+[![Release](https://img.shields.io/github/v/release/lgzarturo/springboot-course?label=Latest%20Release)](https://github.com/lgzarturo/springboot-course/releases/tag/v0.1.0)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.8-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.20-blue.svg)](https://kotlinlang.org/)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
@@ -138,6 +138,13 @@ terminal:
 - `./gradlew generateDDL`: Genera scripts DDL a partir de entidades JPA.
 - `./gradlew createMigration -Pmigration_version=1 -Pdescription="nombre"`: Crea
   una nueva migración de Flyway.
+
+### Versionado y Releases
+
+- `make version` / `./gradlew printVersion`: Muestra la versión actual del proyecto.
+- `make whatsnext` / `./gradlew whatsnext`: Simula los próximos incrementos SemVer (patch, minor, major).
+- `make bump-minor`: Incrementa versión en archivos del proyecto (`build.gradle.kts`, `OpenApiConfig`, `Ping`, pruebas y `README.md`).
+- `make release-minor`: Proceso completo de release (ejecuta tests, bump de versión, actualiza `CHANGELOG.md`, crea commit y tag en Git).
 
 ---
 

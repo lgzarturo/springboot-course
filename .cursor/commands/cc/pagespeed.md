@@ -1,0 +1,113 @@
+# PageSpeed Performance Audit
+
+Audit web performance using the PageSpeed Insights API. Applies the 80/20
+principle: identify the 20% of changes that produce 80% of the performance gain.
+Produces a prioritized report in the current working directory.
+
+## Step 0 — CCEP Bootstrap
+
+Command: `pagespeed` (fixed for this workflow — do not infer from user text)
+
+1. Run: `npx cc-codeconductor ccep profile pagespeed --output json` to get the phases and their roles.
+2. For each delegated phase, run: `npx cc-codeconductor ccep compile --command pagespeed --phase <phase-id> "$ARGUMENTS" --view prompt --output json`
+3. After planner/intake JSON is available, run: `npx cc-codeconductor ccep evaluate --command pagespeed --input <planner.json> --output json`. If `stop` is true, show questions or risks and wait for human input.
+4. Pass each subagent only the compiled `prompt` for its phase — never forward raw `$ARGUMENTS` to planners.
+
+---
+
+## Usage
+
+```
+/cc-pagespeed --url <url> [--strategy mobile|desktop|both]
+```
+
+## Parameters
+
+| Parameter     | Required | Description                                                    |
+| ------------- | -------- | -------------------------------------------------------------- |
+| `--url`       | Yes      | Full URL to audit (must include scheme: https://...)           |
+| `--strategy`  | No       | Analysis strategy: `mobile`, `desktop`, or `both` (default: `both`) |
+
+## Requirements
+
+### `PAGESPEED_API_KEY` — Optional but strongly recommended
+
+| Mode         | Lab data | CrUX field data | Rate limits      |
+| ------------ | -------- | --------------- | ---------------- |
+| **With key** | ✅        | ✅ (real users)  | 25,000 req/day   |
+| **Without**  | ✅        | ❌               | ~2 req/s shared  |
+
+Without the key, Core Web Vitals field data (real user experience via CrUX) is
+unavailable. Lab data from Lighthouse still runs.
+
+Set the key before invoking the command:
+
+```powershell
+# Windows PowerShell
+$env:PAGESPEED_API_KEY = "your-api-key"
+
+# macOS / Linux
+export PAGESPEED_API_KEY="your-api-key"
+```
+
+Get a free key (Google account required):
+<https://developers.google.com/speed/docs/insights/v5/get-started>
+
+## Workflow
+
+When `/cc-pagespeed` is invoked, load the `pagespeed-perf` skill and execute
+the following steps in order:
+
+1. **Pre-flight** — Read `$env:PAGESPEED_API_KEY` from the environment. Compute
+   the output filename: `{YYYY-MM-DD}_pagespeed-{hostname}-claude.md`.
+
+2. **Collect** — Call the PageSpeed Insights API for the requested strategy
+   (`mobile`, `desktop`, or `both`) using `WebFetch` to call the PSI endpoint
+   directly.
+
+3. **Analyze** — Extract Core Web Vitals (LCP, INP, CLS, FCP, TTFB, TBT),
+   identify the LCP element, enumerate third-party scripts by blocking time,
+   and inspect resource hints in the HTML `<head>`.
+
+4. **Prioritize** — Score each identified optimization using the 80/20 matrix:
+   `Impact × Ease` (each 1–5). Order findings by descending score. Highlight
+   the top actions with Score ≥ 20 as the critical 20%.
+
+5. **Report** — Write the structured markdown report to
+   `{YYYY-MM-DD}_pagespeed-{hostname}-claude.md` in the current directory.
+
+## Output File
+
+The report is saved as `{YYYY-MM-DD}_pagespeed-{hostname}-claude.md`.
+
+- Hostname characters outside `[a-zA-Z0-9]` are replaced with `-`.
+- Example: `https://www.example.com` → `2026-06-07_pagespeed-www-example-com-claude.md`
+
+## Skills Loaded
+
+- `pagespeed-perf` — Web Performance Engineering: PSI API, Core Web Vitals
+  thresholds, 80/20 optimization matrix, resource-hint analysis, third-party
+  script auditing, framework-specific implementation templates.
+
+## Examples
+
+```bash
+# Full audit — mobile + desktop
+/cc-pagespeed --url https://www.example.com
+
+# Mobile only
+/cc-pagespeed --url https://www.example.com --strategy mobile
+
+# Desktop only
+/cc-pagespeed --url https://www.example.com --strategy desktop
+```
+
+## Hard Rules
+
+- **GET only.** Never send POST, PUT, or DELETE to the target URL.
+- **No auth.** Never include cookies, tokens, or auth headers.
+- **No external crawling.** Audit only the provided URL.
+- **Quantify every finding.** Never write "it would improve LCP". Always cite
+  the observed value and estimated gain (e.g., "reduces LCP from 4.2 s to ~3.0 s").
+- **No generic recommendations.** Every finding must be backed by data from
+  the audit of this specific URL.

@@ -1,0 +1,12 @@
+---
+description: Cursor subagent orchestration patterns — multitask, parallel delegation, model tiers.
+alwaysApply: false
+---
+
+# Orchestration Patterns
+
+- Use `/multitask` for independent parallel steps (review + docs).
+- Invoke subagents via Task tool: `orchestrator`, `architect`, `implementer`, `tester`, `reviewer`, `security-reviewer`, `complexity-auditor`, `docs`, `task-coach`, `repo-explorer`.
+- High-risk routes: `architect` → `tester` → `implementer` → `security-reviewer` → `reviewer`.
+- Run `repo-explorer` as background subagent for codebase mapping.
+- See `.cursor/agents/orchestrator.md` for full routing table.

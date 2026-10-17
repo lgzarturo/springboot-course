@@ -1,0 +1,26 @@
+version: 0.2.0
+project:
+  name: springboot-course
+  profile: jvm
+defaults:
+  target: opencode
+  overwrite: false
+  locale: en
+presets:
+  council:
+    enabled: true
+    version: 0.1.0
+safety:
+  destructiveCommands:
+    - rm -rf
+    - drop table
+    - delete from
+  secretPatterns: []
+  compileCheck:
+    enabled: true
+    command: tsc --noEmit
+    timeoutMs: 120000
+loop:
+  enabled: true
+  maxIterations: 3
+  maxTokenBudget: 0

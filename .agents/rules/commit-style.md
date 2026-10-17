@@ -1,40 +1,29 @@
 ---
 trigger: always_on
----
-
----
-description: Reglas para generar mensajes de commit en español con formato Conventional Commits.
-globs: ["**/*"]
+description: Rules for generating commit messages using Conventional Commits format
 ---
 
 ## Git Commit Messages
 
-Cuando generes mensajes de commit DEBES seguir estas reglas sin excepción:
+### Format
 
-### Idioma
-- Todo el mensaje debe estar en **español neutro**.
-
-### Formato obligatorio (Conventional Commits)
 ```
-<tipo>(<scope opcional>): <descripción corta>
+<type>(<scope>): <short description>
 
-- <detalle 1>
-- <detalle 2>
-
-Footer opcional: referencias a issues, breaking changes, etc.
+- <detail 1>
+- <detail 2>
 ```
 
-### Tipos válidos
-feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert
+### Valid Types
 
-### Límites
-- Primera línea (encabezado): máximo 69 caracteres
-- Cuerpo: viñetas concisas, una idea por línea
-- Footer: solo si hay breaking change o referencia a issue
+`feat` `fix` `docs` `style` `refactor` `test` `chore` `perf` `ci` `build`
+`revert`
 
-### Nunca
-- No uses gerundios ("agregando", "corrigiendo")
-- No pongas punto final en el encabezado
-- No inventes tipos fuera de la lista válida
+### Rules
 
----
+- Language: **neutral English** always
+- Header: maximum 69 characters, no trailing period
+- Body: concise bullet points, one idea per line
+- Footer: only for breaking changes or issues
+- No gerunds ("adding", "fixing")
+- Use infinitive or imperative ("add", "fix", "update")

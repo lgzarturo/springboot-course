@@ -133,6 +133,15 @@ variables de entorno necesarias **Contenido**:
 
 ---
 
+### 8. 🎓 Curso y Calendario Semanal
+
+**Archivo**: [course/README.md](course/README.md) **Propósito**: Guía paso a paso y calendario semanal del curso **Contenido**:
+
+- Semanas 0 a 12 de aprendizaje guiado por prácticas TDD
+- Semana 5: [La Fortaleza de la Seguridad — Users, Security & JWT](course/week-05/05-seguridad-y-usuarios.md)
+
+---
+
 ## 🎓 Guías por Rol
 
 ### Para Desarrolladores Nuevos

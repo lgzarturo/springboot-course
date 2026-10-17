@@ -1,0 +1,12 @@
+---
+description: Context budget and token optimization — use when conversation is long or switching tasks.
+alwaysApply: false
+---
+
+# Context Budget
+
+- Execute `/clear` when switching to an unrelated task type.
+- Use `/summarize` or `/compress` before re-delegating with large context.
+- Delegate verbose exploration to background subagents (`repo-explorer`).
+- Prefer `@filename` references over pasting full file contents.
+- Respect `.cursorignore` — do not read excluded paths unless explicitly required.

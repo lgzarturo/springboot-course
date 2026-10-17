@@ -5,6 +5,7 @@ import com.lgzarturo.springbootcourse.features.examples.Example
 import com.lgzarturo.springbootcourse.features.examples.ExampleController
 import com.lgzarturo.springbootcourse.features.examples.ExampleUseCasePort
 import com.lgzarturo.springbootcourse.features.examples.dto.ExamplePatchUpdate
+import com.lgzarturo.springbootcourse.security.SecurityTestConfig
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.justRun
@@ -32,7 +33,7 @@ class MockkTestConfig {
 }
 
 @WebMvcTest(ExampleController::class)
-@Import(MockkTestConfig::class)
+@Import(MockkTestConfig::class, SecurityTestConfig::class)
 class ExampleControllerTest(
     @Autowired val mockMvc: MockMvc,
     @Qualifier("exampleUseCasePort")

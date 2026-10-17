@@ -71,6 +71,11 @@ sentry:
   enable-user-interaction-tracing: off
   enable-user-interaction-breadcrumbs: off
 
+jwt:
+  secret: TestSecretKeyForJwtSigningThatIsLongEnough1234567890
+  access-token-expiration: 15m
+  issuer: springboot-course-test
+
 server:
   port: 0
 
