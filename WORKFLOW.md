@@ -350,7 +350,7 @@ El proyecto incluye un workflow automatizado que:
 
 ### Comandos de Versionado y Release (Makefile y Gradle)
 
-El proyecto incluye soporte nativo tanto en `Makefile` como en `Gradle` para gestionar el versionado semántico y las liberaciones de versión.
+El proyecto incluye soporte nativo tanto en `Makefile` como en `Gradle` para gestionar el versionado semántico y las liberaciones de versión siguiendo el estándar integral de **Release** (pruebas automáticas, sincronización de versión, documentación en changelog, commit y git tag).
 
 #### Usando Makefile (Recomendado)
 
@@ -359,18 +359,12 @@ El proyecto incluye soporte nativo tanto en `Makefile` como en `Gradle` para ges
 make version
 make whatsnext
 
-# Incrementar versión únicamente en archivos del proyecto (sin commit ni tag)
-make bump-patch                          # Incremento PATCH (x.y.Z+1)
-make bump-minor                          # Incremento MINOR (x.Y+1.0)
-make bump-major                          # Incremento MAJOR (X+1.0.0)
-make bump-version VERSION=0.1.0          # Versión explícita
-
-# Proceso completo de Release (Ejecuta tests, bump, CHANGELOG.md, commit y tag)
+# Proceso completo de Release (Ejecuta tests, sincroniza versión, actualiza CHANGELOG.md, crea commit y tag)
 make release-patch                       # Release tipo PATCH (0.0.x)
 make release-minor                       # Release tipo MINOR (0.x.0)
 make release-major                       # Release tipo MAJOR (x.0.0)
 
-# Release con notas personalizadas o versión explícita
+# Release parametrizable con notas personalizadas o versión explícita
 make release TYPE=minor NOTES="Notas del release..."
 make release VERSION=0.1.0 NOTES_FILE="release-notes.md"
 ```
@@ -382,16 +376,11 @@ make release VERSION=0.1.0 NOTES_FILE="release-notes.md"
 ./gradlew printVersion
 ./gradlew whatsnext
 
-# Incrementar versión en archivos
-./gradlew bumpPatch
-./gradlew bumpMinor
-./gradlew bumpMajor
-./gradlew bumpVersion -PnewVersion=0.1.0
-
 # Crear release completo
-./gradlew createRelease -Ptype=minor
 ./gradlew createRelease -Ptype=patch
+./gradlew createRelease -Ptype=minor
 ./gradlew createRelease -Ptype=major -Pnotes="Notas de la versión"
+./gradlew createRelease -PnewVersion=0.1.0
 ```
 
 ---

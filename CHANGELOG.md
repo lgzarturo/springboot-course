@@ -42,8 +42,8 @@ Milestone 5: Autenticación, JWT, RBAC y Sistema de Usuarios — Implementación
   - Pruebas End-to-End (E2E) con `TestRestTemplate` / MockMvc
   - Utilidades de prueba: `@WithMockDomainUser`, `SecurityTestConfig`, `LayeredTestSupport`
 - **Automatización de Release y Versionado Semántico**:
-  - Tareas de Gradle para cálculo e incremento de versiones SemVer (`bumpVersion`, `bumpPatch`, `bumpMinor`, `bumpMajor`, `createRelease`)
-  - Comandos en `Makefile`: `make release`, `make release-patch`, `make release-minor`, `make release-major`, `make bump-version`
+  - Tarea integral en Gradle para cálculo e incremento de versiones SemVer (`createRelease`, `printVersion`, `whatsnext`)
+  - Comandos en `Makefile`: `make release`, `make release-patch`, `make release-minor`, `make release-major`, `make version`, `make whatsnext`
   - Sincronización automática de versiones entre `build.gradle.kts`, `OpenApiConfig`, `Ping`, pruebas y `README.md`
   - Generación automática de tags de Git (`v0.1.0`) y actualización de `CHANGELOG.md`
 

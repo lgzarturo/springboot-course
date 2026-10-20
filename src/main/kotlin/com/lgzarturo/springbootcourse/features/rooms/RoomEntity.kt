@@ -2,6 +2,8 @@ package com.lgzarturo.springbootcourse.features.rooms
 
 import com.lgzarturo.springbootcourse.features.hotels.HotelEntity
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -22,4 +24,10 @@ data class RoomEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     val hotel: HotelEntity? = null,
+    @Enumerated(EnumType.STRING)
+    val status: RoomStatus = RoomStatus.AVAILABLE,
+    @Enumerated(EnumType.STRING)
+    val theme: PokemonTheme = PokemonTheme.PIKACHU,
+    val capacity: Int = 2,
+    val description: String? = null,
 )

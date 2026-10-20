@@ -1,6 +1,7 @@
 package com.lgzarturo.springbootcourse.common.exception
 
 import com.lgzarturo.springbootcourse.features.auth.exceptions.InvalidCredentialsException
+import io.sentry.Sentry
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
@@ -119,6 +120,7 @@ class GlobalExceptionHandler {
         request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> {
         logger.error("Unexpected error: ${ex.message}", ex)
+        Sentry.captureException(ex)
 
         val errorResponse =
             ErrorResponse(

@@ -19,5 +19,31 @@ services:
       retries: 5
     restart: unless-stopped
 
+  app:
+    build: .
+    image: hotel-pokemon
+    container_name: springboot-app
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      # Dentro de la red Compose el host es el servicio postgres, no localhost.
+      # DB_URL se reescribe aquí porque tiene precedencia sobre DB_HOST en dev.
+      DB_HOST: postgres
+      DB_URL: jdbc:postgresql://postgres:${DB_PORT:-5432}/${DB_NAME}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
 volumes:
   postgres_data:

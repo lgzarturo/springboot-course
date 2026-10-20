@@ -85,24 +85,8 @@ version: ## Muestra la versión actual del proyecto
 whatsnext: ## Muestra sugerencias de próximas versiones SemVer (patch, minor, major)
 	$(GRADLEW) whatsnext
 
-.PHONY: bump-version
-bump-version: ## Incrementa versión en archivos (make bump-version TYPE=minor o VERSION=0.1.0)
-	$(GRADLEW) bumpVersion $(if $(TYPE),-Ptype=$(TYPE),) $(if $(VERSION),-PnewVersion=$(VERSION),)
-
-.PHONY: bump-patch
-bump-patch: ## Incrementa versión PATCH en archivos (x.y.Z+1)
-	$(GRADLEW) bumpPatch
-
-.PHONY: bump-minor
-bump-minor: ## Incrementa versión MINOR en archivos (x.Y+1.0)
-	$(GRADLEW) bumpMinor
-
-.PHONY: bump-major
-bump-major: ## Incrementa versión MAJOR en archivos (X+1.0.0)
-	$(GRADLEW) bumpMajor
-
 .PHONY: release
-release: ## Crea release completo (tests, bump, changelog, commit y git tag)
+release: ## Crea release completo (tests, versión, changelog, commit y git tag)
 	$(GRADLEW) createRelease $(if $(TYPE),-Ptype=$(TYPE),) $(if $(VERSION),-PnewVersion=$(VERSION),) $(if $(NOTES),-Pnotes="$(NOTES)",) $(if $(NOTES_FILE),-PnotesFile="$(NOTES_FILE)",) $(if $(ALLOW_DIRTY),-PallowDirty=$(ALLOW_DIRTY),) $(if $(SKIP_TESTS),-PskipTests=$(SKIP_TESTS),)
 
 .PHONY: release-patch
@@ -167,8 +151,20 @@ fix: ## Aplica todas las correcciones automáticas disponibles
 	$(GRADLEW) fixAll
 
 .PHONY: quality
-quality: ## Ejecuta lint + tests + cobertura (gate completo)
+quality: ## Gate completo fail-fast: KtLint → Detekt → tests → JaCoCo verificación (LINE 85%) → build
 	$(GRADLEW) codeQuality
+
+.PHONY: verify-quality
+verify-quality: ## Verifica el cableado del gate (orden, umbral LINE 85%, docs)
+	@grep -A 3 'tasks.register("codeQuality")' build.gradle.kts | grep 'dependsOn' | grep -q 'ktlintCheck.*detekt.*test.*jacocoTestReport.*jacocoTestCoverageVerification.*build'
+	@test $$(grep -c 'mustRunAfter' build.gradle.kts) -ge 5
+	@grep -A 8 'tasks.jacocoTestCoverageVerification' build.gradle.kts | grep -qi 'counter.*LINE'
+	@grep -A 8 'tasks.jacocoTestCoverageVerification' build.gradle.kts | grep -q '0\.85'
+	@grep -q 'ignoreFailures.set(false)' build.gradle.kts
+	@grep -A 4 'tasks.named<Detekt>("detekt")' build.gradle.kts | grep -q 'autoCorrect = false'
+	@grep -A 5 'tasks.jacocoTestReport' build.gradle.kts | grep -q 'html.required.set(true)'
+	@grep -q 'make quality' README.md
+	@echo "✓ Gate wiring OK: orden declarado, LINE 85%, sin auto-corrección, docs presentes"
 
 .PHONY: lint-report
 lint-report: ## Genera reportes de análisis en build/reports/

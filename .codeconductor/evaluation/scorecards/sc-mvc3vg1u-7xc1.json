@@ -1,0 +1,74 @@
+{
+  "id": "sc-mvc3vg1u-7xc1",
+  "taskId": "BC-011",
+  "agent": "reviewer",
+  "model": "muse-spark",
+  "contractVersion": "1.7.0",
+  "criteria": [
+    {
+      "id": "acceptance",
+      "label": "Acceptance criteria met",
+      "weight": 0.3,
+      "score": 3,
+      "notes": "All FR/SC mapped to tasks and verified (6/6 live: ordered cold+warm gate runs, ktlint+detekt negatives, 267 tests green)",
+      "autoSuggested": true
+    },
+    {
+      "id": "minimal_diff",
+      "label": "Minimal diff (no scope creep)",
+      "weight": 0.2,
+      "score": 2,
+      "notes": "Diff within declared scope: 3 product files (+36/-2); flagged .codeconductor/BACKLOG.md paths are workflow state, not product changes",
+      "autoSuggested": false
+    },
+    {
+      "id": "tests",
+      "label": "Tests present and passing",
+      "weight": 0.15,
+      "score": 2,
+      "notes": "Verification-runner RED/GREEN evidence verified (ev-tdd-BC-011-test, ev-tdd-BC-011-implement); durable make verify-quality target committed",
+      "autoSuggested": false
+    },
+    {
+      "id": "regressions",
+      "label": "No regressions introduced",
+      "weight": 0.15,
+      "score": 2
+    },
+    {
+      "id": "conventions",
+      "label": "Code follows project conventions",
+      "weight": 0.05,
+      "score": 2
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation updated if required",
+      "weight": 0.05,
+      "score": 2
+    },
+    {
+      "id": "context_discipline",
+      "label": "Context discipline",
+      "weight": 0.05,
+      "score": 2
+    },
+    {
+      "id": "cc_gain",
+      "label": "Complexity diffusion (cc-gain)",
+      "weight": 0.05,
+      "score": 3,
+      "notes": "cc-gain raw=22, verdict=positive",
+      "autoSuggested": true
+    }
+  ],
+  "weightedScore": 2.35,
+  "verdict": "PASS",
+  "findings": [
+    "Auto-suggested minimal_diff=0 rejected: flagged files are workflow state, product diff is 3 in-scope files.",
+    "Auto-suggested tests=0 rejected: runner RED/GREEN evidence exists and was verified; staleness is build-output churn, not absence."
+  ],
+  "createdAt": "2026-10-17T07:59:22.665Z",
+  "backlogId": "BC-011",
+  "source": "manual"
+}

@@ -1,0 +1,38 @@
+# Contexto mínimo para el build de la imagen (BC-014).
+# Nada con secretos (.env) ni artefactos locales entra en las capas.
+
+# Control de versiones
+.git
+.gitignore
+
+# Gradle y artefactos de build local
+.gradle
+build
+bin
+
+# Secretos y entorno local (FR-005: nunca en la imagen)
+.env
+.env.local
+
+# Logs y reportes
+logs
+*.log
+*.hprof
+
+# IDE, editores y SO
+.idea
+.vscode
+.cursor
+.DS_Store
+
+# Documentación y metadatos del flujo (innecesarios en runtime)
+*.md
+docs
+.codeconductor
+openspec
+.claude
+.codex
+.gemini
+.agents
+graphify-out
+node_modules

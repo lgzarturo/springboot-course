@@ -93,7 +93,11 @@ sentry {
 dependencies {
     // Spring Boot Starters
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
+        // BC-014: sin JAXB (solo se usaba para mapeos XML de Hibernate; el proyecto usa anotaciones)
+        exclude(group = "jakarta.xml.bind", module = "jakarta.xml.bind-api")
+        exclude(group = "org.glassfish.jaxb", module = "jaxb-runtime")
+    }
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -108,7 +112,6 @@ dependencies {
     // Kotlin
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     // OpenAPI/Swagger Documentation
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
     // Monitoring
@@ -119,13 +122,12 @@ dependencies {
     // Development
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-    // Database
+    // Database (BC-014: httpclient5 removido por sin uso; H2 queda en runtime porque `generateDDL` lo usa vía main runtimeClasspath)
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.postgresql:postgresql")
     // Flyway para migraciones de base de datos
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
-    implementation("org.apache.httpcomponents.client5:httpclient5")
     // Annotation Processing
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Testing
@@ -184,6 +186,14 @@ tasks.withType<Test> {
     }
 }
 
+// --- Empaquetado Docker (BC-014): JAR por capas como contrato explícito ---
+// El Dockerfile extrae estas capas con `unzip` según BOOT-INF/layers.idx; no depende del default.
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    layered {
+        isEnabled = true
+    }
+}
+
 // --- KTLint ---
 ktlint {
     version.set("1.7.1")
@@ -212,6 +222,11 @@ tasks.withType<Detekt>().configureEach {
     }
 }
 
+// The quality gate verifies; it never rewrites sources (auto-correct stays in detektAutoCorrect).
+tasks.named<Detekt>("detekt") {
+    autoCorrect = false
+}
+
 // --- JaCoCo ---
 jacoco {
     toolVersion = "0.8.15"
@@ -234,6 +249,8 @@ tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
                 minimum = "0.85".toBigDecimal()
             }
         }
@@ -493,65 +510,6 @@ tasks.register("generateChangelog") {
     }
 }
 
-tasks.register("bumpVersion") {
-    group = "versioning"
-    description = "Incrementa la versión en build.gradle.kts y archivos relacionados (sin commit/tag)"
-    doLast {
-        val currentVer = version.toString()
-        val targetVer =
-            if (project.hasProperty("newVersion")) {
-                project
-                    .property("newVersion")
-                    .toString()
-                    .removePrefix("v")
-                    .trim()
-            } else {
-                val type = project.findProperty("type")?.toString() ?: "patch"
-                calculateNextSemVer(currentVer, type)
-            }
-
-        if (targetVer == currentVer) {
-            throw GradleException("La nueva versión ($targetVer) es idéntica a la versión actual ($currentVer).")
-        }
-
-        updateVersionInProject(currentVer, targetVer)
-        println("\n✓ Versión actualizada con éxito: $currentVer -> $targetVer")
-    }
-}
-
-tasks.register("bumpPatch") {
-    group = "versioning"
-    description = "Incrementa la versión PATCH (x.y.Z+1)"
-    doLast {
-        val currentVer = version.toString()
-        val targetVer = calculateNextSemVer(currentVer, "patch")
-        updateVersionInProject(currentVer, targetVer)
-        println("\n✓ Versión PATCH actualizada con éxito: $currentVer -> $targetVer")
-    }
-}
-
-tasks.register("bumpMinor") {
-    group = "versioning"
-    description = "Incrementa la versión MINOR (x.Y+1.0)"
-    doLast {
-        val currentVer = version.toString()
-        val targetVer = calculateNextSemVer(currentVer, "minor")
-        updateVersionInProject(currentVer, targetVer)
-        println("\n✓ Versión MINOR actualizada con éxito: $currentVer -> $targetVer")
-    }
-}
-
-tasks.register("bumpMajor") {
-    group = "versioning"
-    description = "Incrementa la versión MAJOR (X+1.0.0)"
-    doLast {
-        val currentVer = version.toString()
-        val targetVer = calculateNextSemVer(currentVer, "major")
-        updateVersionInProject(currentVer, targetVer)
-        println("\n✓ Versión MAJOR actualizada con éxito: $currentVer -> $targetVer")
-    }
-}
-
 tasks.register("createRelease") {
     group = "versioning"
     description = "Genera un release SemVer completo: tests, actualización de archivos, CHANGELOG.md, commit y git tag"
@@ -806,8 +764,15 @@ tasks.register<Detekt>("detektAutoCorrect") {
 tasks.register("codeQuality") {
     group = "verification"
     description = "Ejecuta todas las verificaciones de calidad: ktlint, detekt y tests con cobertura"
-    dependsOn("ktlintCheck", "detekt", "test", "jacocoTestReport")
+    dependsOn("ktlintCheck", "detekt", "test", "jacocoTestReport", "jacocoTestCoverageVerification", "build")
 }
+
+// Declared gate order: KtLint → Detekt → tests → JaCoCo report → JaCoCo verification → build.
+tasks.named("detekt") { mustRunAfter("ktlintCheck") }
+tasks.named("test") { mustRunAfter("detekt") }
+tasks.named("jacocoTestReport") { mustRunAfter("test") }
+tasks.named("jacocoTestCoverageVerification") { mustRunAfter("jacocoTestReport") }
+tasks.named("build") { mustRunAfter("jacocoTestCoverageVerification") }
 
 tasks.register("fixAll") {
     group = "formatting"

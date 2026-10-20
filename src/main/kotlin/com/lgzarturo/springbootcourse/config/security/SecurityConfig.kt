@@ -41,6 +41,7 @@ class SecurityConfig(
                 auth.requestMatchers(HttpMethod.GET, "/api/v1/users").hasAnyAuthority("users:read", "ROLE_ADMIN")
                 auth.requestMatchers(HttpMethod.PUT, "/api/v1/users/**").hasAnyAuthority("users:write", "ROLE_ADMIN")
                 auth.requestMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAnyAuthority("users:write", "ROLE_ADMIN")
+                auth.requestMatchers("/actuator/**").hasAuthority("ROLE_ADMIN")
                 auth.anyRequest().authenticated()
             }.exceptionHandling { ex ->
                 ex.authenticationEntryPoint(authenticationEntryPoint)
@@ -53,7 +54,7 @@ class SecurityConfig(
         private val PUBLIC_PATHS =
             arrayOf(
                 "/actuator/health",
-                "/actuator/info",
+                "/actuator/health/**",
                 "/api-docs/**",
                 "/swagger-ui/**",
                 "/swagger-ui.html",

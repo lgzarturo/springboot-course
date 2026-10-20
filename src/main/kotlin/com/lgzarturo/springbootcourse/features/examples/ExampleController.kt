@@ -1,5 +1,6 @@
 package com.lgzarturo.springbootcourse.features.examples
 
+import com.lgzarturo.springbootcourse.common.exception.ErrorResponse
 import com.lgzarturo.springbootcourse.common.pagination.PageRequest
 import com.lgzarturo.springbootcourse.common.pagination.PageResult
 import com.lgzarturo.springbootcourse.common.pagination.SortOrder
@@ -7,6 +8,12 @@ import com.lgzarturo.springbootcourse.features.examples.dto.ExamplePatchUpdate
 import com.lgzarturo.springbootcourse.features.examples.dto.ExampleRequest
 import com.lgzarturo.springbootcourse.features.examples.dto.ExampleResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
@@ -47,6 +54,26 @@ class ExampleController(
         summary = "Crear un nuevo ejemplo",
         description = "Crea un nuevo ejemplo en la base de datos",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "201",
+            description = "Ejemplo creado",
+            content = [
+                Content(mediaType = "application/json", schema = Schema(implementation = ExampleResponse::class)),
+            ],
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Datos inválidos",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     fun create(
         @Valid @RequestBody request: ExampleRequest,
     ): ResponseEntity<ExampleResponse> {
@@ -65,8 +92,34 @@ class ExampleController(
         summary = "Obtener un ejemplo por su ID",
         description = "Obtiene un ejemplo por su ID en la base de datos",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Ejemplo encontrado",
+            content = [
+                Content(mediaType = "application/json", schema = Schema(implementation = ExampleResponse::class)),
+            ],
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "ID inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Ejemplo no encontrado",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     @GetMapping("/{id}")
     fun getById(
+        @Parameter(description = "Identificador del ejemplo", example = "1")
         @PathVariable
         @Min(value = 1, message = "El ID debe ser mayor que 0")
         id: Long,
@@ -87,8 +140,22 @@ class ExampleController(
         summary = "Obtener todos los ejemplos",
         description = "Obtiene todos los ejemplos en la base de datos",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Página de ejemplos",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = PageResult::class))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     @GetMapping
     fun getAll(
+        @Parameter(description = "Texto de búsqueda opcional", example = "Bulbasaur")
         @RequestParam(required = false) searchText: String?,
         pageable: Pageable,
     ): ResponseEntity<PageResult<Example>> {
@@ -125,8 +192,34 @@ class ExampleController(
         summary = "Actualizar un ejemplo",
         description = "Actualiza un ejemplo en la base de datos",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Ejemplo actualizado",
+            content = [
+                Content(mediaType = "application/json", schema = Schema(implementation = ExampleResponse::class)),
+            ],
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Datos inválidos",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Ejemplo no encontrado",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     @PutMapping("/{id}")
     fun update(
+        @Parameter(description = "Identificador del ejemplo", example = "1")
         @PathVariable id: Long,
         @Valid @RequestBody exampleRequest: ExampleRequest,
     ): ResponseEntity<ExampleResponse> {
@@ -145,8 +238,28 @@ class ExampleController(
         summary = "Eliminar un ejemplo",
         description = "Elimina un ejemplo en la base de datos",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(responseCode = "204", description = "Ejemplo eliminado"),
+        ApiResponse(
+            responseCode = "400",
+            description = "ID inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Ejemplo no encontrado",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     @DeleteMapping("/{id}")
     fun delete(
+        @Parameter(description = "Identificador del ejemplo", example = "1")
         @PathVariable
         @Min(value = 1, message = "El ID debe ser mayor que 0")
         id: Long,
@@ -167,8 +280,34 @@ class ExampleController(
         summary = "Actualizar parcialmente un ejemplo",
         description = "Actualiza parcialmente un ejemplo en la base de datos",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Ejemplo actualizado",
+            content = [
+                Content(mediaType = "application/json", schema = Schema(implementation = ExampleResponse::class)),
+            ],
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Datos inválidos",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Ejemplo no encontrado",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     @PatchMapping("/{id}")
     fun patch(
+        @Parameter(description = "Identificador del ejemplo", example = "1")
         @PathVariable id: Long,
         @Valid @RequestBody update: ExamplePatchUpdate,
     ): ResponseEntity<ExampleResponse> {

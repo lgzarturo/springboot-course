@@ -220,7 +220,7 @@ Referencias:
 - **Módulo de Usuarios y Value Objects**: Se construyó el dominio `User` utilizando Value Objects inmutables con validación embebida (`UserId`, `Email`, `Password`, `PhoneNumber`, `Role`), y se integró `BCryptPasswordEncoder` para el hashing de credenciales.
 - **Migraciones Flyway V3 y V4**: Se diseñaron y aplicaron las migraciones SQL para crear la tabla `users` e incorporar la gestión de roles.
 - **Estrategia de Pruebas en 5 Capas**: Se implementó la pirámide de pruebas con soporte de seguridad: unitarias con MockK, slices web `@WebMvcTest` con `@WithMockDomainUser`, integración de repositorios JPA con H2/Testcontainers, servicios y pruebas End-to-End.
-- **Versionado Semántico y Release Automation**: Se automatizó el ciclo de liberación mediante Gradle y Makefile (`make release`, `make bump-version`, `make whatsnext`), con sincronización automática de versiones en archivos, generación de changelog y etiquetado Git.
+- **Versionado Semántico y Release Automation**: Se automatizó el ciclo de liberación mediante Gradle y Makefile (`make release`, `make release-patch`, `make release-minor`, `make whatsnext`), con sincronización automática de versiones en archivos, generación de changelog y etiquetado Git.
 
 #### 🏆 Insignia - Guardián de la Fortaleza (Seguridad y Control de Acceso)
 

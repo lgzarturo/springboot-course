@@ -6,4 +6,8 @@ data class Room(
     val type: String,
     val price: Double,
     val hotelId: String,
+    val status: RoomStatus = RoomStatus.AVAILABLE,
+    val theme: PokemonTheme = PokemonTheme.PIKACHU,
+    val capacity: Int = 2,
+    val description: String? = null,
 )

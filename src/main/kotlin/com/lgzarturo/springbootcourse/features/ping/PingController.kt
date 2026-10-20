@@ -1,7 +1,14 @@
 package com.lgzarturo.springbootcourse.features.ping
 
+import com.lgzarturo.springbootcourse.common.exception.ErrorResponse
 import com.lgzarturo.springbootcourse.features.ping.dto.PingResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -32,6 +39,19 @@ class PingController(
         summary = "Ping simple",
         description = "Retorna un pong simple para verificar que la API está funcionando",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Pong con mensaje y versión",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = PingResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     fun ping(): ResponseEntity<PingResponse> {
         val ping = pingUseCasePort.getPing()
         val response = pingMapper.toResponse(ping)
@@ -50,7 +70,21 @@ class PingController(
         summary = "Ping con mensaje personalizado",
         description = "Retorna un pong con un mensaje personalizado",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Pong con el mensaje personalizado",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = PingResponse::class))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     fun pingWithMessage(
+        @Parameter(description = "Mensaje personalizado", example = "hello")
         @PathVariable message: String,
     ): ResponseEntity<PingResponse> {
         val ping = pingUseCasePort.getPingWithMessage(message)
@@ -68,6 +102,19 @@ class PingController(
     @Operation(
         summary = "Health check",
         description = "Verifica el estado de salud de la API",
+    )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Estado de salud con status y servicio",
+            content = [Content(mediaType = "application/json", schema = Schema(type = "object"))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
     )
     fun health(): ResponseEntity<Map<String, String>> =
         ResponseEntity.status(HttpStatus.OK).body(
