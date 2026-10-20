@@ -55,10 +55,7 @@
   },
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
-    "allow": [
-      "Read(**)",
-      "Edit(**)"
-    ],
+    "allow": ["Read(**)", "Edit(**)", "Bash(*)", "WebFetch(*)"],
     "deny": [
       "Agent(bypass-runner)",
       "Bash(rm -rf *)",
@@ -116,10 +113,6 @@
       "Edit(~/.gnupg/**)",
       "Edit(.codeconductor/**)",
       "Write(.codeconductor/**)"
-    ],
-    "ask": [
-      "Bash(*)",
-      "WebFetch(*)"
     ],
     "defaultMode": "default",
     "disableBypassPermissionsMode": "disable"
