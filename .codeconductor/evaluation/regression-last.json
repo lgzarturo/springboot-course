@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "id": "tests_pass",
+      "required": false,
+      "passed": false,
+      "message": "Command failed: npm test — Command failed: npm test\nnpm error code ENOENT\nnpm error syscall open\nnpm error path /home/algforge/work/springboot-course/package.json\nnpm error errno -2\nnpm error enoent Could not read package.json:"
+    },
+    {
+      "id": "doctor_config",
+      "required": false,
+      "passed": false,
+      "message": "Command failed: npx cc-codeconductor doctor — Command failed: npx cc-codeconductor doctor\nnpm notice run npx\nnpm notice run 'codeconductor' doctor\n"
+    },
+    {
+      "id": "no_scope_creep",
+      "required": false,
+      "passed": true,
+      "message": "diff_scope check requires task context; skipped in CLI (manual in workflow)"
+    }
+  ],
+  "timestamp": "2026-10-20T03:45:38.155Z"
+}

@@ -52,7 +52,7 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
 ### BC-015 | Expose production observability
 
 - Priority: P2
-- Status: IN_PROGRESS
+- Status: BLOCKED
 - Type: feature
 - Owner: spring-kotlin team
 - Depends on: BC-014
@@ -68,7 +68,7 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
   - [ ] Reservation counters, endpoint timers, and available-room gauges are visible in metrics
   - [ ] Sentry captures an unhandled production exception with the configured environment
 - Risks: Health details and metric labels must not expose credentials or high-cardinality personal data.
-- Progress: 60%
+- Progress: 80%
 - Branch: `feature/milestone-08-deploy`
 - Reviewer: reviewer
 - Last update: 2026-09-16
