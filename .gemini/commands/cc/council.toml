@@ -1,40 +1,9 @@
-description = "Multi-agent council for code review and architecture decisions"
+description = "Council-driven workflow with CCEP-1 bootstrap"
 
 prompt = """
-## Step 1 — Deliberation & Specification (SDD)
+<!-- GENERATED redirect to presets/agy/workflows/cc-council.md by scripts/render-agent-commands.ts — DO NOT EDIT. -->
 
-Invoke the council skill to analyze the request before writing any code. The council must act as a steering committee involving task-coach (Product), architect, and devil.
+## Step 0 — CCEP Bootstrap
 
-The council must:
-1. Clarify the prompt and define the absolute minimum scope (Simplicity Gate).
-2. Explicitly document all assumptions and resolve ambiguities (Think Before Coding).
-3. Draft a Task Card & Technical Plan (The Specification).
-
-STOP here. Show the agreed Task Card & Technical Plan and wait for human confirmation before continuing.
-
----
-
-## Step 2 — Test Definition (TDD)
-
-Invoke tester with the approved Task Card & Technical Plan. Write failing tests based on the Acceptance Criteria, then confirm they fail (Red state).
-
----
-
-## Step 3 — Surgical Implementation
-
-Invoke implementer with the failing tests and the Technical Plan. Write the minimal code required to pass the tests, touching ONLY the files specified in the Technical Plan. Loop implementer -> tester until all tests pass (Green state).
-
----
-
-## Step 4 — Multi-Perspective Council Review
-
-Invoke the council skill on the generated diff. If ANY agent votes CRITICAL, the Review Report status is BLOCKED and work returns to Step 3. If APPROVED (no CRITICAL findings), deliver the final Council Verdict and the diff summary.
-
----
-
-## Completion
-
-Deliver the complete Council Verdict. The feature is only complete when tests pass and the council explicitly approves the implementation.
-
-Task request: {{args}}
+command: council. Read `presets/agy/workflows/cc-council.md`, then `ccep profile council` + `ccep compile --command council --view prompt`.
 """
