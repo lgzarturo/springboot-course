@@ -231,3 +231,24 @@ Referencias:
 - Migraciones: `db/migration/V3__create_users_table.sql`, `db/migration/V4__add_roles_to_users.sql`
 
 ---
+
+### Milestone 6: Estrategia de Pruebas, Cobertura JaCoCo y Calidad de Código
+
+**Fecha:** 2026-11-24
+**Versión:** 0.1.0
+
+**Logros:**
+
+- **Consolidación de pruebas por capas y seguridad**: Se unificó `SecurityTestConfig` y `@WithMockDomainUser` en `src/test/kotlin/.../security/` (`SecurityTestConfig.kt` y `WithMockUser.kt`), eliminando duplicados en `support/` y proveyendo `SimpleMeterRegistry` para aislar los slices `@WebMvcTest`.
+- **Estandarización de repositorios de dominio**: Se renombraron `UserRepository` → `UserDomainRepository` y `HotelRepositoryPort` → `HotelDomainRepository` bajo la convención `*DomainRepository`, manteniendo `ExampleRepositoryPort` como referencia hexagonal.
+- **Cobertura y calidad automatizada**: Se configuró el umbral mínimo de cobertura JaCoCo en `0.75` (`75%`) y toolchain Java 21 en `build.gradle.kts`, alcanzando **96.69% LINE** (1843/1906) con **394 tests pasando**, `ktlintCheck` y `detekt` sin errores.
+- **Documentación de auditoría actualizada**: Se actualizó `docs/auditoria-milestone-06.md` con las métricas reales de cobertura, convenciones de nombres y notas de entorno JDK.
+
+#### 🏆 Insignia - Centinela de la Calidad (Testing, Cobertura y Análisis Estático)
+
+Referencias:
+
+- Rama: `feature/milestone-06-testing` / `fix/milestone-06-closure`
+- Auditoría: `docs/auditoria-milestone-06.md`
+
+---

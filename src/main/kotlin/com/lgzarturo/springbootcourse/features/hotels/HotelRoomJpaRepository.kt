@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 class HotelRoomJpaRepository(
     private val hotelJpaRepository: HotelJpaRepository,
     private val roomJpaRepository: RoomJpaRepository,
-) : HotelRepositoryPort {
+) : HotelDomainRepository {
     @PersistenceContext
     private lateinit var entityManager: EntityManager
 

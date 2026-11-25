@@ -3,12 +3,12 @@ package com.lgzarturo.springbootcourse.features.auth
 import com.lgzarturo.springbootcourse.config.security.JwtService
 import com.lgzarturo.springbootcourse.features.auth.exceptions.InvalidCredentialsException
 import com.lgzarturo.springbootcourse.features.users.PasswordEncoder
-import com.lgzarturo.springbootcourse.features.users.UserRepository
+import com.lgzarturo.springbootcourse.features.users.UserDomainRepository
 import org.springframework.stereotype.Service
 
 @Service
 class AuthService(
-    private val userRepository: UserRepository,
+    private val userRepository: UserDomainRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JwtService,
 ) {

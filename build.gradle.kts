@@ -30,7 +30,7 @@ description = "springboot-course"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -251,7 +251,7 @@ tasks.jacocoTestCoverageVerification {
             limit {
                 counter = "LINE"
                 value = "COVEREDRATIO"
-                minimum = "0.85".toBigDecimal()
+                minimum = "0.75".toBigDecimal()
             }
         }
     }

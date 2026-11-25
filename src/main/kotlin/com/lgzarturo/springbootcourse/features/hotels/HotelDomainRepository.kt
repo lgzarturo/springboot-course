@@ -2,7 +2,7 @@ package com.lgzarturo.springbootcourse.features.hotels
 
 import com.lgzarturo.springbootcourse.features.rooms.Room
 
-interface HotelRepositoryPort {
+interface HotelDomainRepository {
     fun save(hotel: Hotel): Hotel
 
     fun findById(id: String): Hotel?

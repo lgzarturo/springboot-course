@@ -1,6 +1,6 @@
 package com.lgzarturo.springbootcourse.features.users
 
-interface UserRepository {
+interface UserDomainRepository {
     fun existsByEmail(email: String): Boolean
 
     fun findByEmail(email: String): User?

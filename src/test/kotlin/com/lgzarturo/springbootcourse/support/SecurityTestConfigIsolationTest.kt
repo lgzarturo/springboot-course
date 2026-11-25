@@ -4,6 +4,7 @@ import com.lgzarturo.springbootcourse.features.ping.Ping
 import com.lgzarturo.springbootcourse.features.ping.PingController
 import com.lgzarturo.springbootcourse.features.ping.PingMapper
 import com.lgzarturo.springbootcourse.features.ping.PingUseCasePort
+import com.lgzarturo.springbootcourse.security.SecurityTestConfig
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.junit.jupiter.api.DisplayName

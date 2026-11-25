@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateUserUseCase(
-    private val userRepository: UserRepository,
+    private val userRepository: UserDomainRepository,
 ) {
     @Transactional
     fun execute(

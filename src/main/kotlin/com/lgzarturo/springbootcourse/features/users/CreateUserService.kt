@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CreateUserService(
-    private val userRepository: UserRepository,
+    private val userRepository: UserDomainRepository,
     private val passwordEncoder: PasswordEncoder,
 ) {
     @Transactional

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
  */
 @DisplayName("GetUserUseCase Tests")
 class GetUserUseCaseTest {
-    private val userRepository: UserRepository = mockk()
+    private val userRepository: UserDomainRepository = mockk()
     private val useCase = GetUserUseCase(userRepository)
 
     @Test

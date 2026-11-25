@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class UserRepositoryAdapter(
     private val userJpaRepository: UserJpaRepository,
-) : UserRepository {
+) : UserDomainRepository {
     override fun existsByEmail(email: String): Boolean = userJpaRepository.existsByEmail(email)
 
     override fun findByEmail(email: String): User? = userJpaRepository.findByEmail(email)?.toDomain()

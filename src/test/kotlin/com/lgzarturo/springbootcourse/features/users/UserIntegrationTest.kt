@@ -39,7 +39,7 @@ class UserIntegrationTest {
     private lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var userRepository: UserDomainRepository
 
     @Value("\${jwt.secret:TestSecretKeyForJwtSigningThatIsLongEnough1234567890}")
     private lateinit var jwtSecret: String

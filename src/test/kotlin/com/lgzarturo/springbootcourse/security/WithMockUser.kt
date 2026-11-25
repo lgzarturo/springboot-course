@@ -1,5 +1,6 @@
 package com.lgzarturo.springbootcourse.security
 
+import com.lgzarturo.springbootcourse.features.users.UserRole
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContext
@@ -7,7 +8,30 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithSecurityContext
 import org.springframework.security.test.context.support.WithSecurityContextFactory
 
-typealias WithMockDomainUser = com.lgzarturo.springbootcourse.support.WithMockDomainUser
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
+@WithSecurityContext(factory = WithMockDomainUserSecurityContextFactory::class)
+annotation class WithMockDomainUser(
+    val userId: Long = 1L,
+    val username: String = "trainer@pokemon.com",
+    val role: UserRole = UserRole.GUEST,
+)
+
+class WithMockDomainUserSecurityContextFactory : WithSecurityContextFactory<WithMockDomainUser> {
+    override fun createSecurityContext(annotation: WithMockDomainUser): SecurityContext {
+        val context = SecurityContextHolder.createEmptyContext()
+        val authorities = annotation.role.allGrantedAuthorities().map { SimpleGrantedAuthority(it) }
+        val principal =
+            org.springframework.security.core.userdetails.User(
+                annotation.username,
+                "password",
+                authorities,
+            )
+        val auth = UsernamePasswordAuthenticationToken(principal, "password", authorities)
+        context.authentication = auth
+        return context
+    }
+}
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)

@@ -6,5 +6,5 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class HotelServiceConfig {
     @Bean
-    fun hotelService(repository: HotelRepositoryPort): HotelService = HotelService(repository)
+    fun hotelService(repository: HotelDomainRepository): HotelService = HotelService(repository)
 }

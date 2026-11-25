@@ -20,12 +20,12 @@ import org.junit.jupiter.api.extension.ExtendWith
 @DisplayName("HotelService Tests")
 class HotelServiceTest {
     @MockK
-    private lateinit var hotelRepositoryPort: HotelRepositoryPort
+    private lateinit var hotelDomainRepository: HotelDomainRepository
     private lateinit var hotelService: HotelService
 
     @BeforeEach
     fun setUp() {
-        hotelService = HotelService(hotelRepositoryPort)
+        hotelService = HotelService(hotelDomainRepository)
     }
 
     @Test
@@ -36,13 +36,13 @@ class HotelServiceTest {
         val savedHotel = Hotel("1", "Test Hotel", "Test Address", emptyList())
 
         // When
-        every { hotelRepositoryPort.save(hotelToSave) } returns savedHotel
+        every { hotelDomainRepository.save(hotelToSave) } returns savedHotel
 
         val result = hotelService.createHotel(hotelToSave)
 
         // Then
         Assertions.assertEquals(savedHotel, result)
-        verify { hotelRepositoryPort.save(hotelToSave) }
+        verify { hotelDomainRepository.save(hotelToSave) }
     }
 
     @Test
@@ -53,13 +53,13 @@ class HotelServiceTest {
         val expectedHotel = Hotel("1", "Test Hotel", "Test Address", emptyList())
 
         // When
-        every { hotelRepositoryPort.findById(hotelId) } returns expectedHotel
+        every { hotelDomainRepository.findById(hotelId) } returns expectedHotel
 
         val result = hotelService.getHotelById(hotelId)
 
         // Then
         Assertions.assertEquals(expectedHotel, result)
-        verify { hotelRepositoryPort.findById(hotelId) }
+        verify { hotelDomainRepository.findById(hotelId) }
     }
 
     @Test
@@ -69,13 +69,13 @@ class HotelServiceTest {
         val hotelId = "non-existent-id"
 
         // When
-        every { hotelRepositoryPort.findById(hotelId) } returns null
+        every { hotelDomainRepository.findById(hotelId) } returns null
 
         val result = hotelService.getHotelById(hotelId)
 
         // Then
         assertNull(result)
-        verify { hotelRepositoryPort.findById(hotelId) }
+        verify { hotelDomainRepository.findById(hotelId) }
     }
 
     @Test
@@ -93,14 +93,14 @@ class HotelServiceTest {
         val total = 2L
 
         // When
-        every { hotelRepositoryPort.findAll(criteria, page, size) } returns Pair(hotels, total)
+        every { hotelDomainRepository.findAll(criteria, page, size) } returns Pair(hotels, total)
 
         val (resultHotels, resultTotal) = hotelService.getAllHotels(criteria, page, size)
 
         // Then
         Assertions.assertEquals(hotels, resultHotels)
         Assertions.assertEquals(total, resultTotal)
-        verify { hotelRepositoryPort.findAll(criteria, page, size) }
+        verify { hotelDomainRepository.findAll(criteria, page, size) }
     }
 
     @Test
@@ -113,15 +113,15 @@ class HotelServiceTest {
         val updatedHotel = Hotel("1", "Updated Name", "Updated Address", emptyList())
 
         // When
-        every { hotelRepositoryPort.findById(hotelId) } returns existingHotel
-        every { hotelRepositoryPort.update(any()) } returns updatedHotel
+        every { hotelDomainRepository.findById(hotelId) } returns existingHotel
+        every { hotelDomainRepository.update(any()) } returns updatedHotel
 
         val result = hotelService.updateHotel(hotelId, hotelToUpdate)
 
         // Then
         Assertions.assertEquals(updatedHotel, result)
-        verify { hotelRepositoryPort.findById(hotelId) }
-        verify { hotelRepositoryPort.update(any()) }
+        verify { hotelDomainRepository.findById(hotelId) }
+        verify { hotelDomainRepository.update(any()) }
     }
 
     @Test
@@ -132,14 +132,14 @@ class HotelServiceTest {
         val hotelToUpdate = Hotel("non-existent-id", "Updated Name", "Updated Address", emptyList())
 
         // When
-        every { hotelRepositoryPort.findById(hotelId) } returns null
+        every { hotelDomainRepository.findById(hotelId) } returns null
 
         val result = hotelService.updateHotel(hotelId, hotelToUpdate)
 
         // Then
         assertNull(result)
-        verify { hotelRepositoryPort.findById(hotelId) }
-        verify(exactly = 0) { hotelRepositoryPort.update(any()) }
+        verify { hotelDomainRepository.findById(hotelId) }
+        verify(exactly = 0) { hotelDomainRepository.update(any()) }
     }
 
     @Test
@@ -149,13 +149,13 @@ class HotelServiceTest {
         val hotelId = "1"
 
         // When
-        every { hotelRepositoryPort.deleteById(hotelId) } returns true
+        every { hotelDomainRepository.deleteById(hotelId) } returns true
 
         val result = hotelService.deleteHotel(hotelId)
 
         // Then
         Assertions.assertTrue(result)
-        verify { hotelRepositoryPort.deleteById(hotelId) }
+        verify { hotelDomainRepository.deleteById(hotelId) }
     }
 
     @Test
@@ -165,13 +165,13 @@ class HotelServiceTest {
         val hotelId = "non-existent-id"
 
         // When
-        every { hotelRepositoryPort.deleteById(hotelId) } returns false
+        every { hotelDomainRepository.deleteById(hotelId) } returns false
 
         val result = hotelService.deleteHotel(hotelId)
 
         // Then
         Assertions.assertFalse(result)
-        verify { hotelRepositoryPort.deleteById(hotelId) }
+        verify { hotelDomainRepository.deleteById(hotelId) }
     }
 
     @Test
@@ -183,13 +183,13 @@ class HotelServiceTest {
         val expectedRoom = Room("101", "101", "Standard", 100.0, hotelId)
 
         // When
-        every { hotelRepositoryPort.findRoomById(hotelId, roomId) } returns expectedRoom
+        every { hotelDomainRepository.findRoomById(hotelId, roomId) } returns expectedRoom
 
         val result = hotelService.getRoomById(hotelId, roomId)
 
         // Then
         Assertions.assertEquals(expectedRoom, result)
-        verify { hotelRepositoryPort.findRoomById(hotelId, roomId) }
+        verify { hotelDomainRepository.findRoomById(hotelId, roomId) }
     }
 
     @Test
@@ -200,12 +200,12 @@ class HotelServiceTest {
         val roomId = "non-existent-room-id"
 
         // When
-        every { hotelRepositoryPort.findRoomById(hotelId, roomId) } returns null
+        every { hotelDomainRepository.findRoomById(hotelId, roomId) } returns null
 
         val result = hotelService.getRoomById(hotelId, roomId)
 
         // Then
         assertNull(result)
-        verify { hotelRepositoryPort.findRoomById(hotelId, roomId) }
+        verify { hotelDomainRepository.findRoomById(hotelId, roomId) }
     }
 }

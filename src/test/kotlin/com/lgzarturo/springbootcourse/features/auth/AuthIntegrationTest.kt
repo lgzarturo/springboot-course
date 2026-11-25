@@ -1,6 +1,6 @@
 package com.lgzarturo.springbootcourse.features.auth
 
-import com.lgzarturo.springbootcourse.features.users.UserRepository
+import com.lgzarturo.springbootcourse.features.users.UserDomainRepository
 import com.lgzarturo.springbootcourse.security.JwtTestHelper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
@@ -43,7 +43,7 @@ class AuthIntegrationTest {
     private lateinit var jwtIssuer: String
 
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var userRepository: UserDomainRepository
 
     @Test
     @DisplayName("POST /api/v1/auth/login debe retornar 200 OK con un JWT firmado")
