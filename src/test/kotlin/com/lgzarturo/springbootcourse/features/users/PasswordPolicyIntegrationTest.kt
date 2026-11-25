@@ -72,6 +72,5 @@ class PasswordPolicyIntegrationTest {
     private fun registerBody(
         email: String,
         password: String,
-    ): String =
-        """{"email":"$email","password":"$password","firstName":"Test","lastName":"Trainer"}"""
+    ): String = """{"email":"$email","password":"$password","firstName":"Test","lastName":"Trainer"}"""
 }

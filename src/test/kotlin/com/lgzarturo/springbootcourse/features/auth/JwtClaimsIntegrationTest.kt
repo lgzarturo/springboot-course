@@ -69,7 +69,8 @@ class JwtClaimsIntegrationTest {
 
         assertNotNull(firstJti)
         assertNotNull(secondJti)
-        org.junit.jupiter.api.Assertions.assertNotEquals(firstJti, secondJti)
+        org.junit.jupiter.api.Assertions
+            .assertNotEquals(firstJti, secondJti)
     }
 
     private fun register(email: String) {

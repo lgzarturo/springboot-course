@@ -13,11 +13,11 @@ import com.lgzarturo.springbootcourse.features.rooms.PokemonTheme
 import com.lgzarturo.springbootcourse.features.rooms.RoomStatus
 import com.lgzarturo.springbootcourse.features.rooms.dto.CreateRoomRequest
 import com.lgzarturo.springbootcourse.features.rooms.dto.RoomResponse
-import com.lgzarturo.springbootcourse.features.users.dto.CreateUserRequest
-import com.lgzarturo.springbootcourse.features.users.dto.UserResponse
 import com.lgzarturo.springbootcourse.features.users.CreateUserCommand
 import com.lgzarturo.springbootcourse.features.users.CreateUserService
 import com.lgzarturo.springbootcourse.features.users.UserRole
+import com.lgzarturo.springbootcourse.features.users.dto.CreateUserRequest
+import com.lgzarturo.springbootcourse.features.users.dto.UserResponse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue

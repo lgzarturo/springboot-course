@@ -45,8 +45,7 @@ class SecurityConfig(
                     referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
                 }
                 headers.contentSecurityPolicy { csp -> csp.policyDirectives(cspPolicy) }
-            }
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            }.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                 auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()

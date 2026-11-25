@@ -67,7 +67,10 @@ class JwtService(
         val tokenId = runCatching { UUID.fromString(claims.id) }.getOrNull()
         val version = claims.get(VERSION_CLAIM, Number::class.java)?.toLong()
         val expiration = claims.expiration
-        if (userId == null || tokenId == null || version == null || expiration == null) {
+        if (userId == null || tokenId == null) {
+            return null
+        }
+        if (version == null || expiration == null) {
             return null
         }
         val roles = claims.get(ROLES_CLAIM, List::class.java) ?: emptyList<Any>()

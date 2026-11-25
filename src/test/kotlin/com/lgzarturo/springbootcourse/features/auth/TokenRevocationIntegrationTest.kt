@@ -125,9 +125,12 @@ class TokenRevocationIntegrationTest {
 
         val removed = tokenRevocationPort.purgeExpired(now)
 
-        org.junit.jupiter.api.Assertions.assertEquals(1, removed)
-        org.junit.jupiter.api.Assertions.assertFalse(tokenRevocationPort.isRevoked(expired))
-        org.junit.jupiter.api.Assertions.assertTrue(tokenRevocationPort.isRevoked(alive))
+        org.junit.jupiter.api.Assertions
+            .assertEquals(1, removed)
+        org.junit.jupiter.api.Assertions
+            .assertFalse(tokenRevocationPort.isRevoked(expired))
+        org.junit.jupiter.api.Assertions
+            .assertTrue(tokenRevocationPort.isRevoked(alive))
     }
 
     @Test

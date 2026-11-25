@@ -25,7 +25,9 @@ class JwtAuthenticationFilter(
         filterChain: FilterChain,
     ) {
         val header = request.getHeader(HttpHeaders.AUTHORIZATION)
-        if (header != null && header.startsWith(BEARER_PREFIX) && SecurityContextHolder.getContext().authentication == null) {
+        if (header != null && header.startsWith(BEARER_PREFIX) &&
+            SecurityContextHolder.getContext().authentication == null
+        ) {
             jwtService.parseToken(header.substring(BEARER_PREFIX.length))?.let { parsed ->
                 authenticate(parsed)?.let { SecurityContextHolder.getContext().authentication = it }
             }
@@ -37,8 +39,8 @@ class JwtAuthenticationFilter(
         if (tokenRevocationPort.isRevoked(parsed.tokenId)) {
             return null
         }
-        val user = userRepository.findById(parsed.userId) ?: return null
-        if (!user.isActive || user.tokenVersion != parsed.tokenVersion) {
+        val user = userRepository.findById(parsed.userId)
+        if (user == null || !user.isActive || user.tokenVersion != parsed.tokenVersion) {
             return null
         }
         val authorities = parsed.authorities.map(::SimpleGrantedAuthority)

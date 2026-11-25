@@ -41,8 +41,14 @@ class JwtServiceTest {
     @Test
     @DisplayName("Cada emisión debe producir un jti distinto")
     fun `each emission mints a unique jti`() {
-        val first = jwtService.parseToken(jwtService.generateAccessToken(1L, "ash@pokemon.com", listOf("ROLE_GUEST"), 0L))
-        val second = jwtService.parseToken(jwtService.generateAccessToken(1L, "ash@pokemon.com", listOf("ROLE_GUEST"), 0L))
+        val first =
+            jwtService.parseToken(
+                jwtService.generateAccessToken(1L, "ash@pokemon.com", listOf("ROLE_GUEST"), 0L),
+            )
+        val second =
+            jwtService.parseToken(
+                jwtService.generateAccessToken(1L, "ash@pokemon.com", listOf("ROLE_GUEST"), 0L),
+            )
 
         assertNotNull(first?.tokenId)
         assertNotEquals(first?.tokenId, second?.tokenId)
@@ -72,7 +78,13 @@ class JwtServiceTest {
     @DisplayName("Debe rechazar tokens legacy sin jti ni versión")
     fun `legacy token without jti and version returns null`() {
         val legacy =
-            JwtTestHelper.mintToken(properties.secret, "ash@pokemon.com", listOf("ROLE_GUEST"), properties.issuer, 60_000)
+            JwtTestHelper.mintToken(
+                properties.secret,
+                "ash@pokemon.com",
+                listOf("ROLE_GUEST"),
+                properties.issuer,
+                60_000,
+            )
 
         assertNull(jwtService.parseToken(legacy))
     }

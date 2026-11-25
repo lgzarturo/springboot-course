@@ -20,7 +20,8 @@ class RateLimitFilter(
     private val properties: RateLimitProperties,
 ) : OncePerRequestFilter() {
     private val hits: Cache<String, ArrayDeque<Long>> =
-        Caffeine.newBuilder()
+        Caffeine
+            .newBuilder()
             .expireAfterWrite(properties.windowSeconds * 2, TimeUnit.SECONDS)
             .maximumSize(MAX_TRACKED_KEYS)
             .build()
@@ -43,7 +44,13 @@ class RateLimitFilter(
             (request.requestURI.startsWith(AUTH_PATH_PREFIX) || request.requestURI == USERS_PATH)
 
     private fun key(request: HttpServletRequest): String {
-        val forwarded = request.getHeader(FORWARDED_FOR_HEADER)?.split(",")?.firstOrNull()?.trim().orEmpty()
+        val forwarded =
+            request
+                .getHeader(FORWARDED_FOR_HEADER)
+                ?.split(",")
+                ?.firstOrNull()
+                ?.trim()
+                .orEmpty()
         val ip = forwarded.ifEmpty { request.remoteAddr ?: UNKNOWN_IP }
         return "$ip:${request.method}:${request.requestURI}"
     }

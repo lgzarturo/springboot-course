@@ -15,7 +15,8 @@ class CacheConfig {
     fun cacheManager(): CacheManager =
         CaffeineCacheManager(USERS_CACHE).apply {
             setCaffeine(
-                Caffeine.newBuilder()
+                Caffeine
+                    .newBuilder()
                     .expireAfterWrite(USERS_CACHE_TTL_SECONDS, TimeUnit.SECONDS)
                     .maximumSize(USERS_CACHE_MAX_SIZE),
             )
