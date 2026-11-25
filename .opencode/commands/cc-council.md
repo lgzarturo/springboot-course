@@ -1,9 +1,21 @@
 ---
-description: Council-driven workflow with CCEP-1 bootstrap
+description: "Multi-agent council for code review and architecture decisions"
+agent: council-lead
+subtask: true
 ---
 
-<!-- GENERATED redirect to presets/agy/workflows/cc-council.md by scripts/inject-ccep-bootstrap.ts — DO NOT EDIT. -->
+Run the CodeConductor council for multi-perspective analysis.
 
-## Step 0 — CCEP Bootstrap
+## Version
+0.1.0
 
-command: council. Read `presets/agy/workflows/cc-council.md`, then `ccep profile council` + `ccep compile --command council --view prompt`.
+## Agents
+- Architect (architect)
+- Product (product)
+- Delivery (delivery)
+- DataOps (data-ops)
+- Security Reviewer (security-reviewer)
+- Devil (devil)
+
+## Instructions
+Coordinate with the council agents and synthesize their perspectives into the configured output contract.

@@ -6,9 +6,9 @@ description:
   cyclomatic complexity metrics, and bloat pattern findings.
 effort: medium
 mode: subagent
-model: "claude-sonnet-5"
+model: "claude-sonnet-4-6"
 temperature: 0.1
-tools: Read, Glob, Grep
+tools: view_file, list_dir, grep_search
 permission:
   read: allow
   edit: deny

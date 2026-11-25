@@ -1076,7 +1076,7 @@ Contract version:** v0.1.0 **Date:** [YYYY-MM-DD] **Evaluator:** [human name or
 - Keep solutions simple and direct.
 - User instructions always override this file.
 - When using tools, be precise and minimal with context.
-- Prose/docs/code comments: be terse and direct. Prefer concrete nouns over abstract ones. Omit filler phrases ("note that", "please", "as mentioned"). One idea per sentence.
+- Spanish prose/docs/reports/Markdown: preserve natural Spanish orthography, including accents, `ñ`, `¿`, `¡`, and normal Unicode. The ASCII-only editing preference does not apply to these artifacts.
 
 ## Context Budget
 

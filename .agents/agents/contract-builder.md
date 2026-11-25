@@ -5,9 +5,9 @@ description:
   OpenAPI, JSON Schema, or TypeScript interfaces as source of truth.
 effort: high
 mode: subagent
-model: "claude-opus-5"
+model: "gemini-3.1-pro-high"
 temperature: 0.1
-tools: Read, Glob, Grep
+tools: view_file, list_dir, grep_search
 permission:
   read: allow
   edit:

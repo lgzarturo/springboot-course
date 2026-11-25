@@ -6,9 +6,9 @@ description:
   implementation.
 effort: medium
 mode: subagent
-model: "claude-sonnet-5"
+model: "claude-sonnet-4-6"
 temperature: 0.1
-tools: Read, Write, Edit, Bash, Glob, Grep
+tools: view_file, write_to_file, replace_file_content / multi_replace_file_content, run_command, list_dir, grep_search
 permission:
   read: allow
   edit:

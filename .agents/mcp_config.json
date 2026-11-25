@@ -1,3 +1,16 @@
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "token-savior-recall": {
+      "command": "token-savior",
+      "env": {
+        "TOKEN_SAVIOR_CLIENT": "agy"
+      }
+    },
+    "code-review-graph": {
+      "command": "code-review-graph",
+      "args": [
+        "mcp"
+      ]
+    }
+  }
 }
