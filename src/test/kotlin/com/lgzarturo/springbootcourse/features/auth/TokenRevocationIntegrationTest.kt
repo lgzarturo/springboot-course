@@ -40,6 +40,9 @@ class TokenRevocationIntegrationTest {
     @Autowired
     private lateinit var updateUserUseCase: UpdateUserUseCase
 
+    @Autowired
+    private lateinit var tokenRevocationPort: TokenRevocationPort
+
     @Value("\${jwt.secret:TestSecretKeyForJwtSigningThatIsLongEnough1234567890}")
     private lateinit var jwtSecret: String
 
@@ -72,13 +75,59 @@ class TokenRevocationIntegrationTest {
     @DisplayName("Un token de un usuario inexistente debe retornar 401")
     fun `token for unknown user is rejected`() {
         val orphanToken =
-            JwtTestHelper.mintToken(jwtSecret, "999999", listOf("ROLE_GUEST", "hotels:read"), jwtIssuer, 60_000)
+            JwtTestHelper.mintTokenV2(
+                secret = jwtSecret,
+                subject = "999999",
+                email = "ghost@pokemon.com",
+                roles = listOf("ROLE_GUEST", "hotels:read"),
+                issuer = jwtIssuer,
+                ttlMillis = 60_000,
+                version = 0,
+            )
 
         mockMvc
             .perform(
                 get("/api/v1/hotels")
                     .header("Authorization", "Bearer $orphanToken"),
             ).andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    @DisplayName("Subir la versión del token debe invalidar los tokens emitidos antes")
+    fun `bumped token version rejects previously issued token`() {
+        register("revoke.version@pokemon.com")
+        val token = loginToken("revoke.version@pokemon.com", "Pikachu123!")
+
+        mockMvc
+            .perform(
+                get("/api/v1/hotels")
+                    .header("Authorization", "Bearer $token"),
+            ).andExpect(status().isOk)
+
+        val user = requireNotNull(userRepository.findByEmail("revoke.version@pokemon.com"))
+        userRepository.save(user.bumpTokenVersion())
+
+        mockMvc
+            .perform(
+                get("/api/v1/hotels")
+                    .header("Authorization", "Bearer $token"),
+            ).andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    @DisplayName("La purga debe eliminar solo las revocaciones expiradas")
+    fun `purge removes only expired revocations`() {
+        val expired = java.util.UUID.randomUUID()
+        val alive = java.util.UUID.randomUUID()
+        val now = java.time.Instant.now()
+        tokenRevocationPort.revoke(expired, 1L, now.minusSeconds(60), RevocationReason.LOGOUT)
+        tokenRevocationPort.revoke(alive, 1L, now.plusSeconds(600), RevocationReason.LOGOUT)
+
+        val removed = tokenRevocationPort.purgeExpired(now)
+
+        org.junit.jupiter.api.Assertions.assertEquals(1, removed)
+        org.junit.jupiter.api.Assertions.assertFalse(tokenRevocationPort.isRevoked(expired))
+        org.junit.jupiter.api.Assertions.assertTrue(tokenRevocationPort.isRevoked(alive))
     }
 
     @Test

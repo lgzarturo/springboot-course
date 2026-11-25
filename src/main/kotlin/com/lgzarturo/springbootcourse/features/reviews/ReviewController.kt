@@ -77,15 +77,15 @@ class ReviewController(
     fun create(
         @Valid @RequestBody request: CreateReviewRequest,
     ): ResponseEntity<ReviewResponse> {
-        val email =
-            SecurityContextHolder.getContext().authentication?.name
+        val userId =
+            SecurityContextHolder.getContext().authentication?.principal as? Long
                 ?: throw AccessDeniedException("Se requiere autenticación para opinar")
         val review =
             reviewService.createReview(
                 reservationId = request.reservationId,
                 rating = request.rating,
                 comment = request.comment,
-                authenticatedEmail = email,
+                authenticatedUserId = userId,
             )
         return ResponseEntity.status(HttpStatus.CREATED).body(ReviewResponse.fromDomain(review))
     }

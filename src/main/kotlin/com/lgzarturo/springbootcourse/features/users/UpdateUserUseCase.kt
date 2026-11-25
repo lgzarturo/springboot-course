@@ -26,6 +26,6 @@ class UpdateUserUseCase(
     @Transactional
     fun deactivate(id: Long): User {
         val user = userRepository.findById(id) ?: throw NoSuchElementException("User $id not found")
-        return userRepository.save(user.deactivate())
+        return userRepository.save(user.deactivate().bumpTokenVersion())
     }
 }

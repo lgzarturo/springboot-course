@@ -18,6 +18,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -68,11 +71,16 @@ class ReviewControllerTest {
         clearMocks(reviewService)
     }
 
+    private fun authenticateAs(userId: Long) {
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(userId, null, listOf(SimpleGrantedAuthority("ROLE_GUEST")))
+    }
+
     @Test
-    @WithMockUser(username = "ash@pokemon.com")
     @DisplayName("POST debe crear la reseña con la identidad autenticada y devolver 201")
     fun `should create review with authenticated identity and return 201`() {
         // Given
+        authenticateAs(1L)
         every { reviewService.createReview(any(), any(), any(), any()) } returns sampleReview()
 
         // When / Then
@@ -85,7 +93,7 @@ class ReviewControllerTest {
             .andExpect(jsonPath("$.id", `is`("rev-1")))
             .andExpect(jsonPath("$.reservationId", `is`("res-1")))
             .andExpect(jsonPath("$.rating", `is`(5)))
-        verify { reviewService.createReview("res-1", 5, "Genial", "ash@pokemon.com") }
+        verify { reviewService.createReview("res-1", 5, "Genial", 1L) }
     }
 
     @Test
@@ -110,10 +118,10 @@ class ReviewControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "ash@pokemon.com")
     @DisplayName("POST debe devolver 403 sin propiedad, 409 sin estado y 404 sin reserva")
     fun `should return 403 409 and 404 for forbidden conflict and missing`() {
         // Given: no propietario
+        authenticateAs(1L)
         every { reviewService.createReview(any(), any(), any(), any()) } throws
             AccessDeniedException("Solo el propietario puede opinar")
 

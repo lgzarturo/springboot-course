@@ -39,5 +39,6 @@ class UserJpaRepositoryTest(
             phoneNumber = "+14155552671",
             role = UserRole.GUEST,
             isActive = true,
+            tokenVersion = 0,
         )
 }

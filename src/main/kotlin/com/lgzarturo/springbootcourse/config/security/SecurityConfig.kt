@@ -29,6 +29,7 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
                 auth.requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                 auth.requestMatchers(*PUBLIC_PATHS).permitAll()
                 auth

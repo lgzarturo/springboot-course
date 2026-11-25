@@ -3,7 +3,6 @@ package com.lgzarturo.springbootcourse.features.reviews
 import com.lgzarturo.springbootcourse.features.reservations.ReservationEntity
 import com.lgzarturo.springbootcourse.features.reservations.ReservationJpaRepository
 import com.lgzarturo.springbootcourse.features.reservations.ReservationStatus
-import com.lgzarturo.springbootcourse.features.users.UserJpaRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.security.access.AccessDeniedException
@@ -14,14 +13,13 @@ import org.springframework.transaction.annotation.Transactional
 class ReviewService(
     private val reviewJpaRepository: ReviewJpaRepository,
     private val reservationJpaRepository: ReservationJpaRepository,
-    private val userJpaRepository: UserJpaRepository,
 ) {
     @Transactional
     fun createReview(
         reservationId: String,
         rating: Int,
         comment: String,
-        authenticatedEmail: String,
+        authenticatedUserId: Long,
     ): Review {
         require(reservationId.isNotBlank()) { "La reserva no puede estar vacía" }
         val reservation =
@@ -31,7 +29,7 @@ class ReviewService(
         check(reservation.status == ReservationStatus.COMPLETED) {
             "Solo se puede opinar sobre una reserva COMPLETED (actual: ${reservation.status})"
         }
-        checkOwnership(reservation.userId, authenticatedEmail)
+        checkOwnership(reservation.userId, authenticatedUserId)
         check(!reviewJpaRepository.existsByReservationId(reservationId)) {
             "La reserva ya tiene una reseña"
         }
@@ -65,12 +63,9 @@ class ReviewService(
 
     private fun checkOwnership(
         ownerId: Long,
-        authenticatedEmail: String,
+        authenticatedUserId: Long,
     ) {
-        val user =
-            userJpaRepository.findByEmail(authenticatedEmail)
-                ?: throw NoSuchElementException("Usuario no encontrado: $authenticatedEmail")
-        if (ownerId != user.id) {
+        if (ownerId != authenticatedUserId) {
             throw AccessDeniedException("Solo el propietario de la reserva puede crear su reseña")
         }
     }

@@ -1,12 +1,14 @@
 package com.lgzarturo.springbootcourse.config.metrics
 
+import com.lgzarturo.springbootcourse.features.auth.AuthService
 import com.lgzarturo.springbootcourse.features.hotels.HotelEntity
 import com.lgzarturo.springbootcourse.features.hotels.HotelJpaRepository
 import com.lgzarturo.springbootcourse.features.rooms.RoomEntity
 import com.lgzarturo.springbootcourse.features.rooms.RoomJpaRepository
 import com.lgzarturo.springbootcourse.features.rooms.RoomStatus
+import com.lgzarturo.springbootcourse.features.users.CreateUserCommand
+import com.lgzarturo.springbootcourse.features.users.CreateUserService
 import com.lgzarturo.springbootcourse.features.users.UserRole
-import com.lgzarturo.springbootcourse.security.JwtTestHelper
 import io.micrometer.core.instrument.MeterRegistry
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -54,11 +56,11 @@ class ObservabilityTest {
     @Autowired
     private lateinit var roomRepository: RoomJpaRepository
 
-    @Value("\${jwt.secret}")
-    private lateinit var jwtSecret: String
+    @Autowired
+    private lateinit var createUserService: CreateUserService
 
-    @Value("\${jwt.issuer}")
-    private lateinit var jwtIssuer: String
+    @Autowired
+    private lateinit var authService: AuthService
 
     @Value("\${sentry.environment}")
     private lateinit var sentryEnvironment: String
@@ -74,14 +76,23 @@ class ObservabilityTest {
                 .build()
     }
 
+    private val tokensByRole = mutableMapOf<UserRole, String>()
+
     private fun tokenFor(role: UserRole): String =
-        JwtTestHelper.mintToken(
-            secret = jwtSecret,
-            subject = "observability@${role.name.lowercase()}.pokemon.com",
-            roles = role.allGrantedAuthorities(),
-            issuer = jwtIssuer,
-            ttlMillis = 60_000,
-        )
+        tokensByRole.getOrPut(role) {
+            val email = "observability.${role.name.lowercase()}.${System.nanoTime()}@pokemon.com"
+            createUserService.execute(
+                CreateUserCommand(
+                    email = email,
+                    password = "Password123!",
+                    firstName = "Observability",
+                    lastName = role.name,
+                    phoneNumber = null,
+                    role = role,
+                ),
+            )
+            authService.authenticate(email, "Password123!")
+        }
 
     @Test
     @DisplayName("debe_retornar_up_cuando_health_es_consultado_sin_autenticacion")

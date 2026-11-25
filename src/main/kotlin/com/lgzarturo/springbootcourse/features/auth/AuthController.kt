@@ -8,9 +8,11 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
     private val authService: AuthService,
+    private val logoutService: LogoutService,
 ) {
     @Operation(
         summary = "Iniciar sesión",
@@ -49,5 +52,24 @@ class AuthController(
     ): ResponseEntity<LoginResponse> {
         val token = authService.authenticate(request.email, request.password)
         return ResponseEntity.ok(LoginResponse(token))
+    }
+
+    @Operation(
+        summary = "Cerrar sesión",
+        description = "Revoca el JWT actual. El token deja de aceptarse de inmediato. Idempotente.",
+    )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(responseCode = "204", description = "Sesión cerrada, token revocado"),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
+    @PostMapping("/logout")
+    fun logout(authentication: Authentication): ResponseEntity<Void> {
+        logoutService.logout(authentication)
+        return ResponseEntity.noContent().build()
     }
 }

@@ -20,6 +20,11 @@ class AuthService(
         if (!user.isActive || !passwordEncoder.matches(password, user.password.value)) {
             throw InvalidCredentialsException()
         }
-        return jwtService.generateAccessToken(user.email.value, user.role.allGrantedAuthorities())
+        return jwtService.generateAccessToken(
+            user.id.value,
+            user.email.value,
+            user.role.allGrantedAuthorities(),
+            user.tokenVersion,
+        )
     }
 }

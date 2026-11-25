@@ -41,9 +41,6 @@ class UserRoleAuthorizationTest {
     @Value("\${jwt.secret:TestSecretKeyForJwtSigningThatIsLongEnough1234567890}")
     private lateinit var jwtSecret: String
 
-    @Value("\${jwt.issuer:springboot-course-test}")
-    private lateinit var jwtIssuer: String
-
     @Test
     @DisplayName("FR-001 & FR-002: Login token must contain roles and granular authorities")
     fun `login token contains roles and granular authorities`() {
@@ -73,14 +70,7 @@ class UserRoleAuthorizationTest {
     @Test
     @DisplayName("FR-003: GUEST can read hotels but cannot create or modify them")
     fun `guest can read hotels but cannot create them`() {
-        val guestToken =
-            JwtTestHelper.mintToken(
-                jwtSecret,
-                "guest@pokemon.com",
-                listOf("ROLE_GUEST", "hotels:read", "reservations:create_own"),
-                jwtIssuer,
-                60_000,
-            )
+        val guestToken = loginAs("role.guest.hotels", UserRole.GUEST)
 
         mockMvc
             .perform(
@@ -100,14 +90,7 @@ class UserRoleAuthorizationTest {
     @Test
     @DisplayName("FR-004: STAFF has hotel and reservation management authorities")
     fun `staff has hotel management authorities`() {
-        val staffToken =
-            JwtTestHelper.mintToken(
-                jwtSecret,
-                "staff@pokemon.com",
-                listOf("ROLE_STAFF", "hotels:read", "hotels:manage", "reservations:manage"),
-                jwtIssuer,
-                60_000,
-            )
+        val staffToken = loginAs("role.staff.hotels", UserRole.STAFF)
 
         mockMvc
             .perform(
@@ -121,23 +104,8 @@ class UserRoleAuthorizationTest {
     @Test
     @DisplayName("FR-004 & FR-006: ADMIN has full access to user management operations")
     fun `admin has access to user management operations`() {
-        val adminToken =
-            JwtTestHelper.mintToken(
-                jwtSecret,
-                "admin@pokemon.com",
-                listOf("ROLE_ADMIN", "users:read", "users:write", "hotels:manage", "reservations:manage"),
-                jwtIssuer,
-                60_000,
-            )
-
-        val guestToken =
-            JwtTestHelper.mintToken(
-                jwtSecret,
-                "guest2@pokemon.com",
-                listOf("ROLE_GUEST", "hotels:read"),
-                jwtIssuer,
-                60_000,
-            )
+        val adminToken = loginAs("role.admin.users", UserRole.ADMIN)
+        val guestToken = loginAs("role.guest.users", UserRole.GUEST)
 
         // Guest attempting to list all users is forbidden
         mockMvc
@@ -152,5 +120,23 @@ class UserRoleAuthorizationTest {
                 get("/api/v1/users")
                     .header("Authorization", "Bearer $adminToken"),
             ).andExpect(status().isOk)
+    }
+
+    private fun loginAs(
+        prefix: String,
+        role: UserRole,
+    ): String {
+        val email = "$prefix.${System.nanoTime()}@pokemon.com"
+        createUserService.execute(
+            CreateUserCommand(
+                email = email,
+                password = "Password123!",
+                firstName = "Test",
+                lastName = "User",
+                phoneNumber = null,
+                role = role,
+            ),
+        )
+        return authService.authenticate(email, "Password123!")
     }
 }

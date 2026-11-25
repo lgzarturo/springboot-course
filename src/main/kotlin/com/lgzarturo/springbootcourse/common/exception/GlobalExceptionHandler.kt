@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -144,6 +145,12 @@ class GlobalExceptionHandler {
         ex: InvalidCredentialsException,
         request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.UNAUTHORIZED)
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(
+        ex: AccessDeniedException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.FORBIDDEN)
 
     private fun handleSpecificStatusCodeException(
         ex: Exception,

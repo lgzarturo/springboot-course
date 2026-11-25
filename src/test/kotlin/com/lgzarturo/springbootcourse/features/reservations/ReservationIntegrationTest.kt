@@ -1,5 +1,6 @@
 package com.lgzarturo.springbootcourse.features.reservations
 
+import com.lgzarturo.springbootcourse.features.auth.AuthService
 import com.lgzarturo.springbootcourse.features.hotels.dto.CreateHotelRequest
 import com.lgzarturo.springbootcourse.features.hotels.dto.HotelResponse
 import com.lgzarturo.springbootcourse.features.reservations.dto.CreateReservationRequest
@@ -11,13 +12,15 @@ import com.lgzarturo.springbootcourse.features.rooms.dto.CreateRoomRequest
 import com.lgzarturo.springbootcourse.features.rooms.dto.RoomResponse
 import com.lgzarturo.springbootcourse.features.users.dto.CreateUserRequest
 import com.lgzarturo.springbootcourse.features.users.dto.UserResponse
-import com.lgzarturo.springbootcourse.security.JwtTestHelper
+import com.lgzarturo.springbootcourse.features.users.CreateUserCommand
+import com.lgzarturo.springbootcourse.features.users.CreateUserService
+import com.lgzarturo.springbootcourse.features.users.UserRole
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
@@ -49,11 +52,11 @@ class ReservationIntegrationTest {
     @LocalServerPort
     private var port: Int = 0
 
-    @Value("\${jwt.secret}")
-    private lateinit var jwtSecret: String
+    @Autowired
+    private lateinit var createUserService: CreateUserService
 
-    @Value("\${jwt.issuer}")
-    private lateinit var jwtIssuer: String
+    @Autowired
+    private lateinit var authService: AuthService
 
     private val testRestTemplate: TestRestTemplate by lazy {
         val template = TestRestTemplate()
@@ -69,11 +72,39 @@ class ReservationIntegrationTest {
         template
     }
 
-    private fun guestToken(): String =
-        JwtTestHelper.mintToken(jwtSecret, "guest@pokemon.com", listOf("ROLE_GUEST"), jwtIssuer, 300_000)
+    private val guestTokenValue: String by lazy {
+        val email = "res.it.${System.nanoTime()}@pokemon.com"
+        createUserService.execute(
+            CreateUserCommand(
+                email = email,
+                password = "Password123!",
+                firstName = "Guest",
+                lastName = "User",
+                phoneNumber = null,
+                role = UserRole.GUEST,
+            ),
+        )
+        authService.authenticate(email, "Password123!")
+    }
 
-    private fun staffToken(): String =
-        JwtTestHelper.mintToken(jwtSecret, "staff@pokemon.com", listOf("ROLE_STAFF"), jwtIssuer, 300_000)
+    private fun guestToken(): String = guestTokenValue
+
+    private val staffTokenValue: String by lazy {
+        val email = "res.it.${System.nanoTime()}@pokemon.com"
+        createUserService.execute(
+            CreateUserCommand(
+                email = email,
+                password = "Password123!",
+                firstName = "Staff",
+                lastName = "Member",
+                phoneNumber = null,
+                role = UserRole.STAFF,
+            ),
+        )
+        authService.authenticate(email, "Password123!")
+    }
+
+    private fun staffToken(): String = staffTokenValue
 
     private fun <T> withStaffToken(block: () -> T): T {
         val template = testRestTemplate.restTemplate
