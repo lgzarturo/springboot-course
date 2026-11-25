@@ -48,6 +48,7 @@ class OpenApiDocumentationTest {
             .andExpect(jsonPath("$.openapi").value(startsWith("3.")))
             .andExpect(jsonPath("$.info.title").isNotEmpty)
             .andExpect(jsonPath("$['paths']['/api/v1/auth/login']['post']").exists())
+            .andExpect(jsonPath("$['paths']['/api/v1/auth/logout']['post']").exists())
             .andExpect(jsonPath("$['paths']['/api/v1/users']['post']").exists())
             .andExpect(jsonPath("$['paths']['/api/v1/users']['get']").exists())
             .andExpect(jsonPath("$['paths']['/api/v1/users/{id}']['get']").exists())
@@ -86,6 +87,7 @@ class OpenApiDocumentationTest {
             .andExpect(jsonPath("$['paths']['/api/v1/users']['post']['tags'][0]").value("Users"))
             .andExpect(jsonPath("$['paths']['/api/v1/hotels']['get']['tags'][0]").value("Hotels"))
             .andExpect(jsonPath("$['paths']['/api/v1/auth/login']['post']['tags'][0]").value("Auth"))
+            .andExpect(jsonPath("$['paths']['/api/v1/auth/logout']['post']['tags'][0]").value("Auth"))
     }
 
     @Test
@@ -130,6 +132,8 @@ class OpenApiDocumentationTest {
             .andExpect(jsonPath("$['paths']['/api/v1/hotels/{id}']['get']['responses']['404']").exists())
             .andExpect(jsonPath("$['paths']['/api/v1/auth/login']['post']['responses']['200']").exists())
             .andExpect(jsonPath("$['paths']['/api/v1/auth/login']['post']['responses']['401']").exists())
+            .andExpect(jsonPath("$['paths']['/api/v1/auth/logout']['post']['responses']['204']").exists())
+            .andExpect(jsonPath("$['paths']['/api/v1/auth/logout']['post']['responses']['401']").exists())
     }
 
     @Test
