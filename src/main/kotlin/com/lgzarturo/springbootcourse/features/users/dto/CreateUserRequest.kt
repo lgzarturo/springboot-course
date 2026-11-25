@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 
 @Schema(description = "Datos para registrar un usuario con rol GUEST")
 data class CreateUserRequest(
@@ -16,12 +17,15 @@ data class CreateUserRequest(
         requiredMode = Schema.RequiredMode.REQUIRED,
     )
     val email: String,
-    @field:Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")
+    @field:NotBlank
+    @field:Size(min = 8, max = 72)
+    @field:Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,72}$")
     @field:Schema(
-        description = "Contraseña de mínimo 8 caracteres con mayúscula, minúscula y dígito",
+        description = "Contraseña de 8 a 72 caracteres con mayúscula, minúscula y dígito",
         format = "password",
-        pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
+        pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,72}$",
         minLength = 8,
+        maxLength = 72,
         example = "Starmie123!",
         requiredMode = Schema.RequiredMode.REQUIRED,
     )

@@ -139,7 +139,7 @@ class UserControllerTest {
                 firstName = "Ash",
                 lastName = "Ketchum",
             )
-        every { createUserService.execute(any()) } throws DuplicateEmailException(request.email)
+        every { createUserService.execute(any()) } throws DuplicateEmailException()
 
         mockMvc
             .perform(

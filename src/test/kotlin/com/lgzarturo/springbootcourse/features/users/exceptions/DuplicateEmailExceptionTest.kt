@@ -14,7 +14,7 @@ class DuplicateEmailExceptionTest {
     @Test
     @DisplayName("El mensaje debe ser genérico y no filtrar el correo (WS7)")
     fun `message must be generic without leaking email`() {
-        val exception = DuplicateEmailException("ash@pokemon.com")
+        val exception = DuplicateEmailException()
 
         assertEquals("Email already registered", exception.message)
     }
@@ -23,7 +23,7 @@ class DuplicateEmailExceptionTest {
     @DisplayName("Debería ser lanzable como RuntimeException")
     fun `should be throwable as runtime exception`() {
         assertThrows<DuplicateEmailException> {
-            throw DuplicateEmailException("ash@pokemon.com")
+            throw DuplicateEmailException()
         }
     }
 }

@@ -16,8 +16,9 @@ class AuthService(
         email: String,
         password: String,
     ): String {
-        val user = userRepository.findByEmail(email) ?: throw InvalidCredentialsException()
-        if (!user.isActive || !passwordEncoder.matches(password, user.password.value)) {
+        val user = userRepository.findByEmail(email.lowercase())
+        val passwordOk = passwordEncoder.matches(password, user?.password?.value ?: DUMMY_HASH)
+        if (user == null || !user.isActive || !passwordOk) {
             throw InvalidCredentialsException()
         }
         return jwtService.generateAccessToken(
@@ -26,5 +27,11 @@ class AuthService(
             user.role.allGrantedAuthorities(),
             user.tokenVersion,
         )
+    }
+
+    companion object {
+        // Hash bcrypt válido para comparar cuando el usuario no existe:
+        // iguala los tiempos y evita enumeración por timing.
+        private const val DUMMY_HASH = "\$2a\$12\$qBcsQSN9W3MTd9rhlZT1QegAgwhVGri9msaYm8dTO8A7qLz9vWWVG"
     }
 }
