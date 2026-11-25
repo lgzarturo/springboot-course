@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
@@ -33,9 +32,6 @@ import org.springframework.test.context.ActiveProfiles
 class UserE2ETest {
     @LocalServerPort
     private var port: Int = 0
-
-    @Value("\${jwt.secret:TestSecretKeyForJwtSigningThatIsLongEnough1234567890}")
-    private lateinit var jwtSecret: String
 
     private val restTemplate = TestRestTemplate()
 
@@ -105,7 +101,13 @@ class UserE2ETest {
         assertEquals(HttpStatus.CREATED, created.statusCode)
         val userId = requireNotNull(created.body?.id)
 
-        val token = LayeredTestSupport.mintTokenForRole(jwtSecret, email, UserRole.GUEST)
+        val loginResponse =
+            restTemplate.postForEntity(
+                baseUrl("/api/v1/auth/login"),
+                HttpEntity(mapOf("email" to email, "password" to "Password123!"), headers),
+                Map::class.java,
+            )
+        val token = loginResponse.body?.get("token") as String
         val authHeaders = HttpHeaders().apply { setBearerAuth(token) }
 
         val profileResponse =

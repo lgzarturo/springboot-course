@@ -1,5 +1,6 @@
 package com.lgzarturo.springbootcourse.features.reviews
 
+import com.lgzarturo.springbootcourse.features.auth.AuthService
 import com.lgzarturo.springbootcourse.features.hotels.dto.CreateHotelRequest
 import com.lgzarturo.springbootcourse.features.hotels.dto.HotelResponse
 import com.lgzarturo.springbootcourse.features.reservations.ReservationStatus
@@ -12,15 +13,17 @@ import com.lgzarturo.springbootcourse.features.rooms.PokemonTheme
 import com.lgzarturo.springbootcourse.features.rooms.RoomStatus
 import com.lgzarturo.springbootcourse.features.rooms.dto.CreateRoomRequest
 import com.lgzarturo.springbootcourse.features.rooms.dto.RoomResponse
+import com.lgzarturo.springbootcourse.features.users.CreateUserCommand
+import com.lgzarturo.springbootcourse.features.users.CreateUserService
+import com.lgzarturo.springbootcourse.features.users.UserRole
 import com.lgzarturo.springbootcourse.features.users.dto.CreateUserRequest
 import com.lgzarturo.springbootcourse.features.users.dto.UserResponse
-import com.lgzarturo.springbootcourse.security.JwtTestHelper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
@@ -52,11 +55,11 @@ class ReviewIntegrationTest {
     @LocalServerPort
     private var port: Int = 0
 
-    @Value("\${jwt.secret}")
-    private lateinit var jwtSecret: String
+    @Autowired
+    private lateinit var createUserService: CreateUserService
 
-    @Value("\${jwt.issuer}")
-    private lateinit var jwtIssuer: String
+    @Autowired
+    private lateinit var authService: AuthService
 
     private val testRestTemplate: TestRestTemplate by lazy {
         val template = TestRestTemplate()
@@ -65,18 +68,49 @@ class ReviewIntegrationTest {
         template.restTemplate.uriTemplateHandler = factory
         template.restTemplate.interceptors.add(
             ClientHttpRequestInterceptor { request, body, execution ->
-                request.headers.setBearerAuth(tokenFor("guest@pokemon.com"))
+                request.headers.setBearerAuth(defaultGuestToken)
                 execution.execute(request, body)
             },
         )
         template
     }
 
-    private fun tokenFor(email: String): String =
-        JwtTestHelper.mintToken(jwtSecret, email, listOf("ROLE_GUEST"), jwtIssuer, 300_000)
+    private val defaultGuestToken: String by lazy {
+        val email = "rev.it.${System.nanoTime()}@pokemon.com"
+        createUserService.execute(
+            CreateUserCommand(
+                email = email,
+                password = "Password123!",
+                firstName = "Guest",
+                lastName = "User",
+                phoneNumber = null,
+                role = UserRole.GUEST,
+            ),
+        )
+        authService.authenticate(email, "Password123!")
+    }
 
-    private fun staffToken(): String =
-        JwtTestHelper.mintToken(jwtSecret, "staff@pokemon.com", listOf("ROLE_STAFF"), jwtIssuer, 300_000)
+    private val staffTokenValue: String by lazy {
+        val email = "rev.it.${System.nanoTime()}@pokemon.com"
+        createUserService.execute(
+            CreateUserCommand(
+                email = email,
+                password = "Password123!",
+                firstName = "Staff",
+                lastName = "Member",
+                phoneNumber = null,
+                role = UserRole.STAFF,
+            ),
+        )
+        authService.authenticate(email, "Password123!")
+    }
+
+    private val tokensByEmail = mutableMapOf<String, String>()
+
+    private fun tokenFor(email: String): String =
+        tokensByEmail.getOrPut(email) { authService.authenticate(email, "Pikachu123") }
+
+    private fun staffToken(): String = staffTokenValue
 
     private fun <T> withToken(
         token: String,

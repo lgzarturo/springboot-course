@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PasswordEncoder {
-    private val delegate = BCryptPasswordEncoder()
+    private val delegate = BCryptPasswordEncoder(BCRYPT_COST)
 
     fun encode(rawPassword: CharSequence): String = requireNotNull(delegate.encode(rawPassword))
 
@@ -13,4 +13,8 @@ class PasswordEncoder {
         rawPassword: CharSequence,
         encodedPassword: String,
     ): Boolean = delegate.matches(rawPassword, encodedPassword)
+
+    companion object {
+        const val BCRYPT_COST = 12
+    }
 }

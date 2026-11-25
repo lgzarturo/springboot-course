@@ -5,9 +5,6 @@ import com.lgzarturo.springbootcourse.features.reservations.ReservationEntity
 import com.lgzarturo.springbootcourse.features.reservations.ReservationJpaRepository
 import com.lgzarturo.springbootcourse.features.reservations.ReservationStatus
 import com.lgzarturo.springbootcourse.features.rooms.RoomEntity
-import com.lgzarturo.springbootcourse.features.users.UserEntity
-import com.lgzarturo.springbootcourse.features.users.UserJpaRepository
-import com.lgzarturo.springbootcourse.features.users.UserRole
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -39,25 +36,7 @@ class ReviewServiceTest {
     @MockK
     private lateinit var reservationJpaRepository: ReservationJpaRepository
 
-    @MockK
-    private lateinit var userJpaRepository: UserJpaRepository
-
     private lateinit var reviewService: ReviewService
-
-    private val ownerEmail = "ash@pokemon.com"
-
-    private fun sampleUser(
-        id: Long = 1L,
-        email: String = ownerEmail,
-    ) = UserEntity(
-        id = id,
-        email = email,
-        passwordHash = "hash",
-        firstName = "Ash",
-        lastName = "Ketchum",
-        role = UserRole.GUEST,
-        isActive = true,
-    )
 
     private fun sampleReservationEntity(
         status: ReservationStatus = ReservationStatus.COMPLETED,
@@ -92,7 +71,7 @@ class ReviewServiceTest {
 
     @BeforeEach
     fun setUp() {
-        reviewService = ReviewService(reviewJpaRepository, reservationJpaRepository, userJpaRepository)
+        reviewService = ReviewService(reviewJpaRepository, reservationJpaRepository)
     }
 
     @Test
@@ -100,12 +79,11 @@ class ReviewServiceTest {
     fun `createReview should create review for completed reservation owner`() {
         // Given
         every { reservationJpaRepository.findById("res-1") } returns Optional.of(sampleReservationEntity())
-        every { userJpaRepository.findByEmail(ownerEmail) } returns sampleUser()
         every { reviewJpaRepository.existsByReservationId("res-1") } returns false
         every { reviewJpaRepository.save(any()) } returns sampleReviewEntity()
 
         // When
-        val result = reviewService.createReview("res-1", 5, "Estancia excelente", ownerEmail)
+        val result = reviewService.createReview("res-1", 5, "Estancia excelente", 1L)
 
         // Then
         assertEquals("rev-1", result.id)
@@ -126,10 +104,9 @@ class ReviewServiceTest {
         // Given: la reserva pertenece a otro usuario
         every { reservationJpaRepository.findById("res-1") } returns
             Optional.of(sampleReservationEntity(userId = 2L))
-        every { userJpaRepository.findByEmail(ownerEmail) } returns sampleUser()
 
         // When / Then
-        assertThrows<AccessDeniedException> { reviewService.createReview("res-1", 5, "", ownerEmail) }
+        assertThrows<AccessDeniedException> { reviewService.createReview("res-1", 5, "", 1L) }
         verify(exactly = 0) { reviewJpaRepository.save(any()) }
     }
 
@@ -137,19 +114,18 @@ class ReviewServiceTest {
     @DisplayName("Debería rechazar reservas no completadas")
     fun `createReview should reject non-completed reservations`() {
         // Given
-        every { userJpaRepository.findByEmail(ownerEmail) } returns sampleUser()
         every { reservationJpaRepository.findById("res-1") } returns
             Optional.of(sampleReservationEntity(status = ReservationStatus.CONFIRMED))
 
         // When / Then
-        assertThrows<IllegalStateException> { reviewService.createReview("res-1", 5, "", ownerEmail) }
+        assertThrows<IllegalStateException> { reviewService.createReview("res-1", 5, "", 1L) }
 
         // Given: reserva cancelada
         every { reservationJpaRepository.findById("res-1") } returns
             Optional.of(sampleReservationEntity(status = ReservationStatus.CANCELLED))
 
         // When / Then: sin persistir
-        assertThrows<IllegalStateException> { reviewService.createReview("res-1", 5, "", ownerEmail) }
+        assertThrows<IllegalStateException> { reviewService.createReview("res-1", 5, "", 1L) }
         verify(exactly = 0) { reviewJpaRepository.save(any()) }
     }
 
@@ -158,11 +134,10 @@ class ReviewServiceTest {
     fun `createReview should reject duplicate reviews`() {
         // Given
         every { reservationJpaRepository.findById("res-1") } returns Optional.of(sampleReservationEntity())
-        every { userJpaRepository.findByEmail(ownerEmail) } returns sampleUser()
         every { reviewJpaRepository.existsByReservationId("res-1") } returns true
 
         // When / Then
-        assertThrows<IllegalStateException> { reviewService.createReview("res-1", 4, "", ownerEmail) }
+        assertThrows<IllegalStateException> { reviewService.createReview("res-1", 4, "", 1L) }
         verify(exactly = 0) { reviewJpaRepository.save(any()) }
     }
 
@@ -173,8 +148,8 @@ class ReviewServiceTest {
         every { reservationJpaRepository.findById("missing") } returns Optional.empty()
 
         // When / Then
-        assertThrows<NoSuchElementException> { reviewService.createReview("missing", 5, "", ownerEmail) }
-        assertThrows<IllegalArgumentException> { reviewService.createReview("  ", 5, "", ownerEmail) }
+        assertThrows<NoSuchElementException> { reviewService.createReview("missing", 5, "", 1L) }
+        assertThrows<IllegalArgumentException> { reviewService.createReview("  ", 5, "", 1L) }
         verify(exactly = 0) { reviewJpaRepository.save(any()) }
     }
 
@@ -183,12 +158,11 @@ class ReviewServiceTest {
     fun `createReview should reject out-of-range ratings`() {
         // Given
         every { reservationJpaRepository.findById("res-1") } returns Optional.of(sampleReservationEntity())
-        every { userJpaRepository.findByEmail(ownerEmail) } returns sampleUser()
         every { reviewJpaRepository.existsByReservationId("res-1") } returns false
 
         // When / Then
-        assertThrows<IllegalArgumentException> { reviewService.createReview("res-1", 0, "", ownerEmail) }
-        assertThrows<IllegalArgumentException> { reviewService.createReview("res-1", 6, "", ownerEmail) }
+        assertThrows<IllegalArgumentException> { reviewService.createReview("res-1", 0, "", 1L) }
+        assertThrows<IllegalArgumentException> { reviewService.createReview("res-1", 6, "", 1L) }
         verify(exactly = 0) { reviewJpaRepository.save(any()) }
     }
 

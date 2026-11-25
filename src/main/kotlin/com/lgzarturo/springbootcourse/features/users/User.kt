@@ -14,6 +14,7 @@ data class User(
     val phoneNumber: PhoneNumber?,
     val role: UserRole,
     val isActive: Boolean,
+    val tokenVersion: Long,
 ) {
     companion object {
         fun create(
@@ -36,6 +37,7 @@ data class User(
                 phoneNumber = phoneNumber,
                 role = role,
                 isActive = true,
+                tokenVersion = 0,
             )
         }
     }
@@ -59,6 +61,11 @@ data class User(
     fun deactivate(): User =
         copy(
             isActive = false,
+        )
+
+    fun bumpTokenVersion(): User =
+        copy(
+            tokenVersion = tokenVersion + 1,
         )
 
     fun fullName(): String = "$firstName $lastName"

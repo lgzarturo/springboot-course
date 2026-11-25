@@ -30,4 +30,6 @@ data class UserEntity(
     val role: UserRole,
     @Column(name = "is_active", nullable = false)
     val isActive: Boolean,
+    @Column(name = "token_version", nullable = false)
+    val tokenVersion: Long,
 )
