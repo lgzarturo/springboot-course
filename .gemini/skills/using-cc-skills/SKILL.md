@@ -20,16 +20,18 @@ a parallel process.
 
 | Intent | Command | Skill |
 | --- | --- | --- |
+| Investigate a change without implementing | `/cc-plan` | command only |
 | New backlog item | `/cc-backlog` | `backlog` |
 | Deliver a BC-xxx item | `/cc-openspec` | `openspec` |
 | New feature | `/cc-feature` | `openspec` + `testing-tdd` |
 | Bug fix | `/cc-fix` | `testing-tdd` |
 | Review a diff | `/cc-review` | `evaluation` |
+| Secure a diff before review | `/cc-code-secure` | `cc-code-secure` |
 | TDD cycle only | `/cc-tdd-cycle` | `testing-tdd` |
 | Scorecard / suites | `/cc-scorecard` | `evaluation` |
 
-Then run the matching CLI (`openspec validate`, `scorecard create --from-diff`,
-`hook pre-tool`, `scorecard suite-run`).
+Then run the matching CLI (`openspec validate`, `code-secure scan`,
+`scorecard create --from-diff`, `hook pre-tool`, `scorecard suite-run`).
 
 ## Web interface scope
 

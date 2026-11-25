@@ -1,6 +1,9 @@
 package com.lgzarturo.springbootcourse.features.auth
 
-import com.lgzarturo.springbootcourse.features.users.UserRepository
+import com.lgzarturo.springbootcourse.features.users.CreateUserCommand
+import com.lgzarturo.springbootcourse.features.users.CreateUserService
+import com.lgzarturo.springbootcourse.features.users.UserDomainRepository
+import com.lgzarturo.springbootcourse.features.users.UserRole
 import com.lgzarturo.springbootcourse.security.JwtTestHelper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
@@ -43,7 +46,13 @@ class AuthIntegrationTest {
     private lateinit var jwtIssuer: String
 
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var userRepository: UserDomainRepository
+
+    @Autowired
+    private lateinit var createUserService: CreateUserService
+
+    @Autowired
+    private lateinit var authService: AuthService
 
     @Test
     @DisplayName("POST /api/v1/auth/login debe retornar 200 OK con un JWT firmado")
@@ -132,14 +141,17 @@ class AuthIntegrationTest {
     @Test
     @DisplayName("Un token STAFF debe crear hoteles mientras anónimo recibe 401")
     fun `staff token creates hotels while anonymous is rejected`() {
-        val staffToken =
-            JwtTestHelper.mintToken(
-                jwtSecret,
-                "staff@pokemon.com",
-                listOf("ROLE_STAFF"),
-                jwtIssuer,
-                60_000,
-            )
+        createUserService.execute(
+            CreateUserCommand(
+                email = "staff.login@pokemon.com",
+                password = "Password123!",
+                firstName = "Staff",
+                lastName = "Member",
+                phoneNumber = null,
+                role = UserRole.STAFF,
+            ),
+        )
+        val staffToken = authService.authenticate("staff.login@pokemon.com", "Password123!")
 
         mockMvc
             .perform(
@@ -201,9 +213,10 @@ class AuthIntegrationTest {
         register("claims@pokemon.com")
         val token = loginToken("claims@pokemon.com", "Pikachu123!")
 
+        val user = requireNotNull(userRepository.findByEmail("claims@pokemon.com"))
         val claims = JwtTestHelper.parseClaims(token, jwtSecret)
         org.junit.jupiter.api.Assertions
-            .assertEquals("claims@pokemon.com", claims.subject)
+            .assertEquals(user.id.value.toString(), claims.subject)
         assertTrue(claims.get("roles", List::class.java).contains("ROLE_GUEST"))
         assertTrue(requireNotNull(claims.expiration).after(Date()))
     }

@@ -3,31 +3,31 @@ package com.lgzarturo.springbootcourse.features.hotels
 import com.lgzarturo.springbootcourse.features.rooms.Room
 
 class HotelService(
-    private val hotelRepositoryPort: HotelRepositoryPort,
+    private val hotelDomainRepository: HotelDomainRepository,
 ) {
-    fun createHotel(hotel: Hotel): Hotel = hotelRepositoryPort.save(hotel)
+    fun createHotel(hotel: Hotel): Hotel = hotelDomainRepository.save(hotel)
 
-    fun getHotelById(hotelId: String): Hotel? = hotelRepositoryPort.findById(hotelId)
+    fun getHotelById(hotelId: String): Hotel? = hotelDomainRepository.findById(hotelId)
 
     fun getAllHotels(
         criteria: HotelSearchCriteria,
         page: Int,
         size: Int,
-    ): Pair<List<Hotel>, Long> = hotelRepositoryPort.findAll(criteria, page, size)
+    ): Pair<List<Hotel>, Long> = hotelDomainRepository.findAll(criteria, page, size)
 
     fun updateHotel(
         hotelId: String,
         hotel: Hotel,
     ): Hotel? {
-        val existing = hotelRepositoryPort.findById(hotelId) ?: return null
+        val existing = hotelDomainRepository.findById(hotelId) ?: return null
         val updated = hotel.copy(id = hotelId)
-        return hotelRepositoryPort.update(updated)
+        return hotelDomainRepository.update(updated)
     }
 
-    fun deleteHotel(hotelId: String): Boolean = hotelRepositoryPort.deleteById(hotelId)
+    fun deleteHotel(hotelId: String): Boolean = hotelDomainRepository.deleteById(hotelId)
 
     fun getRoomById(
         hotelId: String,
         roomId: String,
-    ): Room? = hotelRepositoryPort.findRoomById(hotelId, roomId)
+    ): Room? = hotelDomainRepository.findRoomById(hotelId, roomId)
 }

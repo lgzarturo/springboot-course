@@ -5,7 +5,14 @@ const { spawnSync } = require('node:child_process');
 const { existsSync, readFileSync, realpathSync } = require('node:fs');
 const { delimiter, dirname, join, resolve } = require('node:path');
 
-const VALID_EVENTS = ['pre-tool', 'post-tool', 'session-start'];
+const VALID_EVENTS = [
+  'pre-tool',
+  'post-tool',
+  'session-start',
+  'session-end',
+  'subagent-stop',
+  'stop',
+];
 const SPAWN_TIMEOUT = 10000;
 
 const rawArgs = process.argv.slice(1);
@@ -99,7 +106,13 @@ function fallback() {
     process.stderr.write('CodeConductor guard unavailable: install cc-codeconductor locally or enable CC_DEV=1 for trusted development.\n');
   }
   if (isAgy) {
-    if (event === 'post-tool' || event === 'session-start') {
+    if (
+      event === 'post-tool' ||
+      event === 'session-start' ||
+      event === 'session-end' ||
+      event === 'subagent-stop' ||
+      event === 'stop'
+    ) {
       process.stdout.write('{}\n');
     } else {
       process.stdout.write(JSON.stringify(denied ? { decision: 'deny', reason: 'CodeConductor guard unavailable' } : { decision: 'allow' }) + '\n');

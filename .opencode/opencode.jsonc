@@ -76,5 +76,25 @@
     "webfetch": "ask",
     "websearch": "ask",
     "skill": "ask"
+  },
+  "mcp": {
+    "token-savior-recall": {
+      "type": "local",
+      "command": [
+        "token-savior"
+      ],
+      "enabled": true,
+      "environment": {
+        "TOKEN_SAVIOR_CLIENT": "opencode"
+      }
+    },
+    "code-review-graph": {
+      "type": "local",
+      "command": [
+        "code-review-graph",
+        "mcp"
+      ],
+      "enabled": true
+    }
   }
 }

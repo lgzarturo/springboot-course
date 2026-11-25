@@ -1,0 +1,78 @@
+{
+  "id": "sc-mvceslw5-vswj",
+  "taskId": "BC-014",
+  "agent": "reviewer",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "contractVersion": "1.7.0",
+  "criteria": [
+    {
+      "id": "acceptance",
+      "label": "Acceptance criteria met",
+      "weight": 0.3,
+      "score": 3,
+      "notes": "All 6/6 verified live: image boots app (Started log), compose up app+postgres healthy, 2 stages + USER appuser, 273MB<300MB, zero secret hits in history, /actuator/health UP+healthy",
+      "autoSuggested": true
+    },
+    {
+      "id": "minimal_diff",
+      "label": "Minimal diff (no scope creep)",
+      "weight": 0.2,
+      "score": 2,
+      "notes": "Auto minimal_diff=0 rejected: flagged .codeconductor/* and BACKLOG.md are workflow-state files, not product scope creep; other dirty-tree files belong to sibling items. BC-014 product diff strictly in declared Scope (Dockerfile, .dockerignore, docker-compose.yml, build.gradle.kts hunks, README Docker section).",
+      "autoSuggested": true
+    },
+    {
+      "id": "tests",
+      "label": "Tests present and passing",
+      "weight": 0.15,
+      "score": 3,
+      "notes": "Auto tests=0 rejected (stale candidate): runner RED ev-tdd-BC-014-test-1792230068059 (suiteFailed=true) and GREEN ev-tdd-BC-014-implement-1792242233418 (suitePassed=true, exit 0) both exist; /tmp/bc014-verify.sh re-run 13/13 PASS.",
+      "autoSuggested": true
+    },
+    {
+      "id": "regressions",
+      "label": "No regressions introduced",
+      "weight": 0.15,
+      "score": 2,
+      "notes": "Review caught + fixed H2 testRuntimeOnly regression (generateDDL needs main runtimeClasspath); bootJar green twice in docker builds, compileTestKotlin green, no Kotlin sources touched."
+    },
+    {
+      "id": "conventions",
+      "label": "Code follows project conventions",
+      "weight": 0.05,
+      "score": 2,
+      "notes": "No Kotlin touched (ktlint/detekt unaffected); ES comments match repo style; Dockerfile/compose idioms standard."
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation updated if required",
+      "weight": 0.05,
+      "score": 2,
+      "notes": "README Docker section covers prereqs, build, compose up, health probe, teardown; threshold corrected to <300MB per amended FR-004."
+    },
+    {
+      "id": "context_discipline",
+      "label": "Context discipline",
+      "weight": 0.05,
+      "score": 2,
+      "notes": "All edits inside declared Scope; sibling items' dirty-tree files untouched; failure modes probed outside the repo (/tmp)."
+    },
+    {
+      "id": "cc_gain",
+      "label": "Complexity diffusion (cc-gain)",
+      "weight": 0.05,
+      "score": 3,
+      "notes": "cc-gain raw=110, verdict=positive",
+      "autoSuggested": true
+    }
+  ],
+  "weightedScore": 2.5,
+  "verdict": "PASS",
+  "findings": [
+    "Auto minimal_diff=0 and tests=0 corrected with rationale (workflow-state false positives; runner RED/GREEN evidence verified).",
+    "Review fix: H2 kept on main runtimeClasspath for generateDDL; image 273MB < 300MB; all 6 acceptance criteria verified live."
+  ],
+  "createdAt": "2026-10-17T13:05:06.022Z",
+  "backlogId": "BC-014",
+  "source": "manual"
+}

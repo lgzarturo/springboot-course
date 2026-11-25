@@ -1,17 +1,17 @@
 ---
 name: commit
-description: Generates a commit in English following Conventional Commits based on staged changes
+description: Genera un commit en español siguiendo Conventional Commits basado en los cambios staged
 ---
 
 // turbo-all
 
-## Steps
+## Pasos
 
-1. View staged changes: `git diff --cached --stat`
-2. If nothing is staged, suggest `git add .` or specific files
-3. Get full diff: `git diff --cached`
-4. Check recent style: `git log -n 3 --oneline`
-5. Generate message following `.agents/rules/commit-style.md`
-6. Show proposal and confirm with the user
-7. Execute: `git commit -m "<message>"`
-8. Confirm success: `git status`
+1. Ver cambios staged: `git diff --cached --stat`
+2. Si no hay nada staged, sugiere `git add .` o archivos específicos
+3. Obtener diff completo: `git diff --cached`
+4. Ver estilo reciente: `git log -n 3 --oneline`
+5. Generar mensaje siguiendo `.agents/rules/commit-style.md`
+6. Mostrar propuesta y confirmar con el usuario
+7. Ejecutar: `git commit -m "<mensaje>"`
+8. Confirmar éxito: `git status`

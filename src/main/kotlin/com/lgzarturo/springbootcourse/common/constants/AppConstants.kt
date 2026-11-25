@@ -16,17 +16,6 @@ object AppConstants {
 }
 
 /**
- * Objeto que tiene la configuración de CORS
- */
-object CorsConstants {
-    const val MAX_AGE_SECONDS = 3600L
-    const val API_PATH_PATTERN = "/api/**"
-    val ALLOWED_ORIGINS = listOf("http://localhost:3000", "http://localhost:4200")
-    val ALLOWED_METHODS = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-    val ALLOWED_HEADERS = listOf("*")
-}
-
-/**
  * Constantes de mensajes
  */
 object Messages {

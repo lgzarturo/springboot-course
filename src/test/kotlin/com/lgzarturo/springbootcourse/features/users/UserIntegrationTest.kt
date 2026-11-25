@@ -4,6 +4,7 @@ import com.lgzarturo.springbootcourse.features.users.dto.CreateUserRequest
 import com.lgzarturo.springbootcourse.features.users.dto.UpdateUserRequest
 import com.lgzarturo.springbootcourse.features.users.valueobjects.Email
 import com.lgzarturo.springbootcourse.features.users.valueobjects.Password
+import com.lgzarturo.springbootcourse.security.JwtTestHelper
 import com.lgzarturo.springbootcourse.support.LayeredTestSupport
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -39,7 +40,7 @@ class UserIntegrationTest {
     private lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var userRepository: UserDomainRepository
 
     @Value("\${jwt.secret:TestSecretKeyForJwtSigningThatIsLongEnough1234567890}")
     private lateinit var jwtSecret: String
@@ -114,7 +115,7 @@ class UserIntegrationTest {
                 ),
             )
 
-        val token = LayeredTestSupport.mintTokenForRole(jwtSecret, email, UserRole.GUEST)
+        val token = JwtTestHelper.mintTokenForUser(jwtSecret, user)
 
         mockMvc
             .perform(
@@ -143,7 +144,18 @@ class UserIntegrationTest {
             )
 
         val adminEmail = LayeredTestSupport.uniqueEmail("admin.actor")
-        val adminToken = LayeredTestSupport.mintTokenForRole(jwtSecret, adminEmail, UserRole.ADMIN)
+        val admin =
+            userRepository.save(
+                User.create(
+                    email = Email(adminEmail),
+                    password = Password("Password123!"),
+                    firstName = "Admin",
+                    lastName = "Actor",
+                    phoneNumber = null,
+                    role = UserRole.ADMIN,
+                ),
+            )
+        val adminToken = JwtTestHelper.mintTokenForUser(jwtSecret, admin)
 
         val updateRequest =
             UpdateUserRequest(
@@ -167,7 +179,18 @@ class UserIntegrationTest {
     @DisplayName("debe_retornar_no_encontrado_cuando_id_no_existe")
     fun `debe_retornar_no_encontrado_cuando_id_no_existe`() {
         val adminEmail = LayeredTestSupport.uniqueEmail("admin.check")
-        val adminToken = LayeredTestSupport.mintTokenForRole(jwtSecret, adminEmail, UserRole.ADMIN)
+        val admin =
+            userRepository.save(
+                User.create(
+                    email = Email(adminEmail),
+                    password = Password("Password123!"),
+                    firstName = "Admin",
+                    lastName = "Check",
+                    phoneNumber = null,
+                    role = UserRole.ADMIN,
+                ),
+            )
+        val adminToken = JwtTestHelper.mintTokenForUser(jwtSecret, admin)
 
         mockMvc
             .perform(

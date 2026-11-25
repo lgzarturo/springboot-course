@@ -7,6 +7,39 @@ El formato está basado en
 basa en [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Added
+
+- **Revocación de JWT**: denylist `revoked_tokens` + `POST /api/v1/auth/logout`
+  (204 idempotente) y revocación masiva por `users.token_version`
+  (V9/V10, purga diaria programada).
+- **Rate limiting** en `POST /api/v1/auth/*` y `POST /api/v1/users`
+  (5/min por IP+endpoint, 429 con `Retry-After`, desactivable por perfil).
+- **Security headers** explícitos (HSTS, frame deny, nosniff, referrer, CSP)
+  y CORS allowlist dentro de la cadena de seguridad
+  (`APP_SECURITY_ALLOWED_ORIGINS`).
+- **Logs de seguridad**: login ok/fallo (email enmascarado), denegaciones
+  401/403 y logout (userId+jti), sin passwords, tokens ni emails completos.
+- Handler global `AccessDeniedException` → 403.
+- ADR-001 con el diseño de revocación y decisiones.
+
+### Changed
+
+- **Contrato JWT (rompedor)**: `sub` ahora es userId; claims `email`, `jti`,
+  `v`. Tokens legacy se rechazan (re-autenticar tras desplegar).
+- `GET /api/v1/users/{id}`: solo dueño o admin (`@PreAuthorize`).
+- BCrypt cost 10 → 12; passwords limitadas a 8–72 caracteres.
+- Emails normalizados a minúsculas (V11); login insensible a mayúsculas.
+- `ReviewService` usa `authenticatedUserId` en vez de email para ownership.
+- 409 de registro duplicado con mensaje genérico (sin email).
+
+### Security
+
+- Cierra H1–H5 y M1–M7 de la auditoría de autenticación: fuerza bruta,
+  BOLA en perfiles, tokens de usuarios desactivados, DoS bcrypt,
+  CORS permisivo, headers ausentes, falta de logs, NPE en claims,
+  enumeración de emails (409, timing y logs).
+
 ## [0.1.0] - 2026-10-12
 
 Milestone 5: Autenticación, JWT, RBAC y Sistema de Usuarios — Implementación completa del módulo de seguridad con Spring Security 6.x, arquitectura de tokens JWT sin estado, control de acceso basado en roles (RBAC: GUEST, STAFF, ADMIN), CRUD de usuarios con Value Objects, migraciones de base de datos Flyway V3 y V4, y estrategia de pruebas en 5 capas.
@@ -42,8 +75,8 @@ Milestone 5: Autenticación, JWT, RBAC y Sistema de Usuarios — Implementación
   - Pruebas End-to-End (E2E) con `TestRestTemplate` / MockMvc
   - Utilidades de prueba: `@WithMockDomainUser`, `SecurityTestConfig`, `LayeredTestSupport`
 - **Automatización de Release y Versionado Semántico**:
-  - Tareas de Gradle para cálculo e incremento de versiones SemVer (`bumpVersion`, `bumpPatch`, `bumpMinor`, `bumpMajor`, `createRelease`)
-  - Comandos en `Makefile`: `make release`, `make release-patch`, `make release-minor`, `make release-major`, `make bump-version`
+  - Tarea integral en Gradle para cálculo e incremento de versiones SemVer (`createRelease`, `printVersion`, `whatsnext`)
+  - Comandos en `Makefile`: `make release`, `make release-patch`, `make release-minor`, `make release-major`, `make version`, `make whatsnext`
   - Sincronización automática de versiones entre `build.gradle.kts`, `OpenApiConfig`, `Ping`, pruebas y `README.md`
   - Generación automática de tags de Git (`v0.1.0`) y actualización de `CHANGELOG.md`
 

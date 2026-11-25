@@ -1,17 +1,20 @@
 package com.lgzarturo.springbootcourse.features.hotels.integration
 
+import com.lgzarturo.springbootcourse.features.auth.AuthService
 import com.lgzarturo.springbootcourse.features.hotels.dto.CreateHotelRequest
 import com.lgzarturo.springbootcourse.features.hotels.dto.HotelResponse
 import com.lgzarturo.springbootcourse.features.hotels.dto.PageResponse
 import com.lgzarturo.springbootcourse.features.hotels.dto.UpdateHotelRequest
-import com.lgzarturo.springbootcourse.security.JwtTestHelper
+import com.lgzarturo.springbootcourse.features.users.CreateUserCommand
+import com.lgzarturo.springbootcourse.features.users.CreateUserService
+import com.lgzarturo.springbootcourse.features.users.UserRole
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
@@ -40,11 +43,11 @@ class HotelIntegrationTest {
     @LocalServerPort
     private var port: Int = 0
 
-    @Value("\${jwt.secret}")
-    private lateinit var jwtSecret: String
+    @Autowired
+    private lateinit var createUserService: CreateUserService
 
-    @Value("\${jwt.issuer}")
-    private lateinit var jwtIssuer: String
+    @Autowired
+    private lateinit var authService: AuthService
 
     private val testRestTemplate: TestRestTemplate by lazy {
         val template = TestRestTemplate()
@@ -61,8 +64,22 @@ class HotelIntegrationTest {
         template
     }
 
-    private fun staffToken(): String =
-        JwtTestHelper.mintToken(jwtSecret, "hotel.staff@pokemon.com", listOf("ROLE_STAFF"), jwtIssuer, 300_000)
+    private val staffTokenValue: String by lazy {
+        val email = "hotel.it.${System.nanoTime()}@pokemon.com"
+        createUserService.execute(
+            CreateUserCommand(
+                email = email,
+                password = "Password123!",
+                firstName = "Staff",
+                lastName = "Member",
+                phoneNumber = null,
+                role = UserRole.STAFF,
+            ),
+        )
+        authService.authenticate(email, "Password123!")
+    }
+
+    private fun staffToken(): String = staffTokenValue
 
     private val baseUrl = "/api/v1/hotels"
 

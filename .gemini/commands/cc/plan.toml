@@ -1,0 +1,60 @@
+description = "Investigate the code and write a consultable plan. No Task Card, no implementation, and no model or effort choice."
+
+prompt = """
+# Plan Workflow
+
+Plan request: {{args}}
+
+Investigate the code, write one memo, and stop. This is not a delivery workflow.
+Do not create a Task Card. Do not edit source or tests. Do not choose a model.
+Do not choose a reasoning effort. Do not estimate calendar time. Do not write
+`BACKLOG.md` or an OpenSpec change folder. Do not start another workflow.
+
+## Step 0 — CCEP Bootstrap
+
+Command: `plan` (fixed for this workflow — do not infer from user text)
+
+1. Run: `npx cc-codeconductor ccep profile plan --output json` to get the phases and their roles.
+2. For each delegated phase, run: `npx cc-codeconductor ccep compile --command plan --phase <phase-id> "{{args}}" --view prompt --output json`
+3. After planner/intake JSON is available, run: `npx cc-codeconductor ccep evaluate --command plan --input <planner.json> --output json`. If `stop` is true, show questions or risks and wait for human input.
+4. Pass each subagent only the compiled `prompt` for its phase — never forward raw `{{args}}` to planners.
+
+---
+
+## Step 1 — Investigate (repo-explorer)
+
+If `graphify-out/graph.json` exists, run `graphify query "{{args}}"`. Invoke `repo-explorer`. Cite the files and the behavior the code has today. Do not edit source or tests.
+
+---
+
+## Step 2 — Clarify (task-coach)
+
+Invoke `task-coach`. If two or more readings would change the suggested change, ask one question and stop. Do not create a Task Card. If the request is already specific, continue with `questionsForUser` empty.
+
+---
+
+## Step 3 — Draft (architect)
+
+Invoke `architect`. Write only `.codeconductor/plans/<slug>.md`.
+
+Derive `<slug>` from the question: lowercase, replace each run of non-alphanumeric characters with a hyphen, trim hyphens, and keep at most 60 characters. If that is empty, use `plan`. Asking the same question again overwrites that file.
+
+The memo uses these headings, in order:
+
+- `## Question`
+- `## What the code does today` — cite file paths
+- `## Decision already in the code`
+- `## Assumptions`
+- `## Suggested change` — files and what would change; this is a suggestion, not an order
+- `## Rejected alternatives`
+- `## Open questions`
+- `## If you implement later` — exactly one next slash command (`/cc:feature`, `/cc:fix`, `/cc:refactor`, `/cc:review`, `/cc:backlog`, `/cc:openspec`, `/cc:triage`, …) and the memo path. Do not start that command.
+
+Do not choose a model. Do not choose a reasoning effort. Do not estimate calendar time. Do not set `needsConfirmation`.
+
+---
+
+## Completion
+
+Report the memo path under `.codeconductor/plans/` and stop.
+"""

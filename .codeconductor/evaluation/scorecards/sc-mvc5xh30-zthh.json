@@ -1,0 +1,78 @@
+{
+  "id": "sc-mvc5xh30-zthh",
+  "taskId": "BC-013",
+  "agent": "reviewer",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "contractVersion": "1.7.0",
+  "criteria": [
+    {
+      "id": "acceptance",
+      "label": "Acceptance criteria met",
+      "weight": 0.3,
+      "score": 3,
+      "notes": "All FR/SC mapped to tasks and verified live 7/7 (CRUD under hotel, 400 validation, 400 no-hotel, pagination+status/theme filters, V5 persistence, 4 test layers, OpenAPI paths)",
+      "autoSuggested": true
+    },
+    {
+      "id": "minimal_diff",
+      "label": "Minimal diff (no scope creep)",
+      "weight": 0.2,
+      "score": 2,
+      "notes": "BC-013 product diff strictly in declared Scope (rooms feature, V5 migration, rooms tests; 3 modified + 9 new paths); flagged .codeconductor/BACKLOG.md paths are workflow state, remaining tree dirt is other items on the shared branch",
+      "autoSuggested": false
+    },
+    {
+      "id": "tests",
+      "label": "Tests present and passing",
+      "weight": 0.15,
+      "score": 2,
+      "notes": "Runner RED ev-tdd-BC-013-test (suiteFailed) and GREEN ev-tdd-BC-013-implement (suitePassed) verified present; fresh full suite 309/309 green incl. 35 rooms tests, LINE 97.2%; auto tests=0 was stale-candidate",
+      "autoSuggested": false
+    },
+    {
+      "id": "regressions",
+      "label": "No regressions introduced",
+      "weight": 0.15,
+      "score": 2,
+      "notes": "Fresh make quality green: ktlint+detekt clean, 309/309 tests pass, LINE 97.2%, build OK"
+    },
+    {
+      "id": "conventions",
+      "label": "Code follows project conventions",
+      "weight": 0.05,
+      "score": 2,
+      "notes": "ktlint+detekt clean; Controller/Service/Entity/DTO layout kept; MockK+@DisplayName tests; domain free of Spring"
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation updated if required",
+      "weight": 0.05,
+      "score": 2,
+      "notes": "Full OpenAPI annotations per endpoint (ES descriptions, security, error schemas); /api-docs asserts both room paths"
+    },
+    {
+      "id": "context_discipline",
+      "label": "Context discipline",
+      "weight": 0.05,
+      "score": 2,
+      "notes": "Review made zero product edits (all green); no adjacent refactors; pre-existing branch dirt untouched"
+    },
+    {
+      "id": "cc_gain",
+      "label": "Complexity diffusion (cc-gain)",
+      "weight": 0.05,
+      "score": 3,
+      "notes": "cc-gain raw=73.2, verdict=positive",
+      "autoSuggested": true
+    }
+  ],
+  "weightedScore": 2.35,
+  "verdict": "PASS",
+  "findings": [
+    "Auto-suggested minimal_diff=0 rejected: flagged files are CodeConductor workflow state (.codeconductor/*, BACKLOG status transition); BC-013 product diff is 12 in-scope rooms/V5 paths.",
+    "Auto-suggested tests=0 rejected: runner RED/GREEN evidence exists and was verified (ev-tdd-BC-013-test suiteFailed, ev-tdd-BC-013-implement suitePassed); staleness is build-output churn, not absence."
+  ],
+  "createdAt": "2026-10-17T08:56:56.525Z",
+  "backlogId": "BC-013",
+  "source": "manual"
+}

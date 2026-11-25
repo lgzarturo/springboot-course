@@ -1,12 +1,17 @@
 package com.lgzarturo.springbootcourse.common.pagination
 
+import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 
+@Schema(description = "Criterio de paginación y ordenamiento del dominio")
 data class PageRequest(
+    @field:Schema(description = "Número de página (base 0)", example = "0")
     val page: Int,
+    @field:Schema(description = "Tamaño de página", example = "10")
     val size: Int,
+    @field:Schema(description = "Ordenamientos por propiedad")
     val sort: List<SortOrder> = emptyList(),
 ) {
     fun toPageable(): Pageable {

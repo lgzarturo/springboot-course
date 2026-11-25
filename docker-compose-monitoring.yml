@@ -1,0 +1,19 @@
+# Monitoreo local del Gran Hotel Pokemon (BC-015)
+# Uso: docker compose -f docker-compose-monitoring.yml up -d
+# Requiere la API en ejecución con el perfil por defecto
+# (http://localhost:8080/actuator/prometheus expuesto).
+name: springboot-course-monitoring
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.15.0
+    container_name: hotel-pokemon-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped

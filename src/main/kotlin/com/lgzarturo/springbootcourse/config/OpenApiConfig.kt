@@ -1,9 +1,11 @@
 package com.lgzarturo.springbootcourse.config
 
+import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Contact
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.info.License
+import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.servers.Server
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -41,5 +43,17 @@ class OpenApiConfig {
                         .url("https://api.example.com")
                         .description("Servidor de producción"),
                 ),
+            ).components(
+                Components()
+                    .addSecuritySchemes(
+                        "bearerAuth",
+                        SecurityScheme()
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("bearer")
+                            .bearerFormat("JWT")
+                            .description(
+                                "Autenticación JWT: pega el token de `POST /api/v1/auth/login` como `Bearer <token>`",
+                            ),
+                    ),
             )
 }

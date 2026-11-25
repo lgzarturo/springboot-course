@@ -5,9 +5,9 @@ description:
   actually implemented — reads the diff first, writes only what changed.
 effort: low
 mode: subagent
-model: "claude-haiku-4-5-20251001"
+model: "gemini-3.8-flash-medium"
 temperature: 0.1
-tools: Read, Write, Edit, Glob, Grep
+tools: view_file, write_to_file, replace_file_content / multi_replace_file_content, list_dir, grep_search
 permission:
   read: allow
   edit:

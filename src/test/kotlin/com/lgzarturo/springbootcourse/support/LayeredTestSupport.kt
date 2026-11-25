@@ -1,6 +1,6 @@
 package com.lgzarturo.springbootcourse.support
 
-import com.lgzarturo.springbootcourse.features.users.UserRole
+import com.lgzarturo.springbootcourse.features.users.User
 import com.lgzarturo.springbootcourse.security.JwtTestHelper
 
 /**
@@ -11,17 +11,9 @@ object LayeredTestSupport {
 
     fun uniquePhone(): String = "+1415${(1000000..9999999).random()}"
 
-    fun mintTokenForRole(
+    fun mintTokenForUser(
         secret: String,
-        email: String,
-        role: UserRole,
+        user: User,
         issuer: String = "springboot-course-test",
-    ): String =
-        JwtTestHelper.mintToken(
-            secret = secret,
-            subject = email,
-            roles = role.allGrantedAuthorities(),
-            issuer = issuer,
-            ttlMillis = 3600_000,
-        )
+    ): String = JwtTestHelper.mintTokenForUser(secret, user, issuer)
 }

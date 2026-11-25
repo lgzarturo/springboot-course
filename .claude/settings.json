@@ -51,13 +51,48 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/invoke-hook.cjs session-end",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/invoke-hook.cjs subagent-stop",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/invoke-hook.cjs stop",
+            "async": true
+          }
+        ]
+      }
     ]
   },
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Read(**)",
-      "Edit(**)"
+      "Edit(**)",
+      "Bash(*)",
+      "WebFetch(*)"
     ],
     "deny": [
       "Agent(bypass-runner)",
@@ -116,10 +151,6 @@
       "Edit(~/.gnupg/**)",
       "Edit(.codeconductor/**)",
       "Write(.codeconductor/**)"
-    ],
-    "ask": [
-      "Bash(*)",
-      "WebFetch(*)"
     ],
     "defaultMode": "default",
     "disableBypassPermissionsMode": "disable"

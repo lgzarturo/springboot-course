@@ -12,18 +12,18 @@ import org.junit.jupiter.api.assertThrows
 @DisplayName("DuplicateEmailException Tests")
 class DuplicateEmailExceptionTest {
     @Test
-    @DisplayName("Debería construir el mensaje con el correo duplicado")
-    fun `should build message with duplicated email`() {
-        val exception = DuplicateEmailException("ash@pokemon.com")
+    @DisplayName("El mensaje debe ser genérico y no filtrar el correo (WS7)")
+    fun `message must be generic without leaking email`() {
+        val exception = DuplicateEmailException()
 
-        assertEquals("Email already exists: ash@pokemon.com", exception.message)
+        assertEquals("Email already registered", exception.message)
     }
 
     @Test
     @DisplayName("Debería ser lanzable como RuntimeException")
     fun `should be throwable as runtime exception`() {
         assertThrows<DuplicateEmailException> {
-            throw DuplicateEmailException("ash@pokemon.com")
+            throw DuplicateEmailException()
         }
     }
 }

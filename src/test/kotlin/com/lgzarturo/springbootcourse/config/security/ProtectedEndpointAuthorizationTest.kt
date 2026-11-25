@@ -1,5 +1,8 @@
 package com.lgzarturo.springbootcourse.config.security
 
+import com.lgzarturo.springbootcourse.features.auth.AuthService
+import com.lgzarturo.springbootcourse.features.users.CreateUserCommand
+import com.lgzarturo.springbootcourse.features.users.CreateUserService
 import com.lgzarturo.springbootcourse.features.users.UserRole
 import com.lgzarturo.springbootcourse.security.JwtTestHelper
 import com.lgzarturo.springbootcourse.security.WithMockDomainUser
@@ -33,6 +36,12 @@ import org.springframework.web.context.WebApplicationContext
 class ProtectedEndpointAuthorizationTest {
     @Autowired
     private lateinit var context: WebApplicationContext
+
+    @Autowired
+    private lateinit var createUserService: CreateUserService
+
+    @Autowired
+    private lateinit var authService: AuthService
 
     private lateinit var mockMvc: MockMvc
 
@@ -73,23 +82,8 @@ class ProtectedEndpointAuthorizationTest {
     @Test
     @DisplayName("debe_retornar_403_cuando_solicitud_tiene_roles_insuficientes_con_jwt")
     fun `debe_retornar_403_cuando_solicitud_tiene_roles_insuficientes_con_jwt`() {
-        val guestToken =
-            JwtTestHelper.mintToken(
-                secret = jwtSecret,
-                subject = "guest@pokemon.com",
-                roles = UserRole.GUEST.allGrantedAuthorities(),
-                issuer = jwtIssuer,
-                ttlMillis = 60_000,
-            )
-
-        val staffToken =
-            JwtTestHelper.mintToken(
-                secret = jwtSecret,
-                subject = "staff@pokemon.com",
-                roles = UserRole.STAFF.allGrantedAuthorities(),
-                issuer = jwtIssuer,
-                ttlMillis = 60_000,
-            )
+        val guestToken = loginAs("matrix.guest.deny", UserRole.GUEST)
+        val staffToken = loginAs("matrix.staff.deny", UserRole.STAFF)
 
         // GUEST no tiene permiso para crear hoteles
         mockMvc
@@ -118,32 +112,9 @@ class ProtectedEndpointAuthorizationTest {
     @Test
     @DisplayName("debe_autorizar_exitosamente_cuando_credenciales_jwt_son_validas_para_roles_permitidos")
     fun `debe_autorizar_exitosamente_cuando_credenciales_jwt_son_validas_para_roles_permitidos`() {
-        val guestToken =
-            JwtTestHelper.mintToken(
-                secret = jwtSecret,
-                subject = "guest.ok@pokemon.com",
-                roles = UserRole.GUEST.allGrantedAuthorities(),
-                issuer = jwtIssuer,
-                ttlMillis = 60_000,
-            )
-
-        val staffToken =
-            JwtTestHelper.mintToken(
-                secret = jwtSecret,
-                subject = "staff.ok@pokemon.com",
-                roles = UserRole.STAFF.allGrantedAuthorities(),
-                issuer = jwtIssuer,
-                ttlMillis = 60_000,
-            )
-
-        val adminToken =
-            JwtTestHelper.mintToken(
-                secret = jwtSecret,
-                subject = "admin.ok@pokemon.com",
-                roles = UserRole.ADMIN.allGrantedAuthorities(),
-                issuer = jwtIssuer,
-                ttlMillis = 60_000,
-            )
+        val guestToken = loginAs("matrix.guest.ok", UserRole.GUEST)
+        val staffToken = loginAs("matrix.staff.ok", UserRole.STAFF)
+        val adminToken = loginAs("matrix.admin.ok", UserRole.ADMIN)
 
         // GUEST puede leer hoteles
         mockMvc
@@ -261,5 +232,23 @@ class ProtectedEndpointAuthorizationTest {
         mockMvc
             .perform(get("/api/v1/users"))
             .andExpect(status().isOk)
+    }
+
+    private fun loginAs(
+        prefix: String,
+        role: UserRole,
+    ): String {
+        val email = "$prefix.${System.nanoTime()}@pokemon.com"
+        createUserService.execute(
+            CreateUserCommand(
+                email = email,
+                password = "Password123!",
+                firstName = "Matrix",
+                lastName = "User",
+                phoneNumber = null,
+                role = role,
+            ),
+        )
+        return authService.authenticate(email, "Password123!")
     }
 }

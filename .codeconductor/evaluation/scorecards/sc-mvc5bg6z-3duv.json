@@ -1,0 +1,74 @@
+{
+ "id": "sc-mvc5bg6z-3duv",
+ "taskId": "BC-012",
+ "agent": "reviewer",
+ "model": "opencode-go/deepseek-v4.1-flash",
+ "contractVersion": "1.7.0",
+ "criteria": [
+  {
+   "id": "acceptance",
+   "label": "Acceptance criteria met",
+   "weight": 0.3,
+   "score": 3,
+   "notes": "All FR/SC mapped to tasks and verified (6/6 live: 25 ops/6 tags, summaries+codes, DTO constraints+examples, bearerAuth Authorize, ErrorResponse $ref, OpenAPI 3 JSON)"
+  },
+  {
+   "id": "minimal_diff",
+   "label": "Minimal diff (no scope creep)",
+   "weight": 0.2,
+   "score": 2,
+   "notes": "Source diff strictly in declared Scope (OpenApiConfig, 6 controllers, 12 DTOs, ErrorResponse, 3 pagination, 1 test; annotations only, zero behavior change); flagged .codeconductor/BACKLOG.md paths are workflow state, not scope creep"
+  },
+  {
+   "id": "tests",
+   "label": "Tests present and passing",
+   "weight": 0.15,
+   "score": 2,
+   "notes": "Runner RED evidence ev-tdd-BC-012-test-1792225871721 (5 failed/7) and GREEN ev-tdd-BC-012-implement-1792226320039 (7/7); full suite 274/274 green, LINE 96.85%; auto tests=0 was stale-candidate, evidence verified present"
+  },
+  {
+   "id": "regressions",
+   "label": "No regressions introduced",
+   "weight": 0.15,
+   "score": 2,
+   "notes": "Full make quality green (ktlint+detekt+tests+coverage+build); annotation-only change, no endpoint semantics touched"
+  },
+  {
+   "id": "conventions",
+   "label": "Code follows project conventions",
+   "weight": 0.05,
+   "score": 2,
+   "notes": "ktlint+detekt clean; Controller/Service/DTO layout kept; MockK+@DisplayName contract tests; ES docs preserved"
+  },
+  {
+   "id": "documentation",
+   "label": "Documentation updated if required",
+   "weight": 0.05,
+   "score": 2,
+   "notes": "Item delivers the OpenAPI contract itself: bearerAuth scheme, per-op docs, DTO/ErrorResponse schemas with examples"
+  },
+  {
+   "id": "context_discipline",
+   "label": "Context discipline",
+   "weight": 0.05,
+   "score": 2,
+   "notes": "All edits inside declared Scope; no adjacent refactors; pre-existing tree dirt untouched"
+  },
+  {
+   "id": "cc_gain",
+   "label": "Complexity diffusion (cc-gain)",
+   "weight": 0.05,
+   "score": 3,
+   "notes": "cc-gain raw=68.4, verdict=positive"
+  }
+ ],
+ "weightedScore": 2.35,
+ "verdict": "PASS",
+ "findings": [
+  "Auto-suggested minimal_diff=0 rejected: flagged files are CodeConductor workflow state (.codeconductor/*, BACKLOG status transition); product diff is 24 in-scope files, annotations only.",
+  "Auto-suggested tests=0 rejected: runner RED/GREEN evidence exists and was verified (ev-tdd-BC-012-test-1792225871721, ev-tdd-BC-012-implement-1792226320039); full suite 274/274 green."
+ ],
+ "createdAt": "2026-10-17T08:39:48.939Z",
+ "backlogId": "BC-012",
+ "source": "manual"
+}

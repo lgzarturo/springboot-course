@@ -21,7 +21,7 @@ class CreateUserServiceTest {
         "\$2a\$10\$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"
 
     @MockK
-    private lateinit var userRepository: UserRepository
+    private lateinit var userRepository: UserDomainRepository
 
     @MockK
     private lateinit var passwordEncoder: PasswordEncoder

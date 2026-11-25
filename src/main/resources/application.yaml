@@ -141,9 +141,17 @@ management:
       base-path: /actuator
   endpoint:
     health:
-      show-details: always                        # Lo recomendable es 'when-authorized' para que solo los usuarios autorizados puedan ver los detalles
+      show-details: when-authorized               # Solo usuarios autorizados ven los detalles (sin credenciales en HTTP público)
       probes:
         enabled: true                             # Se agrega para kubernetes liveness/readiness probes
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include:
+            - readinessState
+            - db
+            - diskSpace
   metrics:
     tags:
       application: ${spring.application.name}     # Para mejorar la observabilidad

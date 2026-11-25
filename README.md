@@ -109,8 +109,41 @@ técnicos avanzados.
    Docker:
 
    ```bash
-   docker-compose up -d
+   docker compose up -d postgres
    ```
+
+---
+
+## Docker (BC-014)
+
+Prerrequisitos: Docker con BuildKit, archivo `.env` creado desde
+`.env.example` (ver [Configuración del Entorno](#configuración-del-entorno))
+con `DB_*` y `JWT_SECRET` definidos. Los secretos nunca se copian a la imagen:
+solo llegan por entorno en `docker-compose.yml`.
+
+- **Construir la imagen** (multi-stage: Gradle + JRE 25 mínimo vía `jlink`,
+  runtime Alpine con usuario no-root, <300 MB):
+
+  ```bash
+  docker build -t hotel-pokemon .
+  ```
+
+- **Levantar API + PostgreSQL** (la app escucha en `APP_PORT`, 8080 por
+  defecto; Flyway migra al arrancar):
+
+  ```bash
+  docker compose up --build
+  ```
+
+- **Verificar salud**:
+
+  ```bash
+  curl http://localhost:8080/actuator/health
+  docker inspect --format '{{json .State.Health.Status}}' springboot-app
+  ```
+
+- **Detener**: `docker compose down` (agrega `-v` para borrar el volumen
+  `postgres_data`).
 
 ---
 
@@ -127,11 +160,19 @@ terminal:
 
 ### Calidad y Estilo de Código
 
+- `make quality`: Gate completo fail-fast (KtLint → Detekt → tests →
+  verificación JaCoCo LINE 85% → build). Falla ante cualquier violación de
+  estilo o cobertura bajo el umbral. Requiere los [Requisitos](#requisitos):
+  JDK 25 y Docker (los tests de integración usan Testcontainers).
+- `make verify-quality`: Verifica el cableado del gate sin ejecutarlo.
 - `./gradlew checkCodeStyle`: Ejecuta ktlint y detekt.
 - `./gradlew formatCode`: Aplica correcciones automáticas de estilo.
 - `./gradlew codeQuality`: Ejecuta verificaciones de estilo, tests y genera
   reportes de cobertura.
 - `./gradlew fixAll`: Aplica todas las correcciones automáticas disponibles.
+
+Reportes del gate: ktlint en `build/reports/ktlint/`, detekt en
+`build/reports/detekt/`, cobertura JaCoCo en `build/reports/jacoco/`.
 
 ### Base de Datos
 
@@ -143,8 +184,10 @@ terminal:
 
 - `make version` / `./gradlew printVersion`: Muestra la versión actual del proyecto.
 - `make whatsnext` / `./gradlew whatsnext`: Simula los próximos incrementos SemVer (patch, minor, major).
-- `make bump-minor`: Incrementa versión en archivos del proyecto (`build.gradle.kts`, `OpenApiConfig`, `Ping`, pruebas y `README.md`).
-- `make release-minor`: Proceso completo de release (ejecuta tests, bump de versión, actualiza `CHANGELOG.md`, crea commit y tag en Git).
+- `make release-patch`: Release tipo PATCH (0.0.x) con tests, actualización de archivos, changelog y tag Git.
+- `make release-minor`: Release tipo MINOR (0.x.0) con tests, actualización de archivos, changelog y tag Git.
+- `make release-major`: Release tipo MAJOR (x.0.0) con tests, actualización de archivos, changelog y tag Git.
+- `make release`: Release configurable (`make release TYPE=minor` o `make release VERSION=0.2.0`).
 
 ---
 

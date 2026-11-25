@@ -1,12 +1,14 @@
 package com.lgzarturo.springbootcourse.common.exception
 
 import com.lgzarturo.springbootcourse.features.auth.exceptions.InvalidCredentialsException
+import io.sentry.Sentry
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -119,6 +121,7 @@ class GlobalExceptionHandler {
         request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> {
         logger.error("Unexpected error: ${ex.message}", ex)
+        Sentry.captureException(ex)
 
         val errorResponse =
             ErrorResponse(
@@ -142,6 +145,12 @@ class GlobalExceptionHandler {
         ex: InvalidCredentialsException,
         request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.UNAUTHORIZED)
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(
+        ex: AccessDeniedException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ErrorResponse> = handleSpecificStatusCodeException(ex, request, HttpStatus.FORBIDDEN)
 
     private fun handleSpecificStatusCodeException(
         ex: Exception,

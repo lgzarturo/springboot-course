@@ -49,107 +49,10 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
 
 ## Items
 
-### BC-011 | Enforce automated quality gates
-
-- Priority: P1
-- Status: TODO
-- Type: tech-debt
-- Owner: spring-kotlin team
-- Depends on: BC-009
-- Description: Make formatting, static analysis, tests, coverage, and build validation executable through one documented quality gate.
-- Scope: `build.gradle.kts`, `config/detekt/detekt.yml`, `Makefile`, `README.md`, `.github/workflows/ci.yml`
-- Out of scope: Rewriting existing production code solely to increase the target threshold
-- Business value: Makes pull-request quality checks deterministic and repeatable.
-- Acceptance:
-  - [ ] `make quality` runs KtLint, Detekt, tests, JaCoCo verification, and build in the declared order
-  - [ ] The gate fails when coverage is below 85 percent
-  - [ ] The gate fails on a KtLint violation or Detekt violation
-  - [ ] JaCoCo HTML output is generated under `build/reports/jacoco/`
-  - [ ] README documents the local quality command and its required prerequisites
-  - [ ] The current test suite passes through the complete gate
-- Risks: Existing CI task names and the project-level 85 percent policy must remain aligned.
-- Progress: 0%
-- Branch: `feature/milestone-06-testing`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
-### BC-012 | Complete OpenAPI documentation
-
-- Priority: P2
-- Status: TODO
-- Type: tech-debt
-- Owner: spring-kotlin team
-- Depends on: BC-008, BC-011
-- Description: Document every public REST endpoint, DTO schema, response code, and JWT security requirement in the generated OpenAPI contract.
-- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/config/OpenApiConfig.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/`, `src/main/kotlin/com/lgzarturo/springbootcourse/common/`, `src/test/kotlin/com/lgzarturo/springbootcourse/`
-- Out of scope: Changing endpoint semantics or introducing a separate API documentation service
-- Business value: Lets external developers integrate with the API using a single executable contract.
-- Acceptance:
-  - [ ] Swagger UI lists every controller endpoint grouped by feature
-  - [ ] Every endpoint has a summary, description, request schema, response schema, and applicable status codes
-  - [ ] DTO schemas expose validation constraints and representative examples
-  - [ ] Swagger UI exposes an `Authorize` control for JWT bearer tokens
-  - [ ] Error responses include the documented `ErrorResponse` schema and examples
-  - [ ] `/api-docs` returns a valid OpenAPI 3 JSON document
-- Risks: Documentation annotations must stay synchronized with security and validation behavior.
-- Progress: 0%
-- Branch: `feature/milestone-07-docs`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
-### BC-013 | Implement room management CRUD
-
-- Priority: P1
-- Status: TODO
-- Type: feature
-- Owner: spring-kotlin team
-- Depends on: BC-006, BC-012
-- Description: Complete the rooms feature with domain logic, persistence fields, validation, pagination, filtering, REST endpoints, and OpenAPI documentation.
-- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/rooms/`, `src/main/resources/db/migration/V5__Enrich_Rooms_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/rooms/`
-- Out of scope: Reservations, payments, and room availability synchronization with external systems
-- Business value: Makes hotel inventory manageable and provides the resource required for reservations.
-- Acceptance:
-  - [ ] Room create, list, detail, update, and delete endpoints work under a hotel resource
-  - [ ] DTO validation rejects blank names, non-positive capacities, and invalid room values with `400 Bad Request`
-  - [ ] A room without a valid hotel association returns `400 Bad Request`
-  - [ ] Room listing supports pagination and filtering by status and Pokemon theme
-  - [ ] Room type, status, theme, capacity, and description are persisted by the migration and entity
-  - [ ] Unit, controller, persistence, and integration tests cover the complete room feature
-  - [ ] All room endpoints are represented in the generated OpenAPI document
-- Risks: Room state transitions must remain compatible with future reservation rules.
-- Progress: 0%
-- Branch: `feature/milestone-07-docs`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
-### BC-014 | Package the application with Docker
-
-- Priority: P2
-- Status: TODO
-- Type: feature
-- Owner: spring-kotlin team
-- Depends on: BC-013
-- Description: Produce a reproducible multi-stage application image and a local Compose environment for the API and its database dependencies.
-- Scope: `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `build.gradle.kts`, `README.md`
-- Out of scope: Kubernetes manifests, cloud-specific deployment, and production secret provisioning
-- Business value: Reduces environment drift and makes local and CI execution reproducible.
-- Acceptance:
-  - [ ] `docker build -t hotel-pokemon .` creates an image that starts the application
-  - [ ] `docker compose up` starts the application with PostgreSQL using configured environment variables
-  - [ ] The Dockerfile uses separate build and runtime stages with a non-root runtime user
-  - [ ] The resulting image is smaller than 200 MB
-  - [ ] No database password or signing secret is embedded in the image layers
-  - [ ] The container health check reports application readiness
-- Risks: The JDK 25 runtime and layered JAR layout must remain compatible with the selected base image.
-- Progress: 0%
-- Branch: `feature/milestone-08-deploy`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
 ### BC-015 | Expose production observability
 
 - Priority: P2
-- Status: TODO
+- Status: BLOCKED
 - Type: feature
 - Owner: spring-kotlin team
 - Depends on: BC-014
@@ -165,7 +68,7 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
   - [ ] Reservation counters, endpoint timers, and available-room gauges are visible in metrics
   - [ ] Sentry captures an unhandled production exception with the configured environment
 - Risks: Health details and metric labels must not expose credentials or high-cardinality personal data.
-- Progress: 0%
+- Progress: 80%
 - Branch: `feature/milestone-08-deploy`
 - Reviewer: reviewer
 - Last update: 2026-09-16
@@ -191,31 +94,6 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
 - Risks: Workflow permissions and registry credentials must follow least privilege.
 - Progress: 0%
 - Branch: `feature/milestone-08-deploy`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
-### BC-017 | Implement reservation management
-
-- Priority: P1
-- Status: TODO
-- Type: feature
-- Owner: spring-kotlin team
-- Depends on: BC-008, BC-013
-- Description: Implement reservation creation, querying, and lifecycle transitions while preventing overlapping bookings and keeping room state consistent.
-- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/rooms/`, `src/main/resources/db/migration/V6__Add_Reservations_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/reservations/`
-- Out of scope: Payment processing, notifications, and reviews
-- Business value: Delivers the central hotel booking workflow.
-- Acceptance:
-  - [ ] Reservation creation rejects overlapping dates for the same room
-  - [ ] Check-out date must be after check-in date and invalid ranges return `400 Bad Request`
-  - [ ] Total price equals the number of nights multiplied by the room nightly price
-  - [ ] Only valid transitions from `PENDING` to `CONFIRMED`, `IN_PROGRESS`, `COMPLETED`, or `CANCELLED` are accepted
-  - [ ] Confirming a reservation marks the room `RESERVED` and cancelling it restores `AVAILABLE`
-  - [ ] Reservation listing supports user, status, and date filters with pagination
-  - [ ] Unit and integration tests cover every state transition and the complete booking flow
-- Risks: Concurrent reservation requests require a database-safe overlap strategy.
-- Progress: 0%
-- Branch: `feature/milestone-09-advanced`
 - Reviewer: reviewer
 - Last update: 2026-09-16
 
@@ -267,54 +145,6 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
 - Reviewer: reviewer
 - Last update: 2026-09-16
 
-### BC-020 | Implement reservation payments
-
-- Priority: P1
-- Status: TODO
-- Type: feature
-- Owner: spring-kotlin team
-- Depends on: BC-017
-- Description: Add simulated payment processing, status queries, and refunds for confirmed reservations behind a replaceable gateway boundary.
-- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/payments/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/resources/db/migration/V7__Add_Payments_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/payments/`
-- Out of scope: Real card data, external payment provider credentials, and PCI compliance certification
-- Business value: Completes the reservation confirmation path without storing sensitive payment data.
-- Acceptance:
-  - [ ] A payment can be created only for a reservation in `CONFIRMED` status
-  - [ ] A completed payment moves the reservation to `IN_PROGRESS`
-  - [ ] A refund can be created only for a `COMPLETED` payment
-  - [ ] The payment amount equals the reservation total price
-  - [ ] Payment status transitions cover `PENDING`, `COMPLETED`, `FAILED`, and `REFUNDED`
-  - [ ] Unit and integration tests cover successful, failed, duplicate, and refund flows
-- Risks: The simulated gateway must make it impossible to persist raw payment credentials.
-- Progress: 0%
-- Branch: `feature/milestone-10-capstone`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
-### BC-021 | Implement stay reviews
-
-- Priority: P1
-- Status: TODO
-- Type: feature
-- Owner: spring-kotlin team
-- Depends on: BC-017, BC-020
-- Description: Allow the guest who completed a reservation to create one rated review and expose paginated hotel review summaries.
-- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/reviews/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/resources/db/migration/V8__Add_Reviews_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/reviews/`
-- Out of scope: Moderation workflows, image uploads, and public user profiles
-- Business value: Provides trustworthy hotel feedback and a measurable guest experience signal.
-- Acceptance:
-  - [ ] Only the user who owns a `COMPLETED` reservation can create its review
-  - [ ] A reservation can have at most one review
-  - [ ] Ratings outside the inclusive range 1-5 are rejected with `400 Bad Request`
-  - [ ] `GET /api/v1/hotels/{id}/reviews` returns paginated reviews and the average rating
-  - [ ] Review detail returns `404 Not Found` for an unknown review identifier
-  - [ ] Unit and integration tests cover authorization, uniqueness, validation, pagination, and average-rating calculation
-- Risks: Review ownership must be checked from authenticated identity, not a request body field.
-- Progress: 0%
-- Branch: `feature/milestone-10-capstone`
-- Reviewer: reviewer
-- Last update: 2026-09-16
-
 ### BC-022 | Complete integrated release
 
 - Priority: P0
@@ -341,6 +171,176 @@ agent, contract version, date, findings, weighted score, verdict, and evidence.
 - Last update: 2026-09-16
 
 ## Archive
+### BC-014 | Package the application with Docker
+
+- Priority: P2
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-013
+- Description: Produce a reproducible multi-stage application image and a local Compose environment for the API and its database dependencies.
+- Scope: `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `build.gradle.kts`, `README.md`
+- Out of scope: Kubernetes manifests, cloud-specific deployment, and production secret provisioning
+- Business value: Reduces environment drift and makes local and CI execution reproducible.
+- Acceptance:
+  - [x] `docker build -t hotel-pokemon .` creates an image that starts the application
+  - [x] `docker compose up` starts the application with PostgreSQL using configured environment variables
+  - [x] The Dockerfile uses separate build and runtime stages with a non-root runtime user
+  - [x] The resulting image is smaller than 300 MB as reported by `docker images`
+  - [x] No database password or signing secret is embedded in the image layers
+  - [x] The container health check reports application readiness
+- Risks: The JDK 25 runtime and layered JAR layout must remain compatible with the selected base image.
+- Progress: 100%
+- Branch: `feature/milestone-08-deploy`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-021 | Implement stay reviews
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-017, BC-020
+- Description: Allow the guest who completed a reservation to create one rated review and expose paginated hotel review summaries.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/reviews/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/resources/db/migration/V8__Add_Reviews_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/reviews/`
+- Out of scope: Moderation workflows, image uploads, and public user profiles
+- Business value: Provides trustworthy hotel feedback and a measurable guest experience signal.
+- Acceptance:
+  - [x] Only the user who owns a `COMPLETED` reservation can create its review
+  - [x] A reservation can have at most one review
+  - [x] Ratings outside the inclusive range 1-5 are rejected with `400 Bad Request`
+  - [x] `GET /api/v1/hotels/{id}/reviews` returns paginated reviews and the average rating
+  - [x] Review detail returns `404 Not Found` for an unknown review identifier
+  - [x] Unit and integration tests cover authorization, uniqueness, validation, pagination, and average-rating calculation
+- Risks: Review ownership must be checked from authenticated identity, not a request body field.
+- Progress: 100%
+- Branch: `feature/milestone-10-capstone`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-020 | Implement reservation payments
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-017
+- Description: Add simulated payment processing, status queries, and refunds for confirmed reservations behind a replaceable gateway boundary.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/payments/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/resources/db/migration/V7__Add_Payments_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/payments/`
+- Out of scope: Real card data, external payment provider credentials, and PCI compliance certification
+- Business value: Completes the reservation confirmation path without storing sensitive payment data.
+- Acceptance:
+  - [x] A payment can be created only for a reservation in `CONFIRMED` status
+  - [x] A completed payment moves the reservation to `IN_PROGRESS`
+  - [x] A refund can be created only for a `COMPLETED` payment
+  - [x] The payment amount equals the reservation total price
+  - [x] Payment status transitions cover `PENDING`, `COMPLETED`, `FAILED`, and `REFUNDED`
+  - [x] Unit and integration tests cover successful, failed, duplicate, and refund flows
+- Risks: The simulated gateway must make it impossible to persist raw payment credentials.
+- Progress: 100%
+- Branch: `feature/milestone-10-capstone`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-017 | Implement reservation management
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-008, BC-013
+- Description: Implement reservation creation, querying, and lifecycle transitions while preventing overlapping bookings and keeping room state consistent.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/reservations/`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/rooms/`, `src/main/resources/db/migration/V6__Add_Reservations_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/reservations/`
+- Out of scope: Payment processing, notifications, and reviews
+- Business value: Delivers the central hotel booking workflow.
+- Acceptance:
+  - [x] Reservation creation rejects overlapping dates for the same room
+  - [x] Check-out date must be after check-in date and invalid ranges return `400 Bad Request`
+  - [x] Total price equals the number of nights multiplied by the room nightly price
+  - [x] Only valid transitions from `PENDING` to `CONFIRMED`, `IN_PROGRESS`, `COMPLETED`, or `CANCELLED` are accepted
+  - [x] Confirming a reservation marks the room `RESERVED` and cancelling it restores `AVAILABLE`
+  - [x] Reservation listing supports user, status, and date filters with pagination
+  - [x] Unit and integration tests cover every state transition and the complete booking flow
+- Risks: Concurrent reservation requests require a database-safe overlap strategy.
+- Progress: 100%
+- Branch: `feature/milestone-09-advanced`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-013 | Implement room management CRUD
+
+- Priority: P1
+- Status: DONE
+- Type: feature
+- Owner: spring-kotlin team
+- Depends on: BC-006, BC-012
+- Description: Complete the rooms feature with domain logic, persistence fields, validation, pagination, filtering, REST endpoints, and OpenAPI documentation.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/features/rooms/`, `src/main/resources/db/migration/V5__Enrich_Rooms_Table.sql`, `src/test/kotlin/com/lgzarturo/springbootcourse/features/rooms/`
+- Out of scope: Reservations, payments, and room availability synchronization with external systems
+- Business value: Makes hotel inventory manageable and provides the resource required for reservations.
+- Acceptance:
+  - [x] Room create, list, detail, update, and delete endpoints work under a hotel resource
+  - [x] DTO validation rejects blank names, non-positive capacities, and invalid room values with `400 Bad Request`
+  - [x] A room without a valid hotel association returns `400 Bad Request`
+  - [x] Room listing supports pagination and filtering by status and Pokemon theme
+  - [x] Room type, status, theme, capacity, and description are persisted by the migration and entity
+  - [x] Unit, controller, persistence, and integration tests cover the complete room feature
+  - [x] All room endpoints are represented in the generated OpenAPI document
+- Risks: Room state transitions must remain compatible with future reservation rules.
+- Progress: 100%
+- Branch: `feature/milestone-07-docs`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-012 | Complete OpenAPI documentation
+
+- Priority: P2
+- Status: DONE
+- Type: tech-debt
+- Owner: spring-kotlin team
+- Depends on: BC-008, BC-011
+- Description: Document every public REST endpoint, DTO schema, response code, and JWT security requirement in the generated OpenAPI contract.
+- Scope: `src/main/kotlin/com/lgzarturo/springbootcourse/config/OpenApiConfig.kt`, `src/main/kotlin/com/lgzarturo/springbootcourse/features/`, `src/main/kotlin/com/lgzarturo/springbootcourse/common/`, `src/test/kotlin/com/lgzarturo/springbootcourse/`
+- Out of scope: Changing endpoint semantics or introducing a separate API documentation service
+- Business value: Lets external developers integrate with the API using a single executable contract.
+- Acceptance:
+  - [x] Swagger UI lists every controller endpoint grouped by feature
+  - [x] Every endpoint has a summary, description, request schema, response schema, and applicable status codes
+  - [x] DTO schemas expose validation constraints and representative examples
+  - [x] Swagger UI exposes an `Authorize` control for JWT bearer tokens
+  - [x] Error responses include the documented `ErrorResponse` schema and examples
+  - [x] `/api-docs` returns a valid OpenAPI 3 JSON document
+- Risks: Documentation annotations must stay synchronized with security and validation behavior.
+- Progress: 100%
+- Branch: `feature/milestone-07-docs`
+- Reviewer: reviewer
+- Last update: 2026-09-16
+
+### BC-011 | Enforce automated quality gates
+
+- Priority: P1
+- Status: DONE
+- Type: tech-debt
+- Owner: spring-kotlin team
+- Depends on: BC-009
+- Description: Make formatting, static analysis, tests, coverage, and build validation executable through one documented quality gate.
+- Scope: `build.gradle.kts`, `config/detekt/detekt.yml`, `Makefile`, `README.md`
+- Out of scope: Rewriting existing production code solely to increase the target threshold; CI workflow changes (deferred to BC-016)
+- Business value: Makes pull-request quality checks deterministic and repeatable.
+- Acceptance:
+  - [x] `make quality` runs KtLint, Detekt, tests, JaCoCo verification, and build in the declared order (KtLint → Detekt → tests → JaCoCo verification → build)
+  - [x] The gate fails when global LINE coverage is below 85 percent
+  - [x] The gate fails on a KtLint violation or Detekt violation
+  - [x] JaCoCo HTML output is generated under `build/reports/jacoco/`
+  - [x] README documents the local quality command and its required prerequisites
+  - [x] The current test suite passes through the complete gate
+- Risks: Gradle task names consumed by CI must keep working; the 85 percent policy stays defined in one place for BC-016 to reuse.
+- Progress: 100%
+- Branch: `feature/milestone-06-testing`
+- Reviewer: reviewer
+- Last update: 2026-10-17
+
 ### BC-010 | Verify protected endpoint behavior
 
 - Priority: P1

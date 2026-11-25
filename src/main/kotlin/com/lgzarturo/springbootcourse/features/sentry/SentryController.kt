@@ -1,12 +1,19 @@
 package com.lgzarturo.springbootcourse.features.sentry
 
 import com.lgzarturo.springbootcourse.common.constants.AppConstants
+import com.lgzarturo.springbootcourse.common.exception.ErrorResponse
 import com.lgzarturo.springbootcourse.common.exception.SentryTestException
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.SpanStatus
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -32,6 +39,19 @@ class SentryController {
         summary = "Enviar evento de prueba a Sentry",
         description = "Genera una excepción de prueba y la envía a Sentry con contexto básico",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Confirmación del envío a Sentry",
+            content = [Content(mediaType = "application/json", schema = Schema(type = "string"))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     fun testEvent(): String {
         try {
             throw SentryTestException("This is a test.")
@@ -45,6 +65,19 @@ class SentryController {
     @Operation(
         summary = "Probar breadcrumbs",
         description = "Genera múltiples breadcrumbs antes de lanzar una excepción",
+    )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Confirmación del envío a Sentry",
+            content = [Content(mediaType = "application/json", schema = Schema(type = "string"))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
     )
     fun testBreadcrumbs(): String {
         // Agregar varios breadcrumbs para simular un flujo
@@ -88,7 +121,21 @@ class SentryController {
         summary = "Enviar mensaje personalizado",
         description = "Envía un mensaje a Sentry sin lanzar una excepción",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Confirmación del envío a Sentry",
+            content = [Content(mediaType = "application/json", schema = Schema(type = "string"))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     fun testMessage(
+        @Parameter(description = "Mensaje a enviar a Sentry", example = "Test message")
         @RequestParam(defaultValue = "Test message") message: String,
     ): String {
         Sentry.captureMessage(message, SentryLevel.INFO)
@@ -100,6 +147,19 @@ class SentryController {
     @Operation(
         summary = "Probar performance monitoring",
         description = "Crea una transacción para medir performance",
+    )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Confirmación del envío a Sentry",
+            content = [Content(mediaType = "application/json", schema = Schema(type = "string"))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
     )
     fun testTransaction(): String {
         val transaction = Sentry.startTransaction("test-transaction", "http.server")
@@ -138,7 +198,21 @@ class SentryController {
         summary = "Probar fingerprint personalizado",
         description = "Envía eventos con fingerprint personalizado para agruparlos",
     )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "200",
+            description = "Confirmación del envío a Sentry",
+            content = [Content(mediaType = "application/json", schema = Schema(type = "string"))],
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Sin autenticación o token inválido",
+            content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+        ),
+    )
     fun testCustomFingerprint(
+        @Parameter(description = "Tipo de error para agrupar en Sentry", example = "payment")
         @RequestParam type: String,
     ): String {
         val safeType = HtmlUtils.htmlEscape(type)

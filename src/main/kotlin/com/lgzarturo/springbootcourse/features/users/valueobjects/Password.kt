@@ -6,12 +6,12 @@ value class Password(
 ) {
     init {
         require(isSecure(value) || isEncrypted(value)) {
-            "Password must be at least 8 characters and contain uppercase, lowercase, and number"
+            "Password must be 8 to 72 characters and contain uppercase, lowercase, and number"
         }
     }
 
     companion object {
-        private val PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$".toRegex()
+        private val PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,72}$".toRegex()
 
         fun isSecure(password: String): Boolean = PASSWORD_REGEX.matches(password)
 
