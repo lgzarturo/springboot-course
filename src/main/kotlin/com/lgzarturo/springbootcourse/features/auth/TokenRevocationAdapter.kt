@@ -1,5 +1,7 @@
 package com.lgzarturo.springbootcourse.features.auth
 
+import org.slf4j.LoggerFactory
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -9,6 +11,8 @@ import java.util.UUID
 class TokenRevocationAdapter(
     private val revokedTokenJpaRepository: RevokedTokenJpaRepository,
 ) : TokenRevocationPort {
+    private val logger = LoggerFactory.getLogger(TokenRevocationAdapter::class.java)
+
     override fun isRevoked(tokenId: UUID): Boolean = revokedTokenJpaRepository.existsById(tokenId)
 
     @Transactional
@@ -21,15 +25,19 @@ class TokenRevocationAdapter(
         if (revokedTokenJpaRepository.existsById(tokenId)) {
             return
         }
-        revokedTokenJpaRepository.save(
-            RevokedTokenEntity(
-                jti = tokenId,
-                userId = userId,
-                expiresAt = expiresAt,
-                revokedAt = Instant.now(),
-                reason = reason,
-            ),
-        )
+        try {
+            revokedTokenJpaRepository.save(
+                RevokedTokenEntity(
+                    jti = tokenId,
+                    userId = userId,
+                    expiresAt = expiresAt,
+                    revokedAt = Instant.now(),
+                    reason = reason,
+                ),
+            )
+        } catch (ex: DataIntegrityViolationException) {
+            logger.debug("Concurrent revoke of already revoked token", ex)
+        }
     }
 
     @Transactional

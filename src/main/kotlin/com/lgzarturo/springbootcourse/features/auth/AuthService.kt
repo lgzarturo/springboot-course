@@ -6,6 +6,7 @@ import com.lgzarturo.springbootcourse.features.users.PasswordEncoder
 import com.lgzarturo.springbootcourse.features.users.UserDomainRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.util.Locale
 
 @Service
 class AuthService(
@@ -19,7 +20,7 @@ class AuthService(
         email: String,
         password: String,
     ): String {
-        val user = userRepository.findByEmail(email.lowercase())
+        val user = userRepository.findByEmail(email.lowercase(Locale.ROOT))
         val passwordOk = passwordEncoder.matches(password, user?.password?.value ?: DUMMY_HASH)
         if (user == null || !user.isActive || !passwordOk) {
             logger.warn("Authentication failed for email={}", maskEmail(email))

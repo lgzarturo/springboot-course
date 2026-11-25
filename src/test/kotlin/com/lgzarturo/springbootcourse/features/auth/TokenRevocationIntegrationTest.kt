@@ -115,6 +115,22 @@ class TokenRevocationIntegrationTest {
     }
 
     @Test
+    @DisplayName("Revocar dos veces el mismo jti debe ser idempotente")
+    fun `double revoke is idempotent`() {
+        val jti = java.util.UUID.randomUUID()
+        val expiresAt =
+            java.time.Instant
+                .now()
+                .plusSeconds(600)
+
+        tokenRevocationPort.revoke(jti, 1L, expiresAt, RevocationReason.LOGOUT)
+        tokenRevocationPort.revoke(jti, 1L, expiresAt, RevocationReason.LOGOUT)
+
+        org.junit.jupiter.api.Assertions
+            .assertTrue(tokenRevocationPort.isRevoked(jti))
+    }
+
+    @Test
     @DisplayName("La purga debe eliminar solo las revocaciones expiradas")
     fun `purge removes only expired revocations`() {
         val expired = java.util.UUID.randomUUID()

@@ -7,4 +7,5 @@ data class RateLimitProperties(
     val enabled: Boolean = true,
     val perMinute: Int = 5,
     val windowSeconds: Long = 60,
+    val trustForwardedHeaders: Boolean = false,
 )

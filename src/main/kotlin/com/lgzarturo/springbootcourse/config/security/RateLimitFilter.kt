@@ -44,15 +44,24 @@ class RateLimitFilter(
             (request.requestURI.startsWith(AUTH_PATH_PREFIX) || request.requestURI == USERS_PATH)
 
     private fun key(request: HttpServletRequest): String {
-        val forwarded =
-            request
-                .getHeader(FORWARDED_FOR_HEADER)
-                ?.split(",")
-                ?.firstOrNull()
-                ?.trim()
-                .orEmpty()
-        val ip = forwarded.ifEmpty { request.remoteAddr ?: UNKNOWN_IP }
+        val ip = clientIp(request)
         return "$ip:${request.method}:${request.requestURI}"
+    }
+
+    private fun clientIp(request: HttpServletRequest): String {
+        if (properties.trustForwardedHeaders) {
+            val forwarded =
+                request
+                    .getHeader(FORWARDED_FOR_HEADER)
+                    ?.split(",")
+                    ?.firstOrNull()
+                    ?.trim()
+                    .orEmpty()
+            if (forwarded.isNotEmpty()) {
+                return forwarded
+            }
+        }
+        return request.remoteAddr ?: UNKNOWN_IP
     }
 
     private fun tryConsume(key: String): Boolean {

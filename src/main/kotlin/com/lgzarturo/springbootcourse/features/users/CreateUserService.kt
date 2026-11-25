@@ -6,6 +6,7 @@ import com.lgzarturo.springbootcourse.features.users.valueobjects.Password
 import com.lgzarturo.springbootcourse.features.users.valueobjects.PhoneNumber
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.Locale
 
 @Service
 class CreateUserService(
@@ -14,7 +15,7 @@ class CreateUserService(
 ) {
     @Transactional
     fun execute(command: CreateUserCommand): User {
-        val normalizedEmail = command.email.lowercase()
+        val normalizedEmail = command.email.lowercase(Locale.ROOT)
         if (userRepository.existsByEmail(normalizedEmail)) {
             throw DuplicateEmailException()
         }
