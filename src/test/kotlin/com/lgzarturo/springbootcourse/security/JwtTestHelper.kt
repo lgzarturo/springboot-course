@@ -30,6 +30,23 @@ object JwtTestHelper {
             .compact()
     }
 
+    fun mintTokenWithoutRoles(
+        secret: String,
+        subject: String,
+        issuer: String,
+        ttlMillis: Long,
+    ): String {
+        val now = Date()
+        return Jwts
+            .builder()
+            .subject(subject)
+            .issuer(issuer)
+            .issuedAt(now)
+            .expiration(Date(now.time + ttlMillis))
+            .signWith(Keys.hmacShaKeyFor(secret.toByteArray()))
+            .compact()
+    }
+
     fun parseClaims(
         token: String,
         secret: String,
