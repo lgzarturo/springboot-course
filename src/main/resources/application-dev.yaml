@@ -71,6 +71,11 @@ spring:
 server:
   port: ${PORT:8080}
 
+app:
+  security:
+    # CSP relajada en dev: Swagger UI necesita inline scripts/estilos y data URIs.
+    csp-policy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+
 logging:
   level:
     org.flywaydb: DEBUG

@@ -1,6 +1,7 @@
 package com.lgzarturo.springbootcourse.security
 
 import com.lgzarturo.springbootcourse.config.security.JwtService
+import com.lgzarturo.springbootcourse.config.security.RateLimitProperties
 import com.lgzarturo.springbootcourse.features.auth.TokenRevocationPort
 import com.lgzarturo.springbootcourse.features.users.UserDomainRepository
 import io.micrometer.core.instrument.MeterRegistry
@@ -23,6 +24,10 @@ class SecurityTestConfig {
 
     @Bean
     fun userDomainRepository(): UserDomainRepository = mockk(relaxed = true)
+
+    // El filtro de rate limiting también se carga en slices: desactivado.
+    @Bean
+    fun rateLimitProperties(): RateLimitProperties = RateLimitProperties(enabled = false)
 
     // ReservationMetricsConfig (WebMvcConfigurer) se carga en @WebMvcTest y
     // requiere MeterRegistry, que no se autoconfigura en slices web.
